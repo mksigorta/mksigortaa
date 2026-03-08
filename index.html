@@ -291,22 +291,147 @@ body.has-ann .hero{padding-top:178px;}
 .sec-header{text-align:center;margin-bottom:60px;}
 .sec-tag{display:inline-block;font-size:.73rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:14px;}
 .sec-header h2{font-family:var(--font-head);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:var(--text);}
-.products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px;}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;}
+
+/* ÜRÜN KARTI */
 .product-card{
   background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-  padding:32px 28px;cursor:pointer;transition:var(--trans);position:relative;overflow:hidden;
+  padding:0;cursor:pointer;transition:var(--trans);position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
 }
 .product-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--accent);transform:scaleX(0);transition:.3s;transform-origin:left;}
-.product-card:hover{transform:translateY(-5px);box-shadow:0 16px 50px rgba(0,0,0,.3);}
+.product-card:hover{transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,0,0,.3);}
 .product-card:hover::after{transform:scaleX(1);}
-.prod-icon{font-size:2rem;margin-bottom:16px;}
-.product-card h3{font-family:var(--font-head);font-size:1.15rem;margin-bottom:8px;color:var(--text);}
-.product-card p{font-size:.85rem;line-height:1.7;color:var(--text2);}
-.prod-price{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.price-from{font-size:.72rem;color:var(--text2);}
-.price-amount{font-family:var(--font-head);font-size:1.3rem;font-weight:700;color:var(--accent);}
-.get-offer-link{font-size:.8rem;font-weight:600;color:var(--text);transition:var(--trans);}
-.get-offer-link:hover{color:var(--accent);}
+
+/* Kart üst şerit */
+.pc-header{
+  padding:24px 24px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:14px;
+}
+.prod-icon{
+  font-size:1.8rem;width:52px;height:52px;border-radius:12px;
+  background:rgba(200,169,110,.08);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.pc-head-text{flex:1;}
+.product-card h3{font-family:var(--font-head);font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:4px;}
+.pc-tagline{font-size:.76rem;color:var(--text2);line-height:1.5;}
+
+/* Kısa özellikler */
+.pc-features{padding:16px 24px;display:flex;flex-direction:column;gap:7px;flex:1;}
+.pc-feat{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text2);}
+.pc-feat::before{content:'✓';width:18px;height:18px;background:rgba(200,169,110,.1);
+  border:1px solid rgba(200,169,110,.3);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.62rem;color:var(--accent);flex-shrink:0;line-height:18px;text-align:center;}
+
+/* Uyarı etiketi (zorunlu ürünler için) */
+.pc-alert{
+  margin:0 24px 12px;
+  background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);
+  border-radius:6px;padding:7px 12px;
+  font-size:.74rem;color:#e74c3c;font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+
+/* Fiyat + buton */
+.prod-price{
+  margin:auto 0 0;padding:16px 24px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.price-from{font-size:.68rem;color:var(--text2);}
+.price-amount{font-family:var(--font-head);font-size:1.25rem;font-weight:700;color:var(--accent);}
+.pc-btns{display:flex;gap:8px;}
+.get-offer-link{
+  font-size:.75rem;font-weight:700;color:var(--bg);
+  background:var(--accent);padding:7px 14px;border-radius:5px;
+  transition:var(--trans);white-space:nowrap;
+}
+.get-offer-link:hover{background:var(--accent2);}
+.pc-detail-btn{
+  font-size:.75rem;font-weight:600;color:var(--text2);
+  background:var(--card);border:1px solid var(--border);
+  padding:7px 12px;border-radius:5px;transition:var(--trans);white-space:nowrap;
+}
+.pc-detail-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ============================================================
+   ÜRÜN DETAY MODAL
+============================================================ */
+.prod-modal-overlay{
+  position:fixed;inset:0;z-index:2000;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(8px);
+  display:none;align-items:center;justify-content:center;padding:20px;
+  animation:fadeIn .2s ease;
+}
+.prod-modal-overlay.open{display:flex;}
+.prod-modal{
+  background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  width:100%;max-width:780px;max-height:88vh;overflow-y:auto;
+  position:relative;animation:modalSlideUp .3s cubic-bezier(.34,1.1,.64,1);
+}
+@keyframes modalSlideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.pm-close{
+  position:sticky;top:0;float:right;margin:16px 16px -16px 0;
+  background:rgba(255,255,255,.08);border:1px solid var(--border);
+  color:var(--text2);width:32px;height:32px;border-radius:50%;cursor:pointer;
+  font-size:.85rem;display:flex;align-items:center;justify-content:center;
+  transition:var(--trans);z-index:10;
+}
+.pm-close:hover{background:rgba(231,76,60,.2);color:#e74c3c;border-color:rgba(231,76,60,.3);}
+.pm-hero{
+  padding:36px 36px 24px;border-bottom:1px solid var(--border);
+  display:flex;gap:20px;align-items:flex-start;
+}
+.pm-icon{font-size:2.8rem;width:72px;height:72px;border-radius:16px;
+  background:rgba(200,169,110,.08);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pm-hero-text{flex:1;}
+.pm-hero-text h2{font-family:var(--font-head);font-size:1.7rem;font-weight:700;color:var(--text);margin-bottom:6px;}
+.pm-subtitle{font-size:.87rem;color:var(--text2);line-height:1.6;max-width:500px;}
+.pm-price-pill{
+  display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+  background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.2);
+  border-radius:100px;padding:6px 16px;
+}
+.pm-price-label{font-size:.7rem;color:var(--text2);}
+.pm-price-val{font-family:var(--font-head);font-size:1.1rem;font-weight:700;color:var(--accent);}
+
+/* Sekmeler */
+.pm-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 36px;overflow-x:auto;}
+.pm-tab{
+  padding:14px 20px;font-size:.82rem;font-weight:600;cursor:pointer;
+  color:var(--text2);border-bottom:2px solid transparent;
+  transition:var(--trans);white-space:nowrap;font-family:var(--font-body);
+  background:transparent;border-top:none;border-left:none;border-right:none;
+}
+.pm-tab:hover{color:var(--text);}
+.pm-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.pm-tab-content{display:none;padding:28px 36px;}
+.pm-tab-content.active{display:block;}
+
+/* İçerik blokları */
+.pm-section{margin-bottom:28px;}
+.pm-section h4{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.pm-list{list-style:none;display:flex;flex-direction:column;gap:9px;}
+.pm-list li{display:flex;align-items:flex-start;gap:10px;font-size:.84rem;color:var(--text2);line-height:1.6;}
+.pm-list li .li-icon{font-size:.9rem;flex-shrink:0;margin-top:1px;}
+.pm-warn{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.2);border-radius:8px;padding:14px 18px;margin-bottom:10px;}
+.pm-warn-title{font-weight:700;color:#e74c3c;font-size:.85rem;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.pm-warn p{font-size:.82rem;color:var(--text2);line-height:1.6;margin:0;}
+.pm-info{background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.15);border-radius:8px;padding:14px 18px;margin-bottom:10px;}
+.pm-info p{font-size:.82rem;color:var(--text2);line-height:1.6;margin:0;}
+.pm-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.pm-stat-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;}
+.pm-stat-num{font-family:var(--font-head);font-size:1.5rem;font-weight:700;color:var(--accent);}
+.pm-stat-lbl{font-size:.72rem;color:var(--text2);margin-top:4px;}
+.pm-who-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.pm-who-tag{background:var(--card);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-size:.78rem;color:var(--text2);}
+
+/* Footer */
+.pm-footer{padding:20px 36px;border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.pm-footer .btn-gold{flex:1;min-width:160px;text-align:center;}
 
 /* ============================================================
    SITE – TEKLİF FORMU
@@ -963,50 +1088,43 @@ tr:hover td{background:rgba(255,255,255,.02);}
   </section>
 
   <!-- ÜRÜNLER -->
+  <!-- ============================================================
+       ÜRÜNLER – ZENGİN KARTLAR + DETAY MODAL
+  ============================================================ -->
   <section class="products-sec" id="urunler">
     <div class="sec-header">
       <div class="sec-tag">Sigorta Ürünlerimiz</div>
       <h2>Her İhtiyacınıza Özel Çözüm</h2>
+      <p style="color:var(--text2);font-size:.9rem;margin-top:12px;max-width:560px;margin-left:auto;margin-right:auto;">
+        Detaylı bilgi için ürün kartlarına tıklayın — avantajlar, kimler yararlanabilir ve yasal yükümlülükler hakkında kapsamlı rehber.
+      </p>
     </div>
-    <div class="products-grid">
-      <div class="product-card" onclick="jumpOffer('Kasko Sigortası')">
-        <div class="prod-icon">🚗</div>
-        <h3>Kasko Sigortası</h3>
-        <p>Aracınızı kazalara, hırsızlığa ve doğal afetlere karşı tam güvence altına alın.</p>
-        <div class="prod-price"><div><div class="price-from">Aylık başlayan</div><div class="price-amount">₺299'dan</div></div><span class="get-offer-link">Teklif Al →</span></div>
-      </div>
-      <div class="product-card" onclick="jumpOffer('Trafik Sigortası')">
-        <div class="prod-icon">🚦</div>
-        <h3>Trafik Sigortası</h3>
-        <p>Zorunlu trafik sigortanızı en uygun fiyatla anında yenileyin.</p>
-        <div class="prod-price"><div><div class="price-from">Başlayan fiyat</div><div class="price-amount">₺189'dan</div></div><span class="get-offer-link">Teklif Al →</span></div>
-      </div>
-      <div class="product-card" onclick="jumpOffer('Sağlık Sigortası')">
-        <div class="prod-icon">🏥</div>
-        <h3>Sağlık Sigortası</h3>
-        <p>Siz ve ailenizin sağlığını özel hastane güvencesiyle koruyun.</p>
-        <div class="prod-price"><div><div class="price-from">Aylık başlayan</div><div class="price-amount">₺450'den</div></div><span class="get-offer-link">Teklif Al →</span></div>
-      </div>
-      <div class="product-card" onclick="jumpOffer('Konut Sigortası')">
-        <div class="prod-icon">🏠</div>
-        <h3>Konut Sigortası</h3>
-        <p>Evinizi yangın, deprem ve hırsızlığa karşı güvende tutun.</p>
-        <div class="prod-price"><div><div class="price-from">Yıllık başlayan</div><div class="price-amount">₺899'dan</div></div><span class="get-offer-link">Teklif Al →</span></div>
-      </div>
-      <div class="product-card" onclick="jumpOffer('DASK (Deprem)')">
-        <div class="prod-icon">🏢</div>
-        <h3>DASK – Deprem</h3>
-        <p>Zorunlu deprem sigortanızı kolayca yaptırın, güvende kalın.</p>
-        <div class="prod-price"><div><div class="price-from">Başlayan fiyat</div><div class="price-amount">₺299'dan</div></div><span class="get-offer-link">Teklif Al →</span></div>
-      </div>
-      <div class="product-card" onclick="jumpOffer('İşyeri Sigortası')">
-        <div class="prod-icon">🏪</div>
-        <h3>İşyeri Sigortası</h3>
-        <p>İşletmenizi tüm risklere karşı kapsamlı güvenceyle koruyun.</p>
-        <div class="prod-price"><div><div class="price-from">Aylık başlayan</div><div class="price-amount">₺650'den</div></div><span class="get-offer-link">Teklif Al →</span></div>
-      </div>
-    </div>
+    <div class="products-grid" id="productsGridSite"></div>
   </section>
+
+  <!-- ÜRÜN DETAY MODAL -->
+  <div class="prod-modal-overlay" id="prodModalOverlay" onclick="closeProdModal(event)">
+    <div class="prod-modal" id="prodModal">
+      <button class="pm-close" onclick="closeProdModalBtn()">✕</button>
+      <div class="pm-hero">
+        <div class="pm-icon" id="pmIcon"></div>
+        <div class="pm-hero-text">
+          <h2 id="pmTitle"></h2>
+          <p class="pm-subtitle" id="pmSubtitle"></p>
+          <div class="pm-price-pill">
+            <span class="pm-price-label">Başlayan fiyat</span>
+            <span class="pm-price-val" id="pmPrice"></span>
+          </div>
+        </div>
+      </div>
+      <div class="pm-tabs" id="pmTabs"></div>
+      <div id="pmTabContents"></div>
+      <div class="pm-footer">
+        <button class="btn-gold" onclick="jumpOfferFromModal()">📋 Hemen Teklif Al</button>
+        <button class="cancel-btn" style="padding:11px 22px;" onclick="closeProdModalBtn()">Kapat</button>
+      </div>
+    </div>
+  </div>
 
   <!-- TEKLİF FORMU -->
   <section class="offer-sec" id="teklif">
@@ -3042,6 +3160,7 @@ function admPage(id, btn){
   document.getElementById('admTopTitle').textContent = titles[id]||id;
   // Sekmeye özgü render tetikleyicileri
   if(id==='products') renderProducts();
+renderSiteProducts();
   if(id==='announcements') renderAnnList();
 }
 function showAddPol(){
@@ -3843,6 +3962,7 @@ renderCustomers();
 renderChart();
 renderAnnList();
 renderProducts();
+renderSiteProducts();
 updateBackupCounts();
 renderBackupHistory();
 startAutoBackup();
@@ -3983,6 +4103,7 @@ function saveProduct() {
 
   reorderProducts();
   renderProducts();
+renderSiteProducts();
   cancelProductForm();
 }
 
@@ -3995,6 +4116,7 @@ function deleteProduct() {
   productsData.splice(idx, 1);
   reorderProducts();
   renderProducts();
+renderSiteProducts();
   cancelProductForm();
   showToast('🗑️ Ürün silindi.');
 }
@@ -4004,6 +4126,7 @@ function toggleProductStatus(id) {
   if (!p) return;
   p.status = p.status === 'aktif' ? 'pasif' : 'aktif';
   renderProducts();
+renderSiteProducts();
   showToast(p.status === 'aktif' ? `✅ "${p.name}" aktife alındı!` : `⏸️ "${p.name}" pasife alındı.`);
 }
 
@@ -4025,12 +4148,632 @@ function moveProduct(id, dir) {
   sorted[idx].order = sorted[swapIdx].order;
   sorted[swapIdx].order = tmpOrder;
   renderProducts();
+renderSiteProducts();
   showToast('↕️ Sıralama güncellendi!');
 }
 
 function reorderProducts() {
   const sorted = [...productsData].sort((a,b) => a.order - b.order);
   sorted.forEach((p, i) => { p.order = i + 1; });
+}
+
+
+/* ============================================================
+   ÜRÜN VERİ BANKASI – ZENGİN İÇERİK
+============================================================ */
+const SITE_PRODUCTS = [
+  {
+    id:'kasko', icon:'🚗', name:'Kasko Sigortası',
+    tagline:'Araç hasarlarına karşı kapsamlı güvence',
+    price:"₺299'dan/ay", priceNote:'Araç modeline göre değişir',
+    features:['Çarpma ve trafik kazası teminatı','Hırsızlık ve vandalizm güvencesi','Doğal afet (sel, dolu, deprem) koruması','Yangın ve patlama teminatı','Cam kırılması ve lastik hasarı'],
+    alert:null,
+    tabs:[
+      {
+        label:'📖 Nedir?', content:`
+        <div class="pm-section">
+          <h4>Kasko Sigortası Nedir?</h4>
+          <div class="pm-info"><p>Kasko sigortası, araç sahibinin kendi aracına gelebilecek her türlü hasar ve kayıplara karşı güvence sağlayan <strong>isteğe bağlı</strong> bir sigorta türüdür. Zorunlu trafik sigortasından farklı olarak, yalnızca karşı tarafı değil, <em>sizin aracınızı</em> da korur.</p></div>
+          <ul class="pm-list">
+            <li><span class="li-icon">🔑</span>Kasko kelimesi Türkçe'ye İtalyanca "casco" (kask/kap) sözcüğünden geçmiştir.</li>
+            <li><span class="li-icon">📅</span>Türkiye'de kasko sigortası, Sigortacılık Kanunu çerçevesinde denetlenir ve poliçe süresi genellikle 1 yıldır.</li>
+            <li><span class="li-icon">⚙️</span>Dar, orta ve geniş kapsamlı olmak üzere farklı paketlerde sunulabilir.</li>
+            <li><span class="li-icon">💡</span>Kasko, trafik sigortasını kapsam dışında bırakmaz; ikisi birbirini tamamlar.</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>Neleri Kapsar?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">✅</span>Çarpma, çarpışma ve devrilme sonucu oluşan hasar</li>
+            <li><span class="li-icon">✅</span>Yangın, yıldırım, infilak</li>
+            <li><span class="li-icon">✅</span>Sel ve su baskını hasarı</li>
+            <li><span class="li-icon">✅</span>Dolu, fırtına ve diğer doğal afetler</li>
+            <li><span class="li-icon">✅</span>Hırsızlık, araç çalınması veya çalınmaya teşebbüs</li>
+            <li><span class="li-icon">✅</span>Cam kırılması (genellikle ayrı teminat)</li>
+            <li><span class="li-icon">✅</span>Terör ve sabotaj (opsiyonel)</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'✅ Artıları', content:`
+        <div class="pm-section">
+          <h4>Kasko Sigortasının Avantajları</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">🛡️</span><strong>Tam Güvence:</strong> Kendi kusurunuzdan doğan hasarlarda bile cebinizden para çıkmaz; sigorta şirketi karşılar.</li>
+            <li><span class="li-icon">🚘</span><strong>Araç Değer Kaybı:</strong> Bazı kasko paketleri, kaza sonrası araç değer kaybını da tazmin eder.</li>
+            <li><span class="li-icon">🔧</span><strong>Anlaşmalı Servis:</strong> Yüzlerce anlaşmalı serviste hızlı ve kaliteli onarım imkânı.</li>
+            <li><span class="li-icon">🚗</span><strong>İkame Araç:</strong> Onarım süresinde ikame araç sağlanabilir (pakete göre değişir).</li>
+            <li><span class="li-icon">📞</span><strong>7/24 Yol Yardım:</strong> Her yerde 7 gün 24 saat acil yol yardımı.</li>
+            <li><span class="li-icon">💰</span><strong>Mali Güvence:</strong> Büyük hasar sonrasında ciddi mali yükten korunursunuz.</li>
+            <li><span class="li-icon">📈</span><strong>Hasarsızlık İndirimi:</strong> Her hasarsız yıl için priminize indirim uygulanır.</li>
+            <li><span class="li-icon">🌍</span><strong>Avrupa Güvencesi:</strong> Yurt dışı seyahatlerde de kapsam sağlanabilir.</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'👥 Kimler Alabilir?', content:`
+        <div class="pm-section">
+          <h4>Kimler Kasko Yaptırabilir?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">👤</span>18 yaş ve üzeri, geçerli sürücü belgesi sahibi bireyler</li>
+            <li><span class="li-icon">🏢</span>Araç filosu olan şirket ve kurumlar</li>
+            <li><span class="li-icon">🚕</span>Ticari araç sahipleri (ticari kasko ile)</li>
+            <li><span class="li-icon">📦</span>Kiralık araç şirketleri</li>
+            <li><span class="li-icon">🎓</span>Yeni ehliyet sahipleri (genç sürücü ek primiyle)</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>Kimler İçin Özellikle Önerilir?</h4>
+          <div class="pm-who-grid">
+            <span class="pm-who-tag">🚗 Yeni araç sahipleri</span>
+            <span class="pm-who-tag">👨‍👩‍👧 Aileler</span>
+            <span class="pm-who-tag">🌆 Şehir içi araç kullanıcıları</span>
+            <span class="pm-who-tag">💳 Kredi ile araç alanlar</span>
+            <span class="pm-who-tag">🛣️ Uzun yol sürücüleri</span>
+            <span class="pm-who-tag">🏢 İş araçları</span>
+            <span class="pm-who-tag">🎯 Değerli araç sahipleri</span>
+          </div>
+        </div>`
+      },
+      {
+        label:'⚠️ Önemli Bilgiler', content:`
+        <div class="pm-section">
+          <h4>Neleri Kapsamaz?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">❌</span>Alkollü veya uyuşturucu etkisinde araç kullanımından doğan hasarlar</li>
+            <li><span class="li-icon">❌</span>Ehliyet gerektiren araçlarda ehliyetsiz kullanım</li>
+            <li><span class="li-icon">❌</span>Sigortalının kasıtlı neden olduğu hasarlar</li>
+            <li><span class="li-icon">❌</span>Mekanik arıza, eskime ve amortismanlardan kaynaklanan arızalar</li>
+            <li><span class="li-icon">❌</span>Yarış veya sürat testleri sırasında oluşan hasarlar</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>Fiyatı Etkileyen Faktörler</h4>
+          <div class="pm-grid2">
+            <div class="pm-stat-box"><div class="pm-stat-num">🚗</div><div class="pm-stat-lbl">Araç modeli ve yaşı</div></div>
+            <div class="pm-stat-box"><div class="pm-stat-num">📍</div><div class="pm-stat-lbl">Kullanım bölgesi</div></div>
+            <div class="pm-stat-box"><div class="pm-stat-num">📜</div><div class="pm-stat-lbl">Hasar geçmişi</div></div>
+            <div class="pm-stat-box"><div class="pm-stat-num">🎯</div><div class="pm-stat-lbl">Seçilen teminatlar</div></div>
+          </div>
+        </div>`
+      }
+    ]
+  },
+  {
+    id:'trafik', icon:'🚦', name:'Trafik Sigortası',
+    tagline:'Zorunlu Mali Mesuliyet — Yasal Zorunluluk',
+    price:"₺189'dan", priceNote:'Araç ve model bazlı değişir',
+    features:['3. şahıs bedeni zarar teminatı','Maddi hasar teminatı','Türkiye genelinde geçerli','Anında online yenileme','Rakip fiyat garantisi'],
+    alert:'⚠️ Zorunlu sigorta — yaptırmamanın cezası ağırdır!',
+    tabs:[
+      {
+        label:'📖 Nedir?', content:`
+        <div class="pm-section">
+          <h4>Trafik Sigortası Nedir?</h4>
+          <div class="pm-info"><p>Zorunlu Mali Sorumluluk Sigortası (ZMSS) olarak da bilinen trafik sigortası; araç sürücüsünün <strong>üçüncü kişilere</strong> verdiği bedensel ve maddi zararlara karşı sürücüyü güvence altına alan, <strong>kanunen zorunlu</strong> bir sigorta türüdür.</p></div>
+          <ul class="pm-list">
+            <li><span class="li-icon">📜</span>2918 sayılı Karayolları Trafik Kanunu gereğince Türkiye'de tüm motorlu araçlar için zorunludur.</li>
+            <li><span class="li-icon">🔑</span>Poliçe, Sigortacılık ve Özel Emeklilik Düzenleme ve Denetleme Kurumu (SEDDK) tarafından denetlenir.</li>
+            <li><span class="li-icon">💡</span>Sigortalının kendi aracını değil, <em>karşı tarafa verilen hasarı</em> karşılar.</li>
+            <li><span class="li-icon">🌍</span>Uluslararası araç sigortası (Yeşil Kart) ile yurt dışı kapsam genişletilebilir.</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>Neleri Kapsar?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">✅</span>Trafik kazasında karşı tarafın tedavi giderleri, maluliyet ve ölüm tazminatı</li>
+            <li><span class="li-icon">✅</span>Karşı tarafın araç ve eşya hasarları</li>
+            <li><span class="li-icon">✅</span>Kazada yaralanan yolculara yapılan ödemeler</li>
+            <li><span class="li-icon">✅</span>Hukuki sorumluluk giderleri (belirlenen limitler dahilinde)</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'✅ Artıları', content:`
+        <div class="pm-section">
+          <h4>Trafik Sigortasının Avantajları</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">⚖️</span><strong>Yasal Güvence:</strong> Araç sahibini hukuki yaptırımlardan ve tazminat davalarından korur.</li>
+            <li><span class="li-icon">💰</span><strong>Mali Koruma:</strong> Büyük bir kaza sonrası milyonlarca lira tazminat ödemek zorunda kalmazsınız.</li>
+            <li><span class="li-icon">🏥</span><strong>Sağlık Güvencesi:</strong> Kazada yaralanan karşı tarafın sağlık giderleri sigorta tarafından karşılanır.</li>
+            <li><span class="li-icon">🌐</span><strong>Yaygın Kabul:</strong> Türkiye'nin her yerinde geçerli, muhatap sigorta şirketiyle anlaşmalı servisler.</li>
+            <li><span class="li-icon">📱</span><strong>Dijital Poliçe:</strong> Kağıt poliçe yerine dijital poliçe kullanımı artık yasal olarak geçerlidir.</li>
+            <li><span class="li-icon">🔄</span><strong>Kolay Yenileme:</strong> Online platformdan dakikalar içinde yenileme imkânı.</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'👥 Kimler Almalı?', content:`
+        <div class="pm-section">
+          <h4>Kimler Trafik Sigortası Yaptırmak Zorunda?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">🚗</span>Otomobil, kamyon, otobüs, motosiklet vb. tüm motorlu taşıt sahipleri</li>
+            <li><span class="li-icon">🚌</span>Toplu taşıma araçları (otobüs, minibüs, dolmuş)</li>
+            <li><span class="li-icon">🚛</span>Ticari araçlar ve iş makineleri</li>
+            <li><span class="li-icon">🚜</span>Traktör ve tarım araçları</li>
+            <li><span class="li-icon">🏍️</span>Motosiklet ve scooter sahipleri</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>İstisnalar</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">ℹ️</span>Karayoluna çıkmayan iş makineleri bazı durumlarda muaf tutulabilir.</li>
+            <li><span class="li-icon">ℹ️</span>Devlete ait araçlar için farklı mevzuat uygulanabilir.</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'🚨 Ceza ve Yaptırımlar', content:`
+        <div class="pm-section">
+          <h4>Trafik Sigortası Yaptırmamanın Sonuçları</h4>
+          <div class="pm-warn">
+            <div class="pm-warn-title">⛔ Trafikten Men</div>
+            <p>Sigortasız araç trafik kontrolünde tespit edildiğinde araç geçici olarak trafikten men edilir ve bağlı olduğu çekici ile götürülür.</p>
+          </div>
+          <div class="pm-warn">
+            <div class="pm-warn-title">💸 Para Cezası</div>
+            <p>2025 yılı itibarıyla trafik sigortası yaptırmayan araç sahiplerine <strong>3.000 TL'den başlayan</strong> idari para cezası uygulanır. Ceza miktarı her yıl yeniden değerleme oranında güncellenir.</p>
+          </div>
+          <div class="pm-warn">
+            <div class="pm-warn-title">⚠️ Tazminat Yükümlülüğü</div>
+            <p>Sigortasız araç kaza yaparsa, karşı tarafın tüm tedavi ve tamir giderlerini <strong>araç sahibi kendi cebinden</strong> ödemek zorunda kalır. Bu tutar yüz binlerce liraya ulaşabilir.</p>
+          </div>
+          <div class="pm-warn">
+            <div class="pm-warn-title">📋 Araç Tescil ve Muayene Engeli</div>
+            <p>Trafik sigortası olmayan araçların muayenesi yapılmaz; tescil yenileme işlemleri gerçekleştirilemez.</p>
+          </div>
+          <div class="pm-warn">
+            <div class="pm-warn-title">⚖️ Hukuki Sorumluluk</div>
+            <p>Trafik kazasında karşı tarafın açacağı tazminat davası sonucunda icra takibi başlatılabilir, malvarlığınıza haciz konulabilir.</p>
+          </div>
+        </div>`
+      }
+    ]
+  },
+  {
+    id:'saglik', icon:'🏥', name:'Sağlık Sigortası',
+    tagline:'Siz ve aileniz için özel hastane güvencesi',
+    price:"₺450'den/ay", priceNote:'Yaş ve kapsama göre değişir',
+    features:['Özel hastane yatış teminatı','Poliklinik muayene güvencesi','Diş tedavisi teminatı (opsiyonel)','Doğum ve yenidoğan güvencesi','Yurt içi ve yurt dışı kapsamı'],
+    alert:null,
+    tabs:[
+      {
+        label:'📖 Nedir?', content:`
+        <div class="pm-section">
+          <h4>Tamamlayıcı Sağlık Sigortası Nedir?</h4>
+          <div class="pm-info"><p>Sağlık sigortası; sigortalının ve varsa aile bireylerinin hastalık, kaza veya ameliyat durumlarında <strong>özel hastane ve kliniklerde</strong> aldıkları sağlık hizmetlerinin bedelini karşılayan sigorta türüdür. SGK ile birlikte kullanılan tamamlayıcı türleri de mevcuttur.</p></div>
+          <ul class="pm-list">
+            <li><span class="li-icon">🏥</span>Özel hastane ücretleri SGK'nın karşılamadığı kısmı tamamlar.</li>
+            <li><span class="li-icon">👨‍👩‍👧</span>Aile planları ile tüm aile üyeleri tek poliçede güvence altına alınabilir.</li>
+            <li><span class="li-icon">🔬</span>Tahlil, görüntüleme, fizik tedavi gibi tanı hizmetleri de kapsama dahil edilebilir.</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>Neleri Kapsar?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">✅</span>Yatarak tedavi: ameliyat, oda, hemşirelik, ilaç</li>
+            <li><span class="li-icon">✅</span>Ayakta tedavi: poliklinik, uzman muayenesi</li>
+            <li><span class="li-icon">✅</span>Tanı hizmetleri: MR, tomografi, tahlil</li>
+            <li><span class="li-icon">✅</span>Acil servis hizmetleri</li>
+            <li><span class="li-icon">✅</span>Doğum ve yenidoğan teminatı (opsiyonel)</li>
+            <li><span class="li-icon">✅</span>Diş tedavisi (opsiyonel paketler)</li>
+            <li><span class="li-icon">✅</span>Gözlük ve lens yardımı (opsiyonel)</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'✅ Artıları', content:`
+        <div class="pm-section">
+          <h4>Özel Sağlık Sigortasının Avantajları</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">⏱️</span><strong>Zaman Tasarrufu:</strong> Devlet hastanelerindeki uzun bekleme sürelerinden kurtulursunuz.</li>
+            <li><span class="li-icon">🏨</span><strong>Konfor:</strong> Tek kişilik oda, refakatçi imkânı ve özel hemşire hizmeti.</li>
+            <li><span class="li-icon">👨‍⚕️</span><strong>Doktor Seçme Özgürlüğü:</strong> İstediğiniz uzman hekimi seçip randevu alabilirsiniz.</li>
+            <li><span class="li-icon">🔬</span><strong>Gelişmiş Tanı:</strong> En yeni tıbbi cihaz ve teknolojilere erişim.</li>
+            <li><span class="li-icon">🌍</span><strong>Yurt Dışı Kapsamı:</strong> Yurt dışında acil sağlık durumlarında da güvence.</li>
+            <li><span class="li-icon">💰</span><strong>Mali Güvence:</strong> Beklenmedik hastalık masrafları bütçenizi sarsmaz.</li>
+            <li><span class="li-icon">📋</span><strong>Kurumsal Avantaj:</strong> Çalışanlara sağlık sigortası sağlayan işyerleri, vergi avantajından yararlanır.</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'👥 Kimler Alabilir?', content:`
+        <div class="pm-section">
+          <h4>Kimler Sağlık Sigortası Yaptırabilir?</h4>
+          <div class="pm-who-grid">
+            <span class="pm-who-tag">👤 Bireyler (0–65 yaş arası)</span>
+            <span class="pm-who-tag">👨‍👩‍👧 Aileler</span>
+            <span class="pm-who-tag">🏢 Çalışanlar (grup poliçesi)</span>
+            <span class="pm-who-tag">👴 Yaşlılar (özel planlar)</span>
+            <span class="pm-who-tag">🤰 Hamileler</span>
+            <span class="pm-who-tag">👶 Bebekler (doğumdan itibaren)</span>
+            <span class="pm-who-tag">🎓 Öğrenciler</span>
+            <span class="pm-who-tag">🌍 Yabancı uyruklu kişiler</span>
+          </div>
+        </div>
+        <div class="pm-section">
+          <h4>Önemli Notlar</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">ℹ️</span>Poliçe başlangıcında bazı hastalıklar için bekleme süresi uygulanabilir.</li>
+            <li><span class="li-icon">ℹ️</span>Önceden var olan kronik hastalıklar ek prim veya muafiyet gerektirebilir.</li>
+            <li><span class="li-icon">ℹ️</span>SGK'ya tabi çalışanlar tamamlayıcı sağlık sigortasından daha avantajlı yararlanır.</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'⚠️ Önemli Bilgiler', content:`
+        <div class="pm-section">
+          <h4>Neleri Kapsamaz?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">❌</span>Estetik amaçlı cerrahi operasyonlar</li>
+            <li><span class="li-icon">❌</span>Poliçe öncesi mevcut kronik hastalıklar (muafiyet listesi poliçede belirtilir)</li>
+            <li><span class="li-icon">❌</span>Savaş, terör eylemine katılım gibi özel durumlar</li>
+            <li><span class="li-icon">❌</span>Alkol ve uyuşturucu bağımlılığı tedavisi (bazı planlar hariç)</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>İstatistikler</h4>
+          <div class="pm-grid2">
+            <div class="pm-stat-box"><div class="pm-stat-num">500+</div><div class="pm-stat-lbl">Anlaşmalı hastane</div></div>
+            <div class="pm-stat-box"><div class="pm-stat-num">%100</div><div class="pm-stat-lbl">Acil servis güvencesi</div></div>
+            <div class="pm-stat-box"><div class="pm-stat-num">24s</div><div class="pm-stat-lbl">Müşteri hattı</div></div>
+            <div class="pm-stat-box"><div class="pm-stat-num">48s</div><div class="pm-stat-lbl">Hasar ödeme süresi</div></div>
+          </div>
+        </div>`
+      }
+    ]
+  },
+  {
+    id:'konut', icon:'🏠', name:'Konut Sigortası',
+    tagline:'Evinizi yangın, hırsızlık ve afetlere karşı koruyun',
+    price:"₺899'dan/yıl", priceNote:'Konut değerine göre değişir',
+    features:['Yangın ve patlama teminatı','Su basması ve boru patlaması','Hırsızlık ve vandalizm güvencesi','Deprem ek teminatı (DASK ile)','Ev eşyaları teminatı'],
+    alert:null,
+    tabs:[
+      {
+        label:'📖 Nedir?', content:`
+        <div class="pm-section">
+          <h4>Konut Sigortası Nedir?</h4>
+          <div class="pm-info"><p>Konut sigortası; evinizi, ev eşyalarınızı ve oturanlara ait kişisel eşyaları; yangın, deprem, su baskını, hırsızlık ve benzeri risklere karşı koruyan, <strong>isteğe bağlı</strong> bir sigorta türüdür. Ev sahibi ve kiracılar ayrı ayrı yaptırabilir.</p></div>
+          <ul class="pm-list">
+            <li><span class="li-icon">🏠</span>Binanın kendisi (inşaat masrafı bazlı değerleme) ve içindeki eşyalar ayrı ayrı sigortalanabilir.</li>
+            <li><span class="li-icon">🔑</span>Kiracılar yalnızca eşya sigortası (muhteviyat) yaptırabilir.</li>
+            <li><span class="li-icon">💡</span>DASK (zorunlu deprem sigortası) konut sigortasının yerini tutmaz; ikisi birbirini tamamlar.</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>Neleri Kapsar?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">✅</span>Yangın, yıldırım, gaz patlaması hasarları</li>
+            <li><span class="li-icon">✅</span>Sel, su baskını ve fırtına hasarları</li>
+            <li><span class="li-icon">✅</span>Boru patlaması ve su sızıntısı</li>
+            <li><span class="li-icon">✅</span>Hırsızlık (zorla giriş ile)</li>
+            <li><span class="li-icon">✅</span>Cam kırılması</li>
+            <li><span class="li-icon">✅</span>Komşu katına zarar (sorumluluk teminatı)</li>
+            <li><span class="li-icon">✅</span>Kira kaybı (konut kullanılamaz hale gelirse)</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'✅ Artıları', content:`
+        <div class="pm-section">
+          <h4>Konut Sigortasının Avantajları</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">🏡</span><strong>Ev Değerinizi Koruyun:</strong> Çoğu aile için en büyük yatırım olan evinizi güvence altına alırsınız.</li>
+            <li><span class="li-icon">💧</span><strong>Su Hasarı:</strong> Komşudan gelen su ve boru patlamaları konut sigortası kapsamındadır.</li>
+            <li><span class="li-icon">🔒</span><strong>Hırsızlık Güvencesi:</strong> Zorla girişle gerçekleşen hırsızlıklarda eşyalarınız tazmin edilir.</li>
+            <li><span class="li-icon">🏘️</span><strong>Komşu Sorumluluğu:</strong> Kendi evinizden komşunuza zarar verseniz de teminat devreye girer.</li>
+            <li><span class="li-icon">🏨</span><strong>Geçici Konaklama:</strong> Ev hasar görürse otel/konaklama masrafları karşılanabilir.</li>
+            <li><span class="li-icon">💰</span><strong>Düşük Prim:</strong> Ev değerine kıyasla prim oldukça uygun, yıllık birkaç yüz lira.</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'👥 Kimler Alabilir?', content:`
+        <div class="pm-section">
+          <h4>Kimler Konut Sigortası Yaptırabilir?</h4>
+          <div class="pm-who-grid">
+            <span class="pm-who-tag">🏠 Ev sahipleri</span>
+            <span class="pm-who-tag">🔑 Kiracılar (eşya için)</span>
+            <span class="pm-who-tag">🏢 Site yönetimleri</span>
+            <span class="pm-who-tag">🏗️ Müteahhitler</span>
+            <span class="pm-who-tag">🏦 İpotekli konut sahipleri</span>
+            <span class="pm-who-tag">🌴 Yazlık sahipleri</span>
+          </div>
+        </div>
+        <div class="pm-section">
+          <h4>Banka Kredisi Kullananlar İçin</h4>
+          <div class="pm-info"><p>Konut kredisi kullanarak ev alanların büyük bölümünden bankalar, <strong>konut sigortası yaptırılmasını zorunlu tutar</strong>. Bu durumda sigorta tutarı banka teminatı olarak gösterilir.</p></div>
+        </div>`
+      },
+      {
+        label:'⚠️ Önemli Bilgiler', content:`
+        <div class="pm-section">
+          <h4>DASK ile Farkı Nedir?</h4>
+          <div class="pm-warn">
+            <div class="pm-warn-title">📌 Önemli Ayrım</div>
+            <p>DASK yalnızca deprem hasarını karşılar ve tutarı sınırlıdır. Konut sigortası ise yangın, hırsızlık, su baskını gibi çok daha geniş risklere karşı koruma sağlar. <strong>İkisini birlikte yaptırmanız önerilir.</strong></p>
+          </div>
+        </div>
+        <div class="pm-section">
+          <h4>Neleri Kapsamaz?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">❌</span>İnşaat veya tadilat sırasında oluşan hasarlar</li>
+            <li><span class="li-icon">❌</span>Kasıtlı yangın ve zarar verme</li>
+            <li><span class="li-icon">❌</span>Uzun süre boş kalan konutlardaki hasarlar (30 gün üzeri)</li>
+            <li><span class="li-icon">❌</span>Terk edilmiş yapılar</li>
+          </ul>
+        </div>`
+      }
+    ]
+  },
+  {
+    id:'dask', icon:'🏢', name:'DASK – Deprem Sigortası',
+    tagline:'Zorunlu Deprem Sigortası — Yasal Zorunluluk',
+    price:"₺299'dan", priceNote:'Konut alanı ve bölgeye göre değişir',
+    features:['Deprem kaynaklı yapısal hasar','Deprem sonrası yangın ve patlama','Çığ ve toprak kayması hasarı','Tsunami nedeniyle oluşan hasar','Tüm Türkiye\'de geçerli'],
+    alert:'⚠️ Zorunlu sigorta — yaptırmadan noter, banka işlemi yapılamaz!',
+    tabs:[
+      {
+        label:'📖 Nedir?', content:`
+        <div class="pm-section">
+          <h4>DASK (Doğal Afet Sigortaları Kurumu) Nedir?</h4>
+          <div class="pm-info"><p>DASK, 17 Ağustos 1999 Marmara Depremi'nin ardından devlet tarafından kurulan ve deprem hasarlarını karşılamak amacıyla tüm konut sahiplerine <strong>yasal olarak zorunlu tutulan</strong> deprem sigortasıdır.</p></div>
+          <ul class="pm-list">
+            <li><span class="li-icon">📜</span>587 Sayılı Kanun Hükmünde Kararname ile zorunlu hale getirilmiştir.</li>
+            <li><span class="li-icon">🏛️</span>Hasar ödemeleri devlet güvencesiyle desteklenmektedir.</li>
+            <li><span class="li-icon">🗺️</span>Deprem riski en yüksek olan bölgeler öncelikli olarak belirlenir.</li>
+            <li><span class="li-icon">📐</span>Sigorta bedeli konutun yüzölçümü × yapı tarzı katsayısı ile belirlenir.</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>Neleri Kapsar?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">✅</span>Depremin doğrudan neden olduğu bina yapı hasarları</li>
+            <li><span class="li-icon">✅</span>Deprem sonrası ortaya çıkan yangın, infilak, tsunami hasarları</li>
+            <li><span class="li-icon">✅</span>Heyelan, çığ ve yer kayması (depremden kaynaklanırsa)</li>
+            <li><span class="li-icon">✅</span>Bina çökmesi durumunda yeniden yapım bedeli (limite kadar)</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'✅ Artıları', content:`
+        <div class="pm-section">
+          <h4>DASK'ın Avantajları</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">🏛️</span><strong>Devlet Güvencesi:</strong> DASK, devlet destekli bir kurum olup hasar ödemeleri güvence altındadır.</li>
+            <li><span class="li-icon">💰</span><strong>Uygun Prim:</strong> Konut sigortasına kıyasla çok düşük primlerle büyük güvence sağlar.</li>
+            <li><span class="li-icon">⚡</span><strong>Hızlı Hasar Ödemesi:</strong> Büyük depremler sonrasında DASK hızlı hasar ödeme süreçleriyle mağduriyeti giderir.</li>
+            <li><span class="li-icon">🌍</span><strong>Dayanışma:</strong> Tüm konut sahiplerinin katkısıyla oluşan fon, büyük afetlerde toplumsal dayanışma sağlar.</li>
+            <li><span class="li-icon">📜</span><strong>Resmi İşlem Zorunluluğu:</strong> Geçerli DASK poliçesi; noter, tapu ve banka işlemleri için şarttır.</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'👥 Kimler Almalı?', content:`
+        <div class="pm-section">
+          <h4>Kimler DASK Yaptırmak Zorunda?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">🏠</span>Tapulu konut sahibi olan herkes (belediye sınırları içindeki konutlar)</li>
+            <li><span class="li-icon">🏢</span>Kat mülkiyeti veya kat irtifakı kurulmuş taşınmazların sahipleri</li>
+            <li><span class="li-icon">🔑</span>Kiracılar DASK yaptırmak zorunda değildir; yükümlülük konut sahibine aittir.</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>Muaf Tutulanlar</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">ℹ️</span>Köy ve belediye sınırları dışındaki yapılar (ancak isteğe bağlı yapılabilir)</li>
+            <li><span class="li-icon">ℹ️</span>Tarımsal amaçlı yapılar</li>
+            <li><span class="li-icon">ℹ️</span>Ticari ve sanayi yapıları (ayrı poliçe gerektirir)</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'🚨 Ceza ve Yaptırımlar', content:`
+        <div class="pm-section">
+          <h4>DASK Yaptırmadığınızda Ne Olur?</h4>
+          <div class="pm-warn">
+            <div class="pm-warn-title">🏛️ Tapu İşlemleri Yapılamaz</div>
+            <p>Geçerli DASK poliçesi olmayan konutlarda satış, devir, ipotek ve benzeri tapu işlemleri <strong>gerçekleştirilemez</strong>.</p>
+          </div>
+          <div class="pm-warn">
+            <div class="pm-warn-title">🏦 Banka Kredisi Alınamaz</div>
+            <p>Bankalar konut kredisi ve mortgage işlemlerinde DASK poliçesini zorunlu tutar. DASK olmadan konut kredisi kullanamazsınız.</p>
+          </div>
+          <div class="pm-warn">
+            <div class="pm-warn-title">📋 Noter İşlemlerine Engel</div>
+            <p>Bazı noter işlemlerinde ve resmi sözleşmelerde DASK varlığı aranabilir.</p>
+          </div>
+          <div class="pm-warn">
+            <div class="pm-warn-title">💸 Devlet Desteğinden Yararlanamama</div>
+            <p>Deprem sonrasında sunulan devlet kira yardımı, geçici konut ve hasar tespit hizmetlerinden <strong>yalnızca DASK sahibi konut sahipleri</strong> öncelikli yararlanır.</p>
+          </div>
+        </div>`
+      }
+    ]
+  },
+  {
+    id:'isyeri', icon:'🏪', name:'İşyeri Sigortası',
+    tagline:'Tüm riskler için işletme güvencesi',
+    price:"₺650'den/ay", priceNote:'İşyeri büyüklüğüne göre değişir',
+    features:['Yangın ve patlama teminatı','Hırsızlık ve soygun güvencesi','İş durması (iş kesintisi) teminatı','İşveren sorumluluk sigortası','Makine kırılması teminatı'],
+    alert:null,
+    tabs:[
+      {
+        label:'📖 Nedir?', content:`
+        <div class="pm-section">
+          <h4>İşyeri Sigortası Nedir?</h4>
+          <div class="pm-info"><p>İşyeri sigortası; iş yeri binasını, içindeki mal ve ekipmanları, çalışanları ve işletmenin faaliyetinden doğan hukuki sorumluluğu çeşitli risklere karşı güvence altına alan kapsamlı bir sigorta türüdür.</p></div>
+          <ul class="pm-list">
+            <li><span class="li-icon">🏪</span>Dükkan, mağaza, ofis, fabrika, depo gibi her türlü işyeri için uygundur.</li>
+            <li><span class="li-icon">⚙️</span>Tek bir poliçede yangın, hırsızlık, sorumluluk ve iş durması teminatları birleştirilebilir.</li>
+            <li><span class="li-icon">📊</span>İşletme büyüklüğüne ve sektörüne göre özelleştirilebilir.</li>
+          </ul>
+        </div>
+        <div class="pm-section">
+          <h4>Neleri Kapsar?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">✅</span>Yangın, patlama ve duman hasarı</li>
+            <li><span class="li-icon">✅</span>Hırsızlık, soygun ve kasa teminatı</li>
+            <li><span class="li-icon">✅</span>Su baskını ve fırtına hasarları</li>
+            <li><span class="li-icon">✅</span>Makine ve ekipman kırılması</li>
+            <li><span class="li-icon">✅</span>İş kesintisi — kira, personel maaşı gibi devam eden masraflar</li>
+            <li><span class="li-icon">✅</span>İşveren mali sorumluluk (çalışan kazaları)</li>
+            <li><span class="li-icon">✅</span>Cam kırılması</li>
+            <li><span class="li-icon">✅</span>Elektronik cihaz sigortası (opsiyonel)</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'✅ Artıları', content:`
+        <div class="pm-section">
+          <h4>İşyeri Sigortasının Avantajları</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">💼</span><strong>İş Sürekliliği:</strong> Bir felaket sonrasında işletmenizin ayakta kalmasını sağlar.</li>
+            <li><span class="li-icon">💰</span><strong>Nakit Akışı Koruması:</strong> İş durması teminatı sayesinde kira ve personel giderleri sigorta tarafından karşılanır.</li>
+            <li><span class="li-icon">⚖️</span><strong>Hukuki Koruma:</strong> Çalışan kaza ve üçüncü şahıs davalarında mali güvence sağlar.</li>
+            <li><span class="li-icon">🔒</span><strong>Hırsızlık Güvencesi:</strong> Kasa içeriği dahil tüm envanter güvence altında.</li>
+            <li><span class="li-icon">🛠️</span><strong>Makine Güvencesi:</strong> Arıza ve kırılmalarda onarım/yenileme maliyeti karşılanır.</li>
+            <li><span class="li-icon">🏦</span><strong>Kredi Kolaylığı:</strong> Sigortalı bir işyeri, bankadan daha kolay kredi ve finansman temin edebilir.</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'👥 Kimler Alabilir?', content:`
+        <div class="pm-section">
+          <h4>Kimler İşyeri Sigortası Yaptırabilir?</h4>
+          <div class="pm-who-grid">
+            <span class="pm-who-tag">🏪 Küçük esnaf ve dükkanlar</span>
+            <span class="pm-who-tag">🏢 Ofis ve şirketler</span>
+            <span class="pm-who-tag">🏭 Üretim tesisleri</span>
+            <span class="pm-who-tag">🏬 Mağazalar ve zincirler</span>
+            <span class="pm-who-tag">🏥 Klinik ve muayenehaneler</span>
+            <span class="pm-who-tag">🍽️ Restoran ve kafeler</span>
+            <span class="pm-who-tag">📦 Depo ve lojistik</span>
+            <span class="pm-who-tag">🛒 E-ticaret depoları</span>
+          </div>
+        </div>
+        <div class="pm-section">
+          <h4>Hangi Sektörlere Önerilir?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">⭐</span>Yüksek değerli stok veya ekipmana sahip işletmeler (kuyumcu, elektronik, tekstil)</li>
+            <li><span class="li-icon">⭐</span>Çok sayıda personel çalıştıran işyerleri</li>
+            <li><span class="li-icon">⭐</span>Fabrika, atölye ve üretim tesisleri</li>
+            <li><span class="li-icon">⭐</span>Gıda işletmeleri (yangın riski yüksek)</li>
+          </ul>
+        </div>`
+      },
+      {
+        label:'⚠️ Önemli Bilgiler', content:`
+        <div class="pm-section">
+          <h4>İşyeri Sigortası Zorunlu mu?</h4>
+          <div class="pm-info"><p>İşyeri sigortası genel olarak <strong>zorunlu değildir</strong>; ancak bazı sektörlerde ve kiralık işyerlerinde mal sahipleri poliçe şartı koyabilir. Ayrıca iş yeri açma ve çalışma ruhsatı başvurularında bazı belediyeler sigorta talep edebilir.</p></div>
+        </div>
+        <div class="pm-section">
+          <h4>Neleri Kapsamaz?</h4>
+          <ul class="pm-list">
+            <li><span class="li-icon">❌</span>Savaş ve terör eylemleri (ek paket gerektirir)</li>
+            <li><span class="li-icon">❌</span>Sigortalının kasıtlı eylemleri</li>
+            <li><span class="li-icon">❌</span>Normal eskime ve amortismanlar</li>
+            <li><span class="li-icon">❌</span>Envanter açıkları (kasa veya stok sayım farklılıkları)</li>
+            <li><span class="li-icon">❌</span>Çalışanın yalnız başına işlediği hırsızlık (ek teminat gerektirir)</li>
+          </ul>
+        </div>`
+      }
+    ]
+  }
+];
+
+let currentProdModal = null;
+
+function renderSiteProducts(){
+  const grid = document.getElementById('productsGridSite');
+  if(!grid) return;
+  grid.innerHTML = SITE_PRODUCTS.map(p=>`
+    <div class="product-card">
+      <div class="pc-header">
+        <div class="prod-icon">${p.icon}</div>
+        <div class="pc-head-text">
+          <h3>${p.name}</h3>
+          <div class="pc-tagline">${p.tagline}</div>
+        </div>
+      </div>
+      ${p.alert?`<div class="pc-alert">${p.alert}</div>`:''}
+      <div class="pc-features">
+        ${p.features.map(f=>`<div class="pc-feat">${f}</div>`).join('')}
+      </div>
+      <div class="prod-price">
+        <div>
+          <div class="price-from">${p.priceNote}</div>
+          <div class="price-amount">${p.price}</div>
+        </div>
+        <div class="pc-btns">
+          <button class="pc-detail-btn" onclick="openProdModal('${p.id}')">Detay</button>
+          <button class="get-offer-link" onclick="jumpOffer('${p.name}')">Teklif Al →</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openProdModal(id){
+  const p = SITE_PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  currentProdModal = p.name;
+
+  document.getElementById('pmIcon').textContent = p.icon;
+  document.getElementById('pmTitle').textContent = p.name;
+  document.getElementById('pmSubtitle').textContent = p.tagline;
+  document.getElementById('pmPrice').textContent = p.price;
+
+  // Sekmeler
+  const tabsEl = document.getElementById('pmTabs');
+  const contEl = document.getElementById('pmTabContents');
+  tabsEl.innerHTML = p.tabs.map((t,i)=>`
+    <button class="pm-tab${i===0?' active':''}" onclick="switchPmTab(${i},this)">${t.label}</button>`).join('');
+  contEl.innerHTML = p.tabs.map((t,i)=>`
+    <div class="pm-tab-content${i===0?' active':''}" id="pmt${i}">${t.content}</div>`).join('');
+
+  document.getElementById('prodModalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function switchPmTab(idx, btn){
+  document.querySelectorAll('.pm-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.pm-tab-content').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pmt'+idx).classList.add('active');
+}
+
+function closeProdModal(e){
+  if(e.target === document.getElementById('prodModalOverlay')) closeProdModalBtn();
+}
+function closeProdModalBtn(){
+  document.getElementById('prodModalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function jumpOfferFromModal(){
+  closeProdModalBtn();
+  if(currentProdModal) jumpOffer(currentProdModal);
 }
 
 </script>
