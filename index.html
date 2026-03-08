@@ -137,6 +137,20 @@ nav.main-nav .nav-links a:hover{color:var(--accent);}
 .lpd.on{background:var(--accent);}
 
 /* ============================================================
+   ÜRÜN YÖNETİMİ – FORM STİLLERİ
+============================================================ */
+#productFormPanel .adm-form-grid{gap:16px;}
+.prod-preview-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px 20px;display:flex;flex-direction:column;gap:8px;
+  transition:var(--trans);
+}
+.prod-preview-icon{font-size:2rem;margin-bottom:4px;}
+.prod-preview-name{font-family:var(--font-head);font-size:1.1rem;font-weight:700;color:var(--text);}
+.prod-preview-desc{font-size:.82rem;color:var(--text2);line-height:1.6;}
+.prod-preview-price{font-family:var(--font-head);font-size:1.2rem;color:var(--accent);font-weight:700;margin-top:4px;}
+
+/* ============================================================
    DUYURU BANDI – AŞAĞIDAN YUKARI KAYAN KAMPANYALAR
 ============================================================ */
 #announcementBar{
@@ -2532,16 +2546,93 @@ function searchReviews(q){
 
       <!-- ÜRÜN YÖNETİMİ -->
       <div class="adm-page" id="adm-products">
-        <div class="pg-hdr"><h1>Ürün Yönetimi</h1><button class="new-btn">+ Ürün Ekle</button></div>
-        <div class="panel"><table><thead><tr><th>Ürün</th><th>Fiyat</th><th>Poliçe</th><th>Görünür</th><th>Sıra</th><th>Durum</th><th>İşlem</th></tr></thead>
-        <tbody>
-          <tr><td>🚗 Kasko</td><td>₺299/ay</td><td>387</td><td><div class="tgl on" onclick="this.classList.toggle('on')"></div></td><td>1</td><td><span class="sbadge sbadge-g"><span class="sdot"></span>Aktif</span></td><td><button class="act-btn">✏️</button></td></tr>
-          <tr><td>🚦 Trafik</td><td>₺189</td><td>512</td><td><div class="tgl on" onclick="this.classList.toggle('on')"></div></td><td>2</td><td><span class="sbadge sbadge-g"><span class="sdot"></span>Aktif</span></td><td><button class="act-btn">✏️</button></td></tr>
-          <tr><td>🏥 Sağlık</td><td>₺450/ay</td><td>198</td><td><div class="tgl on" onclick="this.classList.toggle('on')"></div></td><td>3</td><td><span class="sbadge sbadge-g"><span class="sdot"></span>Aktif</span></td><td><button class="act-btn">✏️</button></td></tr>
-          <tr><td>🏠 Konut</td><td>₺899/yıl</td><td>143</td><td><div class="tgl on" onclick="this.classList.toggle('on')"></div></td><td>4</td><td><span class="sbadge sbadge-g"><span class="sdot"></span>Aktif</span></td><td><button class="act-btn">✏️</button></td></tr>
-          <tr><td>🏢 DASK</td><td>₺299</td><td>489</td><td><div class="tgl on" onclick="this.classList.toggle('on')"></div></td><td>5</td><td><span class="sbadge sbadge-g"><span class="sdot"></span>Aktif</span></td><td><button class="act-btn">✏️</button></td></tr>
-          <tr><td>🏪 İşyeri</td><td>₺650/ay</td><td>97</td><td><div class="tgl" onclick="this.classList.toggle('on')"></div></td><td>6</td><td><span class="sbadge sbadge-o"><span class="sdot"></span>Pasif</span></td><td><button class="act-btn">✏️</button></td></tr>
-        </tbody></table></div>
+        <div class="pg-hdr">
+          <h1>Ürün Yönetimi</h1>
+          <button class="new-btn" onclick="showProductForm('new')">+ Ürün Ekle</button>
+        </div>
+
+        <!-- ÜRÜN LİSTESİ -->
+        <div class="panel" id="productTablePanel">
+          <table>
+            <thead>
+              <tr>
+                <th>Ürün</th><th>Açıklama</th><th>Başlangıç Fiyatı</th>
+                <th>Aktif Poliçe</th><th>Görünür</th><th>Sıra</th><th>Durum</th><th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="productsTbl"></tbody>
+          </table>
+        </div>
+
+        <!-- ÜRÜN EKLE / DÜZENLE FORMU -->
+        <div class="panel hidden" id="productFormPanel">
+          <div class="panel-hdr">
+            <span class="panel-title" id="productFormTitle">Yeni Ürün Ekle</span>
+          </div>
+          <div class="adm-form">
+            <input type="hidden" id="pf_id">
+            <div class="adm-form-grid">
+              <div class="afg">
+                <label>İKON / EMOJİ</label>
+                <select id="pf_icon">
+                  <option value="🚗">🚗 Araç</option>
+                  <option value="🚦">🚦 Trafik</option>
+                  <option value="🏥">🏥 Sağlık</option>
+                  <option value="🏠">🏠 Konut</option>
+                  <option value="🏢">🏢 Bina</option>
+                  <option value="🏪">🏪 İşyeri</option>
+                  <option value="✈️">✈️ Seyahat</option>
+                  <option value="🐾">🐾 Evcil Hayvan</option>
+                  <option value="💼">💼 İş</option>
+                  <option value="🌊">🌊 Taşkın</option>
+                </select>
+              </div>
+              <div class="afg">
+                <label>ÜRÜN ADI</label>
+                <input type="text" id="pf_name" placeholder="ör. Kasko Sigortası">
+              </div>
+              <div class="afg adm-form-full">
+                <label>KISA AÇIKLAMA</label>
+                <input type="text" id="pf_desc" placeholder="Ürünün kısa açıklaması">
+              </div>
+              <div class="afg">
+                <label>BAŞLANGIÇ FİYATI</label>
+                <input type="text" id="pf_price" placeholder="ör. ₺299/ay">
+              </div>
+              <div class="afg">
+                <label>AKTİF POLİÇE SAYISI</label>
+                <input type="number" id="pf_count" placeholder="0">
+              </div>
+              <div class="afg">
+                <label>GÖRÜNTÜLENME SIRASI</label>
+                <input type="number" id="pf_order" placeholder="1" min="1">
+              </div>
+              <div class="afg">
+                <label>DURUM</label>
+                <select id="pf_status">
+                  <option value="aktif">Aktif</option>
+                  <option value="pasif">Pasif</option>
+                </select>
+              </div>
+              <div class="afg">
+                <label>SİTEDE GÖSTER</label>
+                <select id="pf_visible">
+                  <option value="1">Evet – Göster</option>
+                  <option value="0">Hayır – Gizle</option>
+                </select>
+              </div>
+              <div class="afg adm-form-full">
+                <label>DETAYLI AÇIKLAMA (Site Kartı)</label>
+                <textarea id="pf_detail" placeholder="Ürünün sitede gösterilecek detaylı açıklaması..." style="min-height:70px;"></textarea>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+              <button class="save-btn" onclick="saveProduct()">💾 Kaydet</button>
+              <button class="cancel-btn" onclick="cancelProductForm()">İptal</button>
+              <button class="cancel-btn" id="deleteProductBtn" style="color:var(--red);border-color:rgba(231,76,60,.3);display:none;" onclick="deleteProduct()">🗑️ Sil</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- DUYURULAR -->
@@ -2949,6 +3040,9 @@ function admPage(id, btn){
   if(btn) btn.classList.add('active');
   const titles={dashboard:'Dashboard',policies:'Poliçe Yönetimi',offers:'Teklif Talepleri',claims:'Hasar Yönetimi',renewals:'Yenilemeler',customers:'Müşteriler',agents:'Acenteler',products:'Ürün Yönetimi',announcements:'📢 Duyuru Yönetimi',siteSettings:'Site Ayarları',reports:'Raporlar',settings:'Ayarlar'};
   document.getElementById('admTopTitle').textContent = titles[id]||id;
+  // Sekmeye özgü render tetikleyicileri
+  if(id==='products') renderProducts();
+  if(id==='announcements') renderAnnList();
 }
 function showAddPol(){
   document.getElementById('polTableWrap').classList.add('hidden');
@@ -3748,12 +3842,197 @@ renderRenewals();
 renderCustomers();
 renderChart();
 renderAnnList();
-// Yedek sistemi başlat
+renderProducts();
 updateBackupCounts();
 renderBackupHistory();
 startAutoBackup();
 // İlk otomatik yedeği 30 dakika sonra al
 setTimeout(()=>takeBackup(true), 30*60*1000);
+
+/* ============================================================
+   ÜRÜN YÖNETİMİ
+============================================================ */
+const productsData = [
+  {id:1, icon:'🚗', name:'Kasko Sigortası',    desc:'Aracınızı kazalara, hırsızlığa ve doğal afetlere karşı koruyun.',         price:'₺299/ay',  count:387, order:1, status:'aktif', visible:true},
+  {id:2, icon:'🚦', name:'Trafik Sigortası',   desc:'Zorunlu trafik sigortanızı en uygun fiyatla anında yenileyin.',              price:'₺189',     count:512, order:2, status:'aktif', visible:true},
+  {id:3, icon:'🏥', name:'Sağlık Sigortası',   desc:'Siz ve ailenizin sağlığını özel hastane güvencesiyle koruyun.',             price:'₺450/ay',  count:198, order:3, status:'aktif', visible:true},
+  {id:4, icon:'🏠', name:'Konut Sigortası',    desc:'Evinizi yangın, deprem ve hırsızlığa karşı güvende tutun.',                 price:'₺899/yıl', count:143, order:4, status:'aktif', visible:true},
+  {id:5, icon:'🏢', name:'DASK (Deprem)',       desc:'Zorunlu deprem sigortanızı kolayca yaptırın, evinizi güvence altına alın.', price:'₺299',     count:489, order:5, status:'aktif', visible:true},
+  {id:6, icon:'🏪', name:'İşyeri Sigortası',   desc:'İşletmenizi tüm risklere karşı kapsamlı güvenceyle koruyun.',               price:'₺650/ay',  count:97,  order:6, status:'pasif', visible:false},
+];
+
+let editingProductId = null;
+
+function renderProducts() {
+  const tbl = document.getElementById('productsTbl');
+  if (!tbl) return;
+  const sorted = [...productsData].sort((a,b) => a.order - b.order);
+  tbl.innerHTML = sorted.map(p => `
+    <tr>
+      <td>
+        <span style="font-size:1.4rem;margin-right:8px;">${p.icon}</span>
+        <strong>${p.name}</strong>
+      </td>
+      <td style="font-size:.8rem;color:var(--text2);max-width:200px;">${p.desc.substring(0,55)}…</td>
+      <td style="font-family:var(--font-head);color:var(--accent);font-weight:700;">${p.price}</td>
+      <td>${p.count}</td>
+      <td>
+        <div class="tgl ${p.visible?'on':''}" onclick="toggleProductVisible(${p.id},this)" title="${p.visible?'Gizle':'Göster'}"></div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <button class="act-btn" onclick="moveProduct(${p.id},-1)" title="Yukarı" ${p.order===1?'disabled style=\'opacity:.3\'':''}>▲</button>
+          <span style="font-size:.8rem;min-width:18px;text-align:center;">${p.order}</span>
+          <button class="act-btn" onclick="moveProduct(${p.id},1)" title="Aşağı" ${p.order===sorted.length?'disabled style=\'opacity:.3\'':''}>▼</button>
+        </div>
+      </td>
+      <td>
+        <span class="sbadge ${p.status==='aktif'?'sbadge-g':'sbadge-o'}">
+          <span class="sdot"></span>${p.status==='aktif'?'Aktif':'Pasif'}
+        </span>
+      </td>
+      <td>
+        <button class="act-btn" onclick="showProductForm(${p.id})" title="Düzenle">✏️ Düzenle</button>
+        <button class="act-btn" onclick="toggleProductStatus(${p.id})" title="Durum Değiştir" style="color:${p.status==='aktif'?'var(--orange)':'var(--green)'}">
+          ${p.status==='aktif'?'⏸️':'▶️'}
+        </button>
+      </td>
+    </tr>`).join('');
+}
+
+function showProductForm(id) {
+  const panel  = document.getElementById('productFormPanel');
+  const tblPan = document.getElementById('productTablePanel');
+  const title  = document.getElementById('productFormTitle');
+  const delBtn = document.getElementById('deleteProductBtn');
+
+  panel.classList.remove('hidden');
+  tblPan.classList.add('hidden');
+
+  if (id === 'new') {
+    editingProductId = null;
+    title.textContent = '➕ Yeni Ürün Ekle';
+    delBtn.style.display = 'none';
+    // Formu temizle
+    document.getElementById('pf_id').value    = '';
+    document.getElementById('pf_icon').value  = '🚗';
+    document.getElementById('pf_name').value  = '';
+    document.getElementById('pf_desc').value  = '';
+    document.getElementById('pf_detail').value= '';
+    document.getElementById('pf_price').value = '';
+    document.getElementById('pf_count').value = '';
+    document.getElementById('pf_order').value = productsData.length + 1;
+    document.getElementById('pf_status').value   = 'aktif';
+    document.getElementById('pf_visible').value  = '1';
+  } else {
+    const p = productsData.find(x => x.id === id);
+    if (!p) return;
+    editingProductId = id;
+    title.textContent = '✏️ Ürünü Düzenle — ' + p.name;
+    delBtn.style.display = 'inline-flex';
+    document.getElementById('pf_id').value       = p.id;
+    document.getElementById('pf_icon').value     = p.icon;
+    document.getElementById('pf_name').value     = p.name;
+    document.getElementById('pf_desc').value     = p.desc;
+    document.getElementById('pf_detail').value   = p.detail || p.desc;
+    document.getElementById('pf_price').value    = p.price;
+    document.getElementById('pf_count').value    = p.count;
+    document.getElementById('pf_order').value    = p.order;
+    document.getElementById('pf_status').value   = p.status;
+    document.getElementById('pf_visible').value  = p.visible ? '1' : '0';
+  }
+}
+
+function cancelProductForm() {
+  document.getElementById('productFormPanel').classList.add('hidden');
+  document.getElementById('productTablePanel').classList.remove('hidden');
+  editingProductId = null;
+}
+
+function saveProduct() {
+  const name  = document.getElementById('pf_name').value.trim();
+  const price = document.getElementById('pf_price').value.trim();
+  if (!name)  { showToast('❌ Ürün adı zorunlu!'); return; }
+  if (!price) { showToast('❌ Fiyat zorunlu!'); return; }
+
+  const data = {
+    icon:    document.getElementById('pf_icon').value,
+    name,
+    desc:    document.getElementById('pf_desc').value.trim() || name,
+    detail:  document.getElementById('pf_detail').value.trim(),
+    price,
+    count:   parseInt(document.getElementById('pf_count').value) || 0,
+    order:   parseInt(document.getElementById('pf_order').value) || productsData.length + 1,
+    status:  document.getElementById('pf_status').value,
+    visible: document.getElementById('pf_visible').value === '1',
+  };
+
+  if (editingProductId) {
+    // Güncelle
+    const idx = productsData.findIndex(x => x.id === editingProductId);
+    if (idx > -1) {
+      productsData[idx] = { ...productsData[idx], ...data };
+      showToast('✅ Ürün güncellendi!');
+    }
+  } else {
+    // Yeni ekle
+    data.id = Date.now();
+    productsData.push(data);
+    showToast('✅ Yeni ürün eklendi!');
+  }
+
+  reorderProducts();
+  renderProducts();
+  cancelProductForm();
+}
+
+function deleteProduct() {
+  if (!editingProductId) return;
+  const p = productsData.find(x => x.id === editingProductId);
+  if (!p) return;
+  if (!confirm(`"${p.name}" ürününü silmek istediğinizden emin misiniz?`)) return;
+  const idx = productsData.findIndex(x => x.id === editingProductId);
+  productsData.splice(idx, 1);
+  reorderProducts();
+  renderProducts();
+  cancelProductForm();
+  showToast('🗑️ Ürün silindi.');
+}
+
+function toggleProductStatus(id) {
+  const p = productsData.find(x => x.id === id);
+  if (!p) return;
+  p.status = p.status === 'aktif' ? 'pasif' : 'aktif';
+  renderProducts();
+  showToast(p.status === 'aktif' ? `✅ "${p.name}" aktife alındı!` : `⏸️ "${p.name}" pasife alındı.`);
+}
+
+function toggleProductVisible(id, el) {
+  const p = productsData.find(x => x.id === id);
+  if (!p) return;
+  p.visible = !p.visible;
+  el.classList.toggle('on', p.visible);
+  showToast(p.visible ? `👁️ "${p.name}" sitede gösteriliyor.` : `🙈 "${p.name}" siteden gizlendi.`);
+}
+
+function moveProduct(id, dir) {
+  const sorted = [...productsData].sort((a,b) => a.order - b.order);
+  const idx = sorted.findIndex(x => x.id === id);
+  const swapIdx = idx + dir;
+  if (swapIdx < 0 || swapIdx >= sorted.length) return;
+  // Sıraları değiştir
+  const tmpOrder = sorted[idx].order;
+  sorted[idx].order = sorted[swapIdx].order;
+  sorted[swapIdx].order = tmpOrder;
+  renderProducts();
+  showToast('↕️ Sıralama güncellendi!');
+}
+
+function reorderProducts() {
+  const sorted = [...productsData].sort((a,b) => a.order - b.order);
+  sorted.forEach((p, i) => { p.order = i + 1; });
+}
+
 </script>
 </body>
 </html>
