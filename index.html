@@ -144,61 +144,51 @@
 }
 
 [data-theme="icemavi"]{
-  --primary:#1d4ed8;--primary2:#2563eb;--accent:#38bdf8;--gold:#fbbf24;
-  --bg:#e0f2fe;--card:rgba(255,255,255,0.72);--border:rgba(186,230,253,0.9);--text:#0c2d6b;--muted:#4b7fa8;
-  --sidebar-bg:linear-gradient(180deg,#0a1f4e 0%,#0e3a8a 50%,#1e6abf 100%);
-  --sidebar-text:rgba(255,255,255,.7);--sidebar-active:rgba(56,189,248,.25);
-  --topbar-bg:rgba(255,255,255,0.65);--topbar-border:rgba(186,230,253,0.8);
+  --primary:#1e40af;--primary2:#2563eb;--accent:#38bdf8;--gold:#fbbf24;
+  --bg:#dbeafe;--card:#f0f9ff;--border:#bae6fd;--text:#0c2d6b;--muted:#3b82a0;
+  --sidebar-bg:#0c2461;--sidebar-text:rgba(255,255,255,.75);--sidebar-active:rgba(56,189,248,.28);
+  --topbar-bg:#e0f2fe;--topbar-border:#bae6fd;
   --success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--info:#0ea5e9;
   --sw:248px;--radius:14px;--radius-sm:9px;
-  --shadow:0 2px 16px rgba(56,189,248,.12),0 1px 4px rgba(14,116,144,.08);
-  --shadow-md:0 8px 32px rgba(56,189,248,.18);--shadow-lg:0 20px 60px rgba(56,189,248,.25);
-  --grad-1:linear-gradient(145deg,#0a1f4e,#1e6abf,#38bdf8);
-  --stat-icon-opacity:0.07;
+  --shadow:0 2px 12px rgba(56,189,248,.15),0 1px 4px rgba(14,116,144,.1);
+  --shadow-md:0 6px 28px rgba(56,189,248,.2);--shadow-lg:0 16px 56px rgba(56,189,248,.28);
+  --grad-1:linear-gradient(145deg,#0c2461,#1565c0,#0ea5e9);
+  --stat-icon-opacity:0.08;
 }
 
-/* Buz Mavisi: tam sayfa kar gradyanı arka plan */
+/* Buz Mavisi: tam sayfa buz gradyanı */
 [data-theme="icemavi"] body{
-  background:linear-gradient(135deg,#bae6fd 0%,#e0f2fe 30%,#f0f9ff 60%,#dbeafe 100%);
+  background:linear-gradient(160deg,#bae6fd 0%,#dbeafe 35%,#eff6ff 65%,#cffafe 100%);
   background-attachment:fixed;
 }
-/* Glass kartlar */
-[data-theme="icemavi"] .card,
-[data-theme="icemavi"] .stat-card{
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-  background:rgba(255,255,255,0.68);
-  border:1px solid rgba(186,230,253,0.85);
-}
-[data-theme="icemavi"] #topbar{
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  background:rgba(240,249,255,0.75);
-}
+/* Sidebar: derin lacivert → buz mavisi gradyan */
 [data-theme="icemavi"] #sidebar{
-  background:linear-gradient(180deg,#0a1f4e 0%,#0e3a8a 55%,#1e6abf 100%);
-  border-right:1px solid rgba(56,189,248,.2);
+  background:linear-gradient(180deg,#0a1a4a 0%,#0c2461 40%,#1565c0 100%);
+  border-right:1px solid rgba(56,189,248,.18);
 }
-/* Stat kartlara buz efekti */
-[data-theme="icemavi"] .stat-card::before{
-  background:linear-gradient(90deg,transparent,rgba(56,189,248,.5),transparent);
+/* Topbar */
+[data-theme="icemavi"] #topbar{
+  background:#e0f2fe;
+  border-bottom:1px solid #bae6fd;
 }
-[data-theme="icemavi"] .stat-card::after{
-  opacity:0.05;
+/* Kartlar: hafif buz mavisi */
+[data-theme="icemavi"] .card{
+  background:#f0f9ff;
+  border:1px solid #bae6fd;
+}
+[data-theme="icemavi"] .stat-card{
+  background:#f0f9ff;
+  border:1px solid #bae6fd;
+  border-top:2px solid #38bdf8;
 }
 /* Tablo başlığı */
 [data-theme="icemavi"] thead tr{
-  background:linear-gradient(90deg,#1e3a8a,#1d6fbe,#0ea5e9);
+  background:linear-gradient(90deg,#1e3a8a,#1565c0,#0ea5e9);
 }
-/* Kar parıltısı: animasyonlu arka plan overlay */
-[data-theme="icemavi"] body::before{
-  content:'';
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(255,255,255,.35),transparent),
-             radial-gradient(ellipse 60% 40% at 80% 90%,rgba(186,230,253,.4),transparent),
-             radial-gradient(ellipse 40% 30% at 50% 50%,rgba(255,255,255,.12),transparent);
+/* Stat kart üst çizgi parıltı */
+[data-theme="icemavi"] .stat-card::before{
+  background:linear-gradient(90deg,transparent,rgba(56,189,248,.6),transparent);
 }
-[data-theme="icemavi"] #main,
-[data-theme="icemavi"] #sidebar,
-[data-theme="icemavi"] #topbar{position:relative;z-index:1;}
 
 /* Glass effect for frost & aurora themes */
 [data-theme="frost"] .card,
