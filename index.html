@@ -9,44 +9,165 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ═══════════════════════════════════════════
-   MKÖÇE POLİÇE TAKİP — UNIFIED PREMIUM THEME
-   Koyu Yeşil Finans Teması
+   MKÖÇE POLİÇE TAKİP — 10 TEMA SİSTEMİ
 ═══════════════════════════════════════════ */
-:root{
-  /* Ana renkler */
-  --bg:#f0f9f4;
-  --surf:#ffffff;
-  --surf2:#f0fdf4;
-  --brd:#bbf7d0;
-  --brd2:#d1fae5;
 
-  /* Marka aksan */
-  --acc:#059669;
-  --acc2:#10b981;
-  --acc3:#34d399;
-  --acc-dark:#064e3b;
-  --acc-deep:#022c22;
-
-  /* Durum renkleri */
-  --ok:#16a34a;
-  --warn:#d97706;
-  --err:#dc2626;
-  --blue:#2563eb;
-
-  /* Metin */
-  --muted:#6b7280;
-  --txt:#1a2e1a;
-
-  /* Header */
-  --hdr:#064e3b;
-  --hdr-acc:#34d399;
-
-  /* Genel */
-  --radius:10px;
-  --sh:0 2px 12px rgba(5,150,105,.09);
-  --sh2:0 8px 28px rgba(5,150,105,.16);
-  --sh3:0 2px 8px rgba(0,0,0,.07);
+/* ── ORMAN YEŞİLİ (varsayılan) ── */
+:root,[data-tema="orman"]{
+  --bg:#f0f9f4; --surf:#ffffff; --surf2:#f0fdf4; --brd:#bbf7d0; --brd2:#d1fae5;
+  --acc:#059669; --acc2:#10b981; --acc3:#34d399; --acc-dark:#064e3b; --acc-deep:#022c22;
+  --ok:#16a34a; --warn:#d97706; --err:#dc2626; --blue:#2563eb;
+  --muted:#6b7280; --txt:#1a2e1a; --hdr:#064e3b; --hdr-acc:#34d399;
+  --hdr-g1:#022c22; --hdr-g2:#064e3b; --hdr-g3:#065f46;
+  --hdr-sh:rgba(2,44,34,.5); --hdr-btn:rgba(52,211,153,.7);
+  --hdr-btn-hover:rgba(52,211,153,.15); --hdr-btn-active:rgba(52,211,153,.22);
+  --inp-bg:#f0fdf4; --radius:10px;
+  --sh:0 2px 12px rgba(5,150,105,.09); --sh2:0 8px 28px rgba(5,150,105,.16); --sh3:0 2px 8px rgba(0,0,0,.07);
 }
+
+/* ── MAVİ ── */
+[data-tema="mavi"]{
+  --bg:#f0f6ff; --surf:#ffffff; --surf2:#eff6ff; --brd:#bfdbfe; --brd2:#dbeafe;
+  --acc:#2563eb; --acc2:#3b82f6; --acc3:#60a5fa; --acc-dark:#1e3a8a; --acc-deep:#172554;
+  --ok:#16a34a; --warn:#d97706; --err:#dc2626; --blue:#2563eb;
+  --muted:#6b7280; --txt:#1e2a4a; --hdr:#1e3a8a; --hdr-acc:#60a5fa;
+  --hdr-g1:#172554; --hdr-g2:#1e3a8a; --hdr-g3:#1d4ed8;
+  --hdr-sh:rgba(23,37,84,.5); --hdr-btn:rgba(96,165,250,.7);
+  --hdr-btn-hover:rgba(96,165,250,.15); --hdr-btn-active:rgba(96,165,250,.22);
+  --inp-bg:#eff6ff;
+  --sh:0 2px 12px rgba(37,99,235,.09); --sh2:0 8px 28px rgba(37,99,235,.16); --sh3:0 2px 8px rgba(0,0,0,.07);
+}
+
+/* ── SARI ── */
+[data-tema="sari"]{
+  --bg:#fffdf0; --surf:#ffffff; --surf2:#fefce8; --brd:#fde68a; --brd2:#fef08a;
+  --acc:#d97706; --acc2:#f59e0b; --acc3:#fbbf24; --acc-dark:#78350f; --acc-deep:#451a03;
+  --ok:#16a34a; --warn:#d97706; --err:#dc2626; --blue:#2563eb;
+  --muted:#78716c; --txt:#2c1a00; --hdr:#78350f; --hdr-acc:#fbbf24;
+  --hdr-g1:#451a03; --hdr-g2:#78350f; --hdr-g3:#92400e;
+  --hdr-sh:rgba(69,26,3,.5); --hdr-btn:rgba(251,191,36,.7);
+  --hdr-btn-hover:rgba(251,191,36,.15); --hdr-btn-active:rgba(251,191,36,.22);
+  --inp-bg:#fefce8;
+  --sh:0 2px 12px rgba(217,119,6,.09); --sh2:0 8px 28px rgba(217,119,6,.16); --sh3:0 2px 8px rgba(0,0,0,.07);
+}
+
+/* ── GRİ TON ── */
+[data-tema="gri"]{
+  --bg:#f4f5f7; --surf:#ffffff; --surf2:#f8f9fa; --brd:#d1d5db; --brd2:#e5e7eb;
+  --acc:#4b5563; --acc2:#6b7280; --acc3:#9ca3af; --acc-dark:#1f2937; --acc-deep:#111827;
+  --ok:#16a34a; --warn:#d97706; --err:#dc2626; --blue:#2563eb;
+  --muted:#6b7280; --txt:#111827; --hdr:#1f2937; --hdr-acc:#9ca3af;
+  --hdr-g1:#111827; --hdr-g2:#1f2937; --hdr-g3:#374151;
+  --hdr-sh:rgba(17,24,39,.5); --hdr-btn:rgba(156,163,175,.7);
+  --hdr-btn-hover:rgba(156,163,175,.15); --hdr-btn-active:rgba(156,163,175,.22);
+  --inp-bg:#f9fafb;
+  --sh:0 2px 12px rgba(75,85,99,.09); --sh2:0 8px 28px rgba(75,85,99,.16); --sh3:0 2px 8px rgba(0,0,0,.07);
+}
+
+/* ── ANDRASİT ── */
+[data-tema="andrasit"]{
+  --bg:#1c2128; --surf:#22272e; --surf2:#2d333b; --brd:#444c56; --brd2:#373e47;
+  --acc:#539bf5; --acc2:#6cb6ff; --acc3:#96d0ff; --acc-dark:#cdd9e5; --acc-deep:#adbac7;
+  --ok:#46954a; --warn:#c69026; --err:#e5534b; --blue:#539bf5;
+  --muted:#768390; --txt:#cdd9e5; --hdr:#161b22; --hdr-acc:#539bf5;
+  --hdr-g1:#0d1117; --hdr-g2:#161b22; --hdr-g3:#21262d;
+  --hdr-sh:rgba(0,0,0,.6); --hdr-btn:rgba(83,155,245,.7);
+  --hdr-btn-hover:rgba(83,155,245,.15); --hdr-btn-active:rgba(83,155,245,.22);
+  --inp-bg:#2d333b;
+  --sh:0 2px 12px rgba(0,0,0,.25); --sh2:0 8px 28px rgba(0,0,0,.4); --sh3:0 2px 8px rgba(0,0,0,.3);
+}
+
+/* ── SİYAH ── */
+[data-tema="siyah"]{
+  --bg:#0a0a0a; --surf:#141414; --surf2:#1a1a1a; --brd:#2a2a2a; --brd2:#222222;
+  --acc:#e2e8f0; --acc2:#cbd5e1; --acc3:#94a3b8; --acc-dark:#f1f5f9; --acc-deep:#f8fafc;
+  --ok:#22c55e; --warn:#f59e0b; --err:#ef4444; --blue:#60a5fa;
+  --muted:#64748b; --txt:#e2e8f0; --hdr:#000000; --hdr-acc:#475569;
+  --hdr-g1:#000000; --hdr-g2:#0a0a0a; --hdr-g3:#111111;
+  --hdr-sh:rgba(0,0,0,.8); --hdr-btn:rgba(71,85,105,.7);
+  --hdr-btn-hover:rgba(71,85,105,.25); --hdr-btn-active:rgba(71,85,105,.4);
+  --inp-bg:#1e1e1e;
+  --sh:0 2px 12px rgba(0,0,0,.4); --sh2:0 8px 28px rgba(0,0,0,.6); --sh3:0 2px 8px rgba(0,0,0,.4);
+}
+
+/* ── AÇIK MAVİ ── */
+[data-tema="acikMavi"]{
+  --bg:#e0f2fe; --surf:#ffffff; --surf2:#f0f9ff; --brd:#bae6fd; --brd2:#e0f2fe;
+  --acc:#0284c7; --acc2:#0ea5e9; --acc3:#38bdf8; --acc-dark:#0c4a6e; --acc-deep:#082f49;
+  --ok:#16a34a; --warn:#d97706; --err:#dc2626; --blue:#0284c7;
+  --muted:#64748b; --txt:#0c2a3e; --hdr:#0369a1; --hdr-acc:#38bdf8;
+  --hdr-g1:#082f49; --hdr-g2:#0c4a6e; --hdr-g3:#075985;
+  --hdr-sh:rgba(8,47,73,.5); --hdr-btn:rgba(56,189,248,.7);
+  --hdr-btn-hover:rgba(56,189,248,.15); --hdr-btn-active:rgba(56,189,248,.22);
+  --inp-bg:#f0f9ff;
+  --sh:0 2px 12px rgba(2,132,199,.09); --sh2:0 8px 28px rgba(2,132,199,.16); --sh3:0 2px 8px rgba(0,0,0,.07);
+}
+
+/* ── TURKUAZ ── */
+[data-tema="turkuaz"]{
+  --bg:#ecfeff; --surf:#ffffff; --surf2:#f0fdfe; --brd:#a5f3fc; --brd2:#cffafe;
+  --acc:#0891b2; --acc2:#06b6d4; --acc3:#22d3ee; --acc-dark:#164e63; --acc-deep:#083344;
+  --ok:#16a34a; --warn:#d97706; --err:#dc2626; --blue:#2563eb;
+  --muted:#6b7280; --txt:#0e3a44; --hdr:#155e75; --hdr-acc:#22d3ee;
+  --hdr-g1:#083344; --hdr-g2:#164e63; --hdr-g3:#155e75;
+  --hdr-sh:rgba(8,51,68,.5); --hdr-btn:rgba(34,211,238,.7);
+  --hdr-btn-hover:rgba(34,211,238,.15); --hdr-btn-active:rgba(34,211,238,.22);
+  --inp-bg:#ecfeff;
+  --sh:0 2px 12px rgba(8,145,178,.09); --sh2:0 8px 28px rgba(8,145,178,.16); --sh3:0 2px 8px rgba(0,0,0,.07);
+}
+
+/* ── DOĞA YEŞİLİ ── */
+[data-tema="doga"]{
+  --bg:#f7fdf4; --surf:#ffffff; --surf2:#f0fdf4; --brd:#bbf7d0; --brd2:#dcfce7;
+  --acc:#16a34a; --acc2:#22c55e; --acc3:#4ade80; --acc-dark:#14532d; --acc-deep:#052e16;
+  --ok:#16a34a; --warn:#d97706; --err:#dc2626; --blue:#2563eb;
+  --muted:#6b7280; --txt:#14291e; --hdr:#15803d; --hdr-acc:#4ade80;
+  --hdr-g1:#052e16; --hdr-g2:#14532d; --hdr-g3:#15803d;
+  --hdr-sh:rgba(5,46,22,.5); --hdr-btn:rgba(74,222,128,.7);
+  --hdr-btn-hover:rgba(74,222,128,.15); --hdr-btn-active:rgba(74,222,128,.22);
+  --inp-bg:#f0fdf4;
+  --sh:0 2px 12px rgba(22,163,74,.09); --sh2:0 8px 28px rgba(22,163,74,.16); --sh3:0 2px 8px rgba(0,0,0,.07);
+}
+
+/* ── MAVİ TONU (Lacivert) ── */
+[data-tema="lacivert"]{
+  --bg:#eef2ff; --surf:#ffffff; --surf2:#eef2ff; --brd:#c7d2fe; --brd2:#e0e7ff;
+  --acc:#4f46e5; --acc2:#6366f1; --acc3:#818cf8; --acc-dark:#1e1b4b; --acc-deep:#0f0e2b;
+  --ok:#16a34a; --warn:#d97706; --err:#dc2626; --blue:#4f46e5;
+  --muted:#6b7280; --txt:#1e1b4b; --hdr:#312e81; --hdr-acc:#818cf8;
+  --hdr-g1:#0f0e2b; --hdr-g2:#1e1b4b; --hdr-g3:#312e81;
+  --hdr-sh:rgba(15,14,43,.5); --hdr-btn:rgba(129,140,248,.7);
+  --hdr-btn-hover:rgba(129,140,248,.15); --hdr-btn-active:rgba(129,140,248,.22);
+  --inp-bg:#eef2ff;
+  --sh:0 2px 12px rgba(79,70,229,.09); --sh2:0 8px 28px rgba(79,70,229,.16); --sh3:0 2px 8px rgba(0,0,0,.07);
+}
+
+/* ── TEMA PANELİ ── */
+#temaWrap{position:relative;margin-left:4px;}
+#temaPanel{
+  display:none;position:absolute;right:0;top:calc(100% + 8px);
+  background:var(--surf);border:1.5px solid var(--brd2);
+  border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.25);
+  z-index:9000;padding:12px;width:260px;
+  animation:tpIn .18s ease;
+}
+@keyframes tpIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+#temaPanel h5{
+  font-size:9.5px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.7px;
+  margin-bottom:9px;padding-bottom:7px;border-bottom:1.5px solid var(--brd2);
+}
+#temaGrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.ti{
+  display:flex;align-items:center;gap:7px;padding:7px 9px;
+  border:1.5px solid var(--brd2);border-radius:8px;
+  background:var(--surf2);cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;color:var(--txt);
+  transition:all .14s;
+}
+.ti:hover{border-color:var(--acc);color:var(--acc);}
+.ti.ak{background:var(--acc);color:#fff;border-color:var(--acc);}
+.tdot{width:11px;height:11px;border-radius:50%;flex-shrink:0;border:2px solid rgba(0,0,0,.12);}
 
 *{box-sizing:border-box;margin:0;padding:0;}
 
@@ -60,46 +181,47 @@ body{
 
 /* ── TOOLBAR ── */
 #toolbar{
-  background:linear-gradient(135deg,#022c22 0%,#064e3b 60%,#065f46 100%);
+  background:linear-gradient(135deg,var(--hdr-g1) 0%,var(--hdr-g2) 60%,var(--hdr-g3) 100%);
   padding:0 14px;
   display:flex;align-items:center;gap:2px;
   border-bottom:3px solid var(--hdr-acc);
-  box-shadow:0 3px 14px rgba(2,44,34,.5);
+  box-shadow:0 3px 14px var(--hdr-sh);
   flex-wrap:wrap;min-height:62px;
+  position:sticky;top:0;z-index:100;
   position:relative;
 }
 #toolbar::after{
   content:'';position:absolute;bottom:-3px;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,#34d399,#10b981,#34d399);
+  background:linear-gradient(90deg,var(--hdr-acc),var(--acc2),var(--hdr-acc));
   background-size:200% 100%;
   animation:shimmer 3s linear infinite;
 }
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 .tb-title{
-  font-size:14px;font-weight:900;color:#34d399;
+  font-size:14px;font-weight:900;color:var(--hdr-acc);
   letter-spacing:1.2px;margin-right:10px;white-space:nowrap;
   display:flex;align-items:center;gap:7px;
 }
-.tb-title span{color:#6ee7b7;font-weight:600;}
+.tb-title span{color:var(--acc3);font-weight:600;}
 
 .tb-btn{
   display:flex;flex-direction:column;align-items:center;gap:3px;
   padding:7px 10px;border:none;background:transparent;
-  color:rgba(110,231,183,.7);cursor:pointer;border-radius:8px;
+  color:var(--hdr-btn);cursor:pointer;border-radius:8px;
   font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;
   letter-spacing:.4px;transition:all .15s;white-space:nowrap;min-width:56px;
 }
 .tb-btn .ico{font-size:20px;line-height:1;}
-.tb-btn:hover{background:rgba(52,211,153,.15);color:#34d399;}
+.tb-btn:hover{background:var(--hdr-btn-hover);color:var(--hdr-acc);}
 .tb-btn.active{
-  background:rgba(52,211,153,.22);
-  color:#34d399;
-  border-bottom:2px solid #34d399;
+  background:var(--hdr-btn-active);
+  color:var(--hdr-acc);
+  border-bottom:2px solid var(--hdr-acc);
 }
 
-#clock-bar{margin-left:auto;text-align:right;color:#6ee7b7;font-size:11px;line-height:1.6;opacity:.85;}
-#clock-bar .ct{color:#a7f3d0;font-weight:700;font-size:12px;}
+#clock-bar{margin-left:auto;text-align:right;color:var(--acc3);font-size:11px;line-height:1.6;opacity:.85;}
+#clock-bar .ct{color:var(--hdr-acc);font-weight:700;font-size:12px;}
 
 /* ── SAYFA ── */
 #pg{padding:14px;max-width:1400px;margin:0 auto;}
@@ -126,7 +248,7 @@ label.lbl{display:block;font-size:10px;color:var(--muted);margin-bottom:3px;font
 
 input,select,textarea{
   width:100%;padding:7px 9px;
-  background:#f0fdf4;border:1.5px solid var(--brd2);
+  background:var(--inp-bg);border:1.5px solid var(--brd2);
   border-radius:6px;color:var(--txt);
   font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;
   outline:none;transition:border-color .18s,box-shadow .18s;
@@ -472,6 +594,14 @@ tbody tr:nth-child(even):hover td{background:#f0fdf4;}
   <button class="tb-btn" id="tbAyarlar" onclick="GT('ayarlar',this)"><div class="ico">⚙️</div>Ayarlar</button>
   <div id="clock-bar"><div class="ct" id="CT">--:--:--</div><div id="CD">---</div></div>
   <div id="oturumBadge" style="display:none;align-items:center;gap:6px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);border-radius:8px;padding:5px 10px;color:#34d399;font-size:11px;font-weight:700;white-space:nowrap;margin-left:4px"></div>
+  <!-- TEMA SEÇİCİ -->
+  <div id="temaWrap">
+    <button class="tb-btn" onclick="temaToggle()" title="Tema Seç"><div class="ico">🎨</div>Tema</button>
+    <div id="temaPanel">
+      <h5>🎨 Renk Teması Seç</h5>
+      <div id="temaGrid"></div>
+    </div>
+  </div>
   <button class="tb-btn" onclick="cikisYap()" title="Çıkış Yap" style="color:#f87171"><div class="ico">🚪</div>Çıkış</button>
 </div>
 <div id="pg"></div>
@@ -3668,6 +3798,70 @@ function cikisYap(){
   showLoginScreen();
   toast('Çıkış yapıldı','warn');
 }
+
+/* ══════════════════════════════════════
+   TEMA SİSTEMİ — 10 TEMA
+══════════════════════════════════════ */
+const TEMALAR=[
+  {id:'orman',    ad:'Orman Yeşili', dot:'#059669'},
+  {id:'mavi',     ad:'Mavi',         dot:'#2563eb'},
+  {id:'sari',     ad:'Sarı',         dot:'#d97706'},
+  {id:'gri',      ad:'Gri Ton',      dot:'#4b5563'},
+  {id:'andrasit', ad:'Andrasit',     dot:'#539bf5'},
+  {id:'siyah',    ad:'Siyah',        dot:'#334155'},
+  {id:'acikMavi', ad:'Açık Mavi',    dot:'#0284c7'},
+  {id:'turkuaz',  ad:'Turkuaz',      dot:'#0891b2'},
+  {id:'doga',     ad:'Doğa Yeşili',  dot:'#16a34a'},
+  {id:'lacivert', ad:'Mavi Tonu',    dot:'#4f46e5'},
+];
+
+let AKTIF_TEMA = localStorage.getItem('mkoceTema') || 'orman';
+
+function applyTheme(id){
+  AKTIF_TEMA = id;
+  document.documentElement.setAttribute('data-tema', id);
+  localStorage.setItem('mkoceTema', id);
+  // Oturum badge rengini güncelle
+  const badge = document.getElementById('oturumBadge');
+  if(badge && badge.style.display !== 'none'){
+    badge.style.background = 'rgba(var(--hdr-btn-hover))';
+  }
+  // Panel kapat
+  const p = document.getElementById('temaPanel');
+  if(p) p.style.display = 'none';
+  // Grid yenile
+  buildTemaGrid();
+  toast('Tema değiştirildi: ' + (TEMALAR.find(t=>t.id===id)||{ad:id}).ad, 'info');
+}
+
+function buildTemaGrid(){
+  const g = document.getElementById('temaGrid');
+  if(!g) return;
+  g.innerHTML = TEMALAR.map(t=>`
+    <button class="ti${AKTIF_TEMA===t.id?' ak':''}" onclick="applyTheme('${t.id}')">
+      <span class="tdot" style="background:${t.dot}"></span>${t.ad}
+    </button>
+  `).join('');
+}
+
+function temaToggle(){
+  const p = document.getElementById('temaPanel');
+  if(!p) return;
+  const isOpen = p.style.display === 'block';
+  p.style.display = isOpen ? 'none' : 'block';
+  if(!isOpen) buildTemaGrid();
+}
+
+// Dışarı tıklayınca kapat
+document.addEventListener('click', function(e){
+  const p = document.getElementById('temaPanel');
+  if(!p || p.style.display !== 'block') return;
+  const wrap = document.getElementById('temaWrap');
+  if(wrap && !wrap.contains(e.target)) p.style.display = 'none';
+});
+
+// Sayfa yüklenince temayı uygula
+applyTheme(AKTIF_TEMA);
 function aGenelKaydet(){
   DB.cfg.uyariGun=document.getElementById('aUg')?.value||30;
   DB.cfg.sirket=document.getElementById('aSirket')?.value||'';
