@@ -471,6 +471,8 @@ tbody tr:nth-child(even):hover td{background:#f0fdf4;}
   <button class="tb-btn" id="tbHatirlatma" onclick="GT('hatirlatma',this)"><div class="ico">🔔</div>Hatırlatma</button>
   <button class="tb-btn" id="tbAyarlar" onclick="GT('ayarlar',this)"><div class="ico">⚙️</div>Ayarlar</button>
   <div id="clock-bar"><div class="ct" id="CT">--:--:--</div><div id="CD">---</div></div>
+  <div id="oturumBadge" style="display:none;align-items:center;gap:6px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);border-radius:8px;padding:5px 10px;color:#34d399;font-size:11px;font-weight:700;white-space:nowrap;margin-left:4px"></div>
+  <button class="tb-btn" onclick="cikisYap()" title="Çıkış Yap" style="color:#f87171"><div class="ico">🚪</div>Çıkış</button>
 </div>
 <div id="pg"></div>
 <div id="toastZ"></div>
@@ -501,8 +503,9 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
    create table if not exists hatirlatma   (id text primary key, data jsonb not null);
    create table if not exists pol_turleri  (id text primary key, data jsonb not null);
    create table if not exists ayarlar      (id text primary key, data jsonb not null);
+   create table if not exists kullanicilar (id text primary key, data jsonb not null);
 
-   -- Tüm tablolara Row Level Security kapat (tek kullanıcı):
+   -- Tüm tablolara Row Level Security kapat:
    alter table musteriler   disable row level security;
    alter table policeler    disable row level security;
    alter table acenteler    disable row level security;
@@ -513,6 +516,7 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
    alter table hatirlatma   disable row level security;
    alter table pol_turleri  disable row level security;
    alter table ayarlar      disable row level security;
+   alter table kullanicilar disable row level security;
 ════════════════════════════════════════════════════════════ */
 
 /* ── SUPABASE İSTEMCİ ── */
@@ -542,6 +546,7 @@ const TBL = {
   iptallar:'iptallar',
   hatirlatmalar:'hatirlatma',
   policeTurleri:'pol_turleri',
+  kullanicilar:'kullanicilar',
   cfg:'ayarlar',
 };
 
@@ -612,8 +617,11 @@ let DB={
   cariHareketler:[],
   iptallar:[],
   hatirlatmalar:[],
-  cfg:LS.getObj('cfg',{sirket:'MK MUHAMMED KÖÇE',uyariGun:30,sifre:'1234'})
+  kullanicilar:[],
+  cfg:LS.getObj('cfg',{sirket:'MK MUHAMMED KÖÇE',uyariGun:30,sifre:'1234',loginSifre:'1234',loginMod:'tekSifre'})
 };
+/* ── OTURUM ── */
+let OTURUM = null; // {ad, rol:'admin'|'kullanici'} veya null
 
 /* ── BAĞLANTI EKRANI ── */
 function showConfigScreen(){
@@ -662,6 +670,7 @@ create table if not exists iptallar     (id text primary key, data jsonb not nul
 create table if not exists hatirlatma   (id text primary key, data jsonb not null);
 create table if not exists pol_turleri  (id text primary key, data jsonb not null);
 create table if not exists ayarlar      (id text primary key, data jsonb not null);
+create table if not exists kullanicilar (id text primary key, data jsonb not null);
 
 alter table musteriler   disable row level security;
 alter table policeler    disable row level security;
@@ -672,7 +681,8 @@ alter table cari_hrkt    disable row level security;
 alter table iptallar     disable row level security;
 alter table hatirlatma   disable row level security;
 alter table pol_turleri  disable row level security;
-alter table ayarlar      disable row level security;`;
+alter table ayarlar      disable row level security;
+alter table kullanicilar disable row level security;`;
 }
 
 function copySql(){
@@ -709,71 +719,80 @@ async function applySupaConfig(){
 
 /* ── TÜM VERİLERİ SUPABASE'DEN YÜKLe ── */
 async function loadAllFromSupabase(){
-  const pg=document.getElementById('pg');
-  pg.innerHTML=`<div style="text-align:center;padding:80px 20px">
-    <div style="font-size:48px;margin-bottom:16px;animation:spin 1s linear infinite">⏳</div>
-    <div style="font-size:16px;font-weight:800;color:#064e3b">Veriler yükleniyor...</div>
-    <div id="loadStatus" style="font-size:12px;color:var(--muted);margin-top:8px">Bağlantı kuruluyor...</div>
-  </div>
-  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
-
-  const status=(msg)=>{const el=document.getElementById('loadStatus');if(el)el.textContent=msg;};
+  /* ── 1) ÖNCE GİRİŞ EKRANINI GÖSTER ─────────────────────────
+     Kullanıcı hemen şifre ekranını görür; veriler arka planda yüklenir.
+     Giriş yapıldıktan sonra veriler zaten hazır olur.
+  ─────────────────────────────────────────────────────────── */
+  showLoginScreen();
 
   try {
-    status('Müşteriler yükleniyor...');
-    DB.musteriler = await sbFetchAll('musteriler');
+    /* ── 2) TÜM TABLOLARI PARALEL ÇEK (Promise.all) ──────────
+       Sırayla değil, hepsi aynı anda → ~10x daha hızlı
+    ─────────────────────────────────────────────────────────── */
+    const [
+      musteriler, policeler, acenteler, aceTahsilat,
+      cariler, cariHrkt, iptallar, hatirlatma,
+      polTurleri, ayarlarArr, kullanicilar
+    ] = await Promise.all([
+      sbFetchAll('musteriler'),
+      sbFetchAll('policeler'),
+      sbFetchAll('acenteler'),
+      sbFetchAll('ace_tahsilat'),
+      sbFetchAll('cariler'),
+      sbFetchAll('cari_hrkt'),
+      sbFetchAll('iptallar'),
+      sbFetchAll('hatirlatma'),
+      sbFetchAll('pol_turleri'),
+      sbFetchAll('ayarlar'),
+      sbFetchAll('kullanicilar')
+    ]);
 
-    status('Poliçeler yükleniyor...');
-    DB.policeler = await sbFetchAll('policeler');
+    /* ── 3) DB'YE YAZ ── */
+    DB.musteriler        = musteriler;
+    DB.policeler         = policeler;
+    DB.acenteler         = acenteler;
+    DB.acenteTahsilatlar = aceTahsilat;
+    DB.cariler           = cariler;
+    DB.cariHareketler    = cariHrkt;
+    DB.iptallar          = iptallar;
+    DB.hatirlatmalar     = hatirlatma;
+    DB.kullanicilar      = kullanicilar;
 
-    status('Acenteler yükleniyor...');
-    DB.acenteler = await sbFetchAll('acenteler');
+    /* ── Poliçe türleri ── */
+    DB.policeTurleri = polTurleri.length
+      ? polTurleri.map(r=>r.tur||r.id)
+      : ['1 - TRAFİK SİG.','2 - KASKO SİG.','3 - DASK SİG.','4 - KONUT SİG.',
+         '5 - TSS SİG.','6 - İŞ YERİ SİG.','TRAFİK','KASKO','KONUT','DASK','SAĞLIK'];
+    if(!polTurleri.length){
+      sbUpsertMany(TBL.policeTurleri, DB.policeTurleri.map((t,i)=>({id:'tur_'+i,tur:t})));
+    }
 
-    status('Acente tahsilatları yükleniyor...');
-    DB.acenteTahsilatlar = await sbFetchAll('ace_tahsilat');
-
-    status('Cari hesaplar yükleniyor...');
-    DB.cariler = await sbFetchAll('cariler');
-
-    status('Cari hareketler yükleniyor...');
-    DB.cariHareketler = await sbFetchAll('cari_hrkt');
-
-    status('İptaller yükleniyor...');
-    DB.iptallar = await sbFetchAll('iptallar');
-
-    status('Hatırlatmalar yükleniyor...');
-    DB.hatirlatmalar = await sbFetchAll('hatirlatma');
-
-    status('Poliçe türleri yükleniyor...');
-    const turleri = await sbFetchAll('pol_turleri');
-    DB.policeTurleri = turleri.length ? turleri.map(r=>r.tur||r.id) : [];
-
-    status('Ayarlar yükleniyor...');
-    const ayarlarArr = await sbFetchAll('ayarlar');
+    /* ── Ayarlar ── */
     const cfgRow = ayarlarArr.find(r=>r.id==='cfg');
     if(cfgRow){
-      DB.cfg={sirket:cfgRow.sirket||'MK MUHAMMED KÖÇE',uyariGun:cfgRow.uyariGun||30,sifre:cfgRow.sifre||'1234'};
-      LS.setObj('cfg',DB.cfg);
+      DB.cfg={
+        sirket:    cfgRow.sirket    || 'MK MUHAMMED KÖÇE',
+        uyariGun:  cfgRow.uyariGun  || 30,
+        sifre:     cfgRow.sifre     || '1234',
+        loginSifre:cfgRow.loginSifre|| '1234',
+        loginMod:  cfgRow.loginMod  || 'tekSifre'
+      };
+      LS.setObj('cfg', DB.cfg);
     }
 
-    if(!DB.policeTurleri.length){
-      DB.policeTurleri=['1 - TRAFİK SİG.','2 - KASKO SİG.','3 - DASK SİG.','4 - KONUT SİG.','5 - TSS SİG.','6 - İŞ YERİ SİG.','TRAFİK','KASKO','KONUT','DASK','SAĞLIK'];
-      await sbUpsertMany(TBL.policeTurleri, DB.policeTurleri.map((t,i)=>({id:'tur_'+i,tur:t})));
-    }
+    /* ── 4) GİRİŞ EKRANINI GÜNCELLE (şifre/mod değişmiş olabilir) ── */
+    showLoginScreen();
 
-    toast(`✓ ${DB.musteriler.length} müşteri, ${DB.policeler.length} poliçe yüklendi`,'info');
-    TAB='dash';
-    document.querySelectorAll('.tb-btn').forEach(b=>b.classList.remove('active'));
-    const tbD=document.getElementById('tbDash');if(tbD)tbD.classList.add('active');
-    render();
+    console.log(`✓ Yüklendi: ${DB.musteriler.length} müşteri, ${DB.policeler.length} poliçe, ${DB.kullanicilar.length} kullanıcı`);
 
   } catch(e){
-    pg.innerHTML=`<div style="text-align:center;padding:80px 20px;color:var(--err)">
-      <div style="font-size:48px">❌</div>
-      <div style="font-weight:800;margin:12px 0">Yükleme Hatası</div>
-      <div style="font-size:12px">${e.message}</div>
-      <button class="btn btn-primary" style="margin-top:16px" onclick="showConfigScreen()">← Geri Dön</button>
-    </div>`;
+    console.error('Yükleme hatası:', e);
+    /* Giriş ekranında hata bildirimi göster */
+    const errDiv = document.createElement('div');
+    errDiv.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#b91c1c;color:#fff;padding:10px 18px;border-radius:8px;font-size:12px;font-weight:700;z-index:9999';
+    errDiv.textContent='⚠ Veri yüklenemedi: '+e.message;
+    document.body.appendChild(errDiv);
+    setTimeout(()=>errDiv.remove(), 5000);
   }
 }
 
@@ -3302,13 +3321,15 @@ function uyHesaba(){
 /* ══ AYARLAR ══ */
 function rAyarlar(c){
   const at=window._at||'genel';
-  c.innerHTML=`<div style="padding:14px"><div class="card" style="max-width:580px;margin:0 auto">
+  c.innerHTML=`<div style="padding:14px"><div class="card" style="max-width:640px;margin:0 auto">
     <div class="card-title"><span>⚙️</span> Ayarlar</div>
-    <div class="tabs">
-      <button class="tab ${at==='genel'?'on':''}" onclick="window._at='genel';render()">Genel</button>
-      <button class="tab ${at==='sifre'?'on':''}" onclick="window._at='sifre';render()">Şifre Değiştir</button>
-      <button class="tab ${at==='turler'?'on':''}" onclick="window._at='turler';render()">Poliçe Türleri</button>
-      <button class="tab ${at==='veri'?'on':''}" onclick="window._at='veri';render()">Veri / Yedek</button>
+    <div class="tabs" style="flex-wrap:wrap">
+      <button class="tab ${at==='genel'?'on':''}" onclick="window._at='genel';render()">⚙️ Genel</button>
+      <button class="tab ${at==='giris'?'on':''}" onclick="window._at='giris';render()">🔐 Giriş Ayarları</button>
+      <button class="tab ${at==='kullanicilar'?'on':''}" onclick="window._at='kullanicilar';render()">👥 Kullanıcılar</button>
+      <button class="tab ${at==='sifre'?'on':''}" onclick="window._at='sifre';render()">🔑 Şifre Değiştir</button>
+      <button class="tab ${at==='turler'?'on':''}" onclick="window._at='turler';render()">📋 Poliçe Türleri</button>
+      <button class="tab ${at==='veri'?'on':''}" onclick="window._at='veri';render()">💾 Veri / Yedek</button>
     </div>
 
     ${at==='genel'?`
@@ -3321,8 +3342,122 @@ function rAyarlar(c){
     <div style="margin-bottom:12px"><label class="lbl">Şirket Adı / Ana Sayfa Başlığı</label><input id="aSirket" value="${DB.cfg.sirket||''}"></div>
     <button class="btn btn-primary" onclick="aGenelKaydet()">✓ Uygula</button>`:''}
 
+    ${at==='giris'?`
+    <div style="font-size:13px;font-weight:800;color:var(--acc-dark);margin-bottom:12px;padding-bottom:7px;border-bottom:1.5px solid var(--brd2)">🔐 Giriş Modu Ayarları</div>
+
+    <!-- Mod Seçimi -->
+    <div style="margin-bottom:16px">
+      <label class="lbl">Giriş Modu</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
+        <div onclick="loginModSecAyar('tekSifre')" id="modTekBox"
+          style="border:2px solid ${(DB.cfg.loginMod||'tekSifre')==='tekSifre'?'var(--acc)':'var(--brd2)'};border-radius:10px;padding:14px;cursor:pointer;background:${(DB.cfg.loginMod||'tekSifre')==='tekSifre'?'#f0fdf4':'#fff'};transition:all .2s">
+          <div style="font-size:22px;margin-bottom:6px">🔑</div>
+          <div style="font-weight:800;font-size:12.5px;color:var(--txt)">Tek Şifre</div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:3px">Herkes aynı şifreyle girer</div>
+          ${(DB.cfg.loginMod||'tekSifre')==='tekSifre'?'<div style="margin-top:6px;font-size:10px;font-weight:800;color:var(--acc)">✓ AKTİF</div>':''}
+        </div>
+        <div onclick="loginModSecAyar('cokluKullanici')" id="modKulBox"
+          style="border:2px solid ${DB.cfg.loginMod==='cokluKullanici'?'var(--acc)':'var(--brd2)'};border-radius:10px;padding:14px;cursor:pointer;background:${DB.cfg.loginMod==='cokluKullanici'?'#f0fdf4':'#fff'};transition:all .2s">
+          <div style="font-size:22px;margin-bottom:6px">👥</div>
+          <div style="font-weight:800;font-size:12.5px;color:var(--txt)">Çoklu Kullanıcı</div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:3px">Her kullanıcı ayrı giriş yapar</div>
+          ${DB.cfg.loginMod==='cokluKullanici'?'<div style="margin-top:6px;font-size:10px;font-weight:800;color:var(--acc)">✓ AKTİF</div>':''}
+        </div>
+      </div>
+    </div>
+
+    <!-- Tek Şifre değiştir -->
+    ${(DB.cfg.loginMod||'tekSifre')==='tekSifre'?`
+    <div style="background:#f0fdf4;border:1.5px solid var(--brd2);border-radius:9px;padding:14px;margin-bottom:12px">
+      <div style="font-weight:800;font-size:12px;color:var(--acc-dark);margin-bottom:10px">🔑 Sistem Giriş Şifresini Değiştir</div>
+      <div style="margin-bottom:10px"><label class="lbl">Mevcut Giriş Şifresi</label><input id="lgMevcut" type="password" placeholder="Mevcut şifre"></div>
+      <div style="margin-bottom:10px"><label class="lbl">Yeni Giriş Şifresi</label><input id="lgYeni" type="password" placeholder="Yeni şifre"></div>
+      <div style="margin-bottom:10px"><label class="lbl">Yeni Şifre (Tekrar)</label><input id="lgYeniT" type="password" placeholder="Tekrar girin"></div>
+      <button class="btn btn-primary" onclick="loginSifreDegistir()">🔑 Giriş Şifresini Değiştir</button>
+    </div>`:`
+    <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:9px;padding:12px;font-size:11.5px;color:#1e40af;font-weight:700">
+      ℹ️ Çoklu kullanıcı modunda şifreler Kullanıcılar sekmesinden yönetilir.
+    </div>`}
+    `:''}
+
+    ${at==='kullanicilar'?`
+    <div style="font-size:13px;font-weight:800;color:var(--acc-dark);margin-bottom:12px;padding-bottom:7px;border-bottom:1.5px solid var(--brd2)">👥 Kullanıcı Yönetimi</div>
+
+    ${DB.cfg.loginMod!=='cokluKullanici'?`
+    <div style="background:#fef3c7;border:1.5px solid #fcd34d;border-radius:9px;padding:12px;margin-bottom:14px;font-size:12px;font-weight:700;color:#92400e">
+      ⚠️ Kullanıcı girişi şu an aktif değil. Giriş Ayarları sekmesinden <strong>Çoklu Kullanıcı</strong> modunu seçin.
+    </div>`:''}
+
+    <!-- Yeni kullanıcı formu -->
+    <div style="background:#f0fdf4;border:1.5px solid var(--brd2);border-radius:10px;padding:14px;margin-bottom:16px">
+      <div style="font-weight:800;font-size:12px;color:var(--acc-dark);margin-bottom:10px">➕ Yeni Kullanıcı Ekle</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div><label class="lbl">Ad Soyad</label><input id="kulAdSoyad" placeholder="Ad Soyad"></div>
+        <div><label class="lbl">Kullanıcı Adı *</label><input id="kulAd" placeholder="kullanici_adi"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+        <div><label class="lbl">Şifre *</label><input id="kulSifre" type="password" placeholder="••••••••"></div>
+        <div><label class="lbl">Şifre Tekrar</label><input id="kulSifreT" type="password" placeholder="••••••••"></div>
+        <div><label class="lbl">Rol</label>
+          <select id="kulRol">
+            <option value="kullanici">Kullanıcı</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-success btn-sm" onclick="kullaniciEkle()">➕ Kullanıcı Ekle</button>
+    </div>
+
+    <!-- Kullanıcı listesi -->
+    <div style="font-weight:800;font-size:12px;color:var(--acc-dark);margin-bottom:8px">
+      Kayıtlı Kullanıcılar (${(DB.kullanicilar||[]).length})
+    </div>
+    ${(DB.kullanicilar||[]).length===0?`
+    <div style="text-align:center;padding:28px;color:var(--muted)">
+      <div style="font-size:36px;margin-bottom:8px">👤</div>
+      <div style="font-size:12px;font-weight:600">Henüz kullanıcı eklenmedi</div>
+    </div>`:`
+    <div style="border:1.5px solid var(--brd2);border-radius:10px;overflow:hidden">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:var(--hdr)">
+          <th style="padding:9px 10px;color:#6ee7b7;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;text-align:left">Ad Soyad</th>
+          <th style="padding:9px 10px;color:#6ee7b7;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;text-align:left">Kullanıcı Adı</th>
+          <th style="padding:9px 10px;color:#6ee7b7;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;text-align:left">Rol</th>
+          <th style="padding:9px 10px;color:#6ee7b7;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;text-align:left">Durum</th>
+          <th style="padding:9px 10px;color:#6ee7b7;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;text-align:left">İşlem</th>
+        </tr></thead>
+        <tbody>
+          ${(DB.kullanicilar||[]).map((k,i)=>`<tr style="border-bottom:1px solid #dcfce7;background:${i%2?'#f0fdf4':'#fff'}">
+            <td style="padding:9px 10px;font-weight:700">${k.adSoyad||'—'}</td>
+            <td style="padding:9px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--acc)">${k.kulAd}</td>
+            <td style="padding:9px 10px">
+              <span style="background:${k.rol==='admin'?'#fef3c7':'#f0fdf4'};color:${k.rol==='admin'?'#92400e':'#166534'};border:1px solid ${k.rol==='admin'?'#fcd34d':'#86efac'};padding:2px 8px;border-radius:20px;font-size:9.5px;font-weight:800">
+                ${k.rol==='admin'?'👑 Admin':'👤 Kullanıcı'}
+              </span>
+            </td>
+            <td style="padding:9px 10px">
+              <span style="background:${k.aktif!==false?'#dcfce7':'#fee2e2'};color:${k.aktif!==false?'#15803d':'#b91c1c'};border:1px solid ${k.aktif!==false?'#86efac':'#fca5a5'};padding:2px 8px;border-radius:20px;font-size:9.5px;font-weight:800">
+                ${k.aktif!==false?'✓ Aktif':'✗ Pasif'}
+              </span>
+            </td>
+            <td style="padding:9px 10px">
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <button class="btn btn-primary btn-xs" onclick="kullaniciSifreDegistir('${k.id}','${k.kulAd}')">🔑 Şifre</button>
+                <button class="btn btn-ghost btn-xs" onclick="kullaniciAktifToggle('${k.id}')">${k.aktif!==false?'⏸ Pasif':'▶ Aktif'}</button>
+                <button class="btn btn-danger btn-xs" onclick="kullaniciSil('${k.id}','${k.kulAd}')">🗑 Sil</button>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`}
+    `:''}
+
     ${at==='sifre'?`
-    <div style="font-size:13px;font-weight:800;color:var(--acc-dark);margin-bottom:12px;padding-bottom:7px;border-bottom:1.5px solid var(--brd2)">🔒 Şifre Değiştir</div>
+    <div style="font-size:13px;font-weight:800;color:var(--acc-dark);margin-bottom:12px;padding-bottom:7px;border-bottom:1.5px solid var(--brd2)">🔒 Şifre Değiştir (Sistem/Uygulama)</div>
+    <div style="background:#f0fdf4;border:1.5px solid var(--brd2);border-radius:9px;padding:12px;margin-bottom:12px;font-size:11.5px;color:#065f46">
+      ℹ️ Bu bölüm eski uygulama şifresini değiştirir. Giriş şifresini değiştirmek için <strong>Giriş Ayarları</strong> sekmesini kullanın.
+    </div>
     <div style="margin-bottom:10px"><label class="lbl">Eski Şifre</label><input id="aSE" type="password"></div>
     <div style="margin-bottom:10px"><label class="lbl">Yeni Şifre</label><input id="aSN" type="password"></div>
     <div style="margin-bottom:10px"><label class="lbl">Yeni Şifre (Tekrar)</label><input id="aSNT" type="password"></div>
@@ -3362,6 +3497,7 @@ function rAyarlar(c){
         ['💼','Cari',(DB.cariler||[]).length],
         ['💳','Cari Hareket',(DB.cariHareketler||[]).length],
         ['🚫','İptal',(DB.iptallar||[]).length],
+        ['👤','Kullanıcı',(DB.kullanicilar||[]).length],
       ].map(([ic,lb,n])=>`<div style="background:#f0fdf4;border:1.5px solid var(--brd2);border-radius:9px;padding:10px;text-align:center">
         <div style="font-size:18px">${ic}</div>
         <div style="font-size:20px;font-weight:900;color:var(--acc)">${n}</div>
@@ -3383,6 +3519,155 @@ function supabagilantiDegistir(){
   showConfigScreen();
   toast('Bağlantı sıfırlandı','warn');
 }
+
+/* ══════════════════════════════════════
+   GİRİŞ EKRANI
+══════════════════════════════════════ */
+function showLoginScreen(){
+  // Toolbar'ı gizle, login göster
+  const toolbar=document.getElementById('toolbar');
+  if(toolbar) toolbar.style.display='none';
+
+  const mod = DB.cfg.loginMod||'tekSifre';
+  const sirket = DB.cfg.sirket||'MK MUHAMMED KÖÇE';
+
+  document.getElementById('pg').innerHTML=`
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#022c22 0%,#064e3b 50%,#065f46 100%);padding:20px">
+    <div style="width:100%;max-width:400px">
+      <!-- Logo -->
+      <div style="text-align:center;margin-bottom:28px">
+        <div style="font-size:56px;margin-bottom:10px">🛡️</div>
+        <div style="font-size:22px;font-weight:900;color:#34d399;letter-spacing:1.5px">${sirket}</div>
+        <div style="font-size:12px;color:#6ee7b7;margin-top:4px;font-weight:600">Poliçe Takip Sistemi</div>
+      </div>
+
+      <!-- Giriş Kartı -->
+      <div style="background:#fff;border-radius:18px;padding:28px 30px;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+        <div style="font-size:15px;font-weight:900;color:#064e3b;margin-bottom:20px;text-align:center;letter-spacing:.5px">
+          🔐 Sisteme Giriş
+        </div>
+
+        <!-- Mod seçici (mini tabs) -->
+        <div style="display:flex;gap:6px;margin-bottom:18px;background:#f0fdf4;border-radius:9px;padding:4px;border:1.5px solid #bbf7d0">
+          <button id="loginTabTek" onclick="loginModGoster('tek')"
+            style="flex:1;padding:7px;border:none;border-radius:7px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:800;cursor:pointer;transition:all .15s;background:${mod==='tekSifre'?'#059669':'transparent'};color:${mod==='tekSifre'?'#fff':'#6b7280'}">
+            🔑 Tek Şifre
+          </button>
+          <button id="loginTabKul" onclick="loginModGoster('kullanici')"
+            style="flex:1;padding:7px;border:none;border-radius:7px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:800;cursor:pointer;transition:all .15s;background:${mod==='cokluKullanici'?'#059669':'transparent'};color:${mod==='cokluKullanici'?'#fff':'#6b7280'}">
+            👤 Kullanıcı Girişi
+          </button>
+        </div>
+
+        <!-- Tek şifre formu -->
+        <div id="loginFormTek" style="display:${mod!=='cokluKullanici'?'block':'none'}">
+          <div style="margin-bottom:14px">
+            <label class="lbl">Sistem Şifresi</label>
+            <input id="lgTekSifre" type="password" placeholder="••••••••"
+              style="width:100%;padding:11px 13px;border:2px solid #bbf7d0;border-radius:9px;font-size:14px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;transition:border-color .15s"
+              onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#bbf7d0'"
+              onkeydown="if(event.key==='Enter')loginTekSifre()">
+          </div>
+          <button onclick="loginTekSifre()" style="width:100%;padding:12px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:9px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;letter-spacing:.5px;transition:all .15s">
+            Giriş Yap →
+          </button>
+        </div>
+
+        <!-- Kullanıcı girişi formu -->
+        <div id="loginFormKul" style="display:${mod==='cokluKullanici'?'block':'none'}">
+          <div style="margin-bottom:12px">
+            <label class="lbl">Kullanıcı Adı</label>
+            <input id="lgKulAd" type="text" placeholder="kullanici_adi"
+              style="width:100%;padding:11px 13px;border:2px solid #bbf7d0;border-radius:9px;font-size:14px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;transition:border-color .15s"
+              onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#bbf7d0'">
+          </div>
+          <div style="margin-bottom:14px">
+            <label class="lbl">Şifre</label>
+            <input id="lgKulSifre" type="password" placeholder="••••••••"
+              style="width:100%;padding:11px 13px;border:2px solid #bbf7d0;border-radius:9px;font-size:14px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;transition:border-color .15s"
+              onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#bbf7d0'"
+              onkeydown="if(event.key==='Enter')loginKullanici()">
+          </div>
+          <button onclick="loginKullanici()" style="width:100%;padding:12px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:9px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;letter-spacing:.5px;transition:all .15s">
+            Giriş Yap →
+          </button>
+        </div>
+
+        <!-- Hata mesajı alanı -->
+        <div id="lgErr" style="display:none;margin-top:12px;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:8px;padding:10px 12px;font-size:12px;font-weight:700;color:#b91c1c;text-align:center">
+          ✗ Şifre hatalı!
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:16px;color:#6ee7b7;font-size:11px;font-weight:600">
+        v8 — Supabase Destekli
+      </div>
+    </div>
+  </div>`;
+}
+
+function loginModGoster(mod){
+  document.getElementById('loginFormTek').style.display = mod==='tek' ? 'block' : 'none';
+  document.getElementById('loginFormKul').style.display = mod==='kullanici' ? 'block' : 'none';
+  const btnTek = document.getElementById('loginTabTek');
+  const btnKul = document.getElementById('loginTabKul');
+  if(btnTek){ btnTek.style.background=mod==='tek'?'#059669':'transparent'; btnTek.style.color=mod==='tek'?'#fff':'#6b7280'; }
+  if(btnKul){ btnKul.style.background=mod==='kullanici'?'#059669':'transparent'; btnKul.style.color=mod==='kullanici'?'#fff':'#6b7280'; }
+}
+
+function loginGosterHata(msg){
+  const el=document.getElementById('lgErr');
+  if(el){ el.style.display='block'; el.textContent='✗ '+(msg||'Şifre hatalı!'); }
+}
+
+function loginTekSifre(){
+  const sifre = document.getElementById('lgTekSifre')?.value||'';
+  const dogruSifre = DB.cfg.loginSifre||DB.cfg.sifre||'1234';
+  if(sifre === dogruSifre){
+    OTURUM = {ad:'Yönetici', rol:'admin'};
+    girisBas();
+  } else {
+    loginGosterHata('Şifre hatalı!');
+    document.getElementById('lgTekSifre').style.borderColor='#dc2626';
+    setTimeout(()=>{ const el=document.getElementById('lgTekSifre'); if(el) el.style.borderColor='#bbf7d0'; },1500);
+  }
+}
+
+function loginKullanici(){
+  const ad    = (document.getElementById('lgKulAd')?.value||'').trim().toLowerCase();
+  const sifre = document.getElementById('lgKulSifre')?.value||'';
+  if(!ad||!sifre){ loginGosterHata('Kullanıcı adı ve şifre zorunlu!'); return; }
+  const kul = (DB.kullanicilar||[]).find(k=>k.kulAd.toLowerCase()===ad && k.sifre===sifre && k.aktif!==false);
+  if(kul){
+    OTURUM = {ad:kul.adSoyad||kul.kulAd, rol:kul.rol||'kullanici', id:kul.id};
+    girisBas();
+  } else {
+    loginGosterHata('Kullanıcı adı veya şifre hatalı!');
+  }
+}
+
+function girisBas(){
+  // Toolbar'ı göster
+  const toolbar=document.getElementById('toolbar');
+  if(toolbar) toolbar.style.display='';
+  // Kullanıcı adını toolbar'a ekle
+  const uBadge=document.getElementById('oturumBadge');
+  if(uBadge){ uBadge.textContent='👤 '+OTURUM.ad; uBadge.style.display='flex'; }
+  toast('Hoş geldiniz, '+OTURUM.ad+' ✓','info');
+  TAB='dash';
+  document.querySelectorAll('.tb-btn').forEach(b=>b.classList.remove('active'));
+  const tbD=document.getElementById('tbDash');if(tbD)tbD.classList.add('active');
+  render();
+}
+
+function cikisYap(){
+  if(!confirm('Çıkış yapmak istediğinize emin misiniz?')) return;
+  OTURUM=null;
+  const uBadge=document.getElementById('oturumBadge');
+  if(uBadge) uBadge.style.display='none';
+  showLoginScreen();
+  toast('Çıkış yapıldı','warn');
+}
 function aGenelKaydet(){
   DB.cfg.uyariGun=document.getElementById('aUg')?.value||30;
   DB.cfg.sirket=document.getElementById('aSirket')?.value||'';
@@ -3394,6 +3679,86 @@ function aSifreKaydet(){
   if(n!==nt){toast('Şifreler eşleşmiyor!','err');return;}
   if(!n){toast('Şifre boş olamaz!','err');return;}
   DB.cfg.sifre=n;saveObj('cfg');toast('Şifre değiştirildi');
+}
+
+/* ── GİRİŞ ŞİFRESİ DEĞİŞTİR ── */
+function loginSifreDegistir(){
+  const mevcut=document.getElementById('lgMevcut')?.value||'';
+  const yeni=document.getElementById('lgYeni')?.value||'';
+  const yeniT=document.getElementById('lgYeniT')?.value||'';
+  const dogruSifre=DB.cfg.loginSifre||DB.cfg.sifre||'1234';
+  if(mevcut!==dogruSifre){toast('Mevcut giriş şifresi hatalı!','err');return;}
+  if(!yeni){toast('Yeni şifre boş olamaz!','err');return;}
+  if(yeni!==yeniT){toast('Şifreler eşleşmiyor!','err');return;}
+  DB.cfg.loginSifre=yeni;
+  saveObj('cfg');
+  toast('Giriş şifresi değiştirildi ✓');
+}
+
+/* ── GİRİŞ MODU SEC ── */
+function loginModSecAyar(mod){
+  DB.cfg.loginMod=mod;
+  saveObj('cfg');
+  render();
+  toast(mod==='tekSifre'?'Tek şifre modu aktif':'Çoklu kullanıcı modu aktif','info');
+}
+
+/* ── KULLANICI YÖNETİMİ ── */
+function kullaniciEkle(){
+  const adSoyad=document.getElementById('kulAdSoyad')?.value.trim()||'';
+  const kulAd=(document.getElementById('kulAd')?.value.trim()||'').toLowerCase();
+  const sifre=document.getElementById('kulSifre')?.value||'';
+  const sifreT=document.getElementById('kulSifreT')?.value||'';
+  const rol=document.getElementById('kulRol')?.value||'kullanici';
+
+  if(!kulAd){toast('Kullanıcı adı zorunlu!','err');return;}
+  if(!sifre){toast('Şifre zorunlu!','err');return;}
+  if(sifre!==sifreT){toast('Şifreler eşleşmiyor!','err');return;}
+  if((DB.kullanicilar||[]).find(k=>k.kulAd.toLowerCase()===kulAd)){toast('Bu kullanıcı adı zaten var!','err');return;}
+
+  const yeni={id:uid(), adSoyad, kulAd, sifre, rol, aktif:true, ekTarih:todayISO()};
+  if(!DB.kullanicilar) DB.kullanicilar=[];
+  DB.kullanicilar.push(yeni);
+  saveOne('kullanicilar', yeni);
+  render();
+  toast('Kullanıcı eklendi: '+kulAd);
+}
+
+function kullaniciSifreDegistir(id, kulAd){
+  openModal('🔑 Şifre Değiştir — '+kulAd,`
+    <div style="margin-bottom:10px"><label class="lbl">Yeni Şifre</label><input id="ksYeni" type="password" placeholder="Yeni şifre"></div>
+    <div style="margin-bottom:10px"><label class="lbl">Yeni Şifre (Tekrar)</label><input id="ksYeniT" type="password" placeholder="Tekrar girin"></div>
+  `,()=>{
+    const yeni=document.getElementById('ksYeni')?.value||'';
+    const yeniT=document.getElementById('ksYeniT')?.value||'';
+    if(!yeni){toast('Şifre boş olamaz!','err');return;}
+    if(yeni!==yeniT){toast('Şifreler eşleşmiyor!','err');return;}
+    const kul=(DB.kullanicilar||[]).find(k=>k.id===id);
+    if(!kul){toast('Kullanıcı bulunamadı!','err');return;}
+    kul.sifre=yeni;
+    saveOne('kullanicilar', kul);
+    closeModal();
+    toast('Şifre değiştirildi: '+kulAd);
+  });
+}
+
+function kullaniciAktifToggle(id){
+  const kul=(DB.kullanicilar||[]).find(k=>k.id===id);
+  if(!kul)return;
+  kul.aktif=kul.aktif===false?true:false;
+  saveOne('kullanicilar', kul);
+  render();
+  toast(kul.aktif?kul.kulAd+' aktif edildi':kul.kulAd+' pasif edildi','warn');
+}
+
+function kullaniciSil(id, kulAd){
+  openModal('⚠️ Kullanıcı Sil',`
+    <div class="alert alert-err"><span>⚠️</span><span><strong>${kulAd}</strong> kullanıcısı silinecek. Emin misiniz?</span></div>
+  `,()=>{
+    DB.kullanicilar=(DB.kullanicilar||[]).filter(k=>k.id!==id);
+    deleteOne('kullanicilar',id);
+    render();closeModal();toast('Kullanıcı silindi: '+kulAd,'warn');
+  });
 }
 function aTurEkle(){
   const v=document.getElementById('aTY')?.value.trim();
