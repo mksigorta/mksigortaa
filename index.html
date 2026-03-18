@@ -3135,20 +3135,22 @@ function getSBConfig(){
 
 function initSupabase(){
   const {url, key} = getSBConfig();
-  if(url && key){
-    try{
-      _supabase = supabase.createClient(url, key);
-      _supabaseEnabled = true;
-      console.log('[Supabase] Bağlantı hazır.');
-      return true;
-    }catch(e){
-      console.error('[Supabase] Başlatma hatası:', e);
-      _supabaseEnabled = false;
-      return false;
-    }
+  if(!url || !key){ _supabaseEnabled=false; return false; }
+  try{
+    // @supabase/supabase-js v2 CDN exports as window.supabase
+    const client = (window.supabase && window.supabase.createClient)
+      ? window.supabase.createClient(url, key)
+      : null;
+    if(!client){ console.error('[Supabase] createClient bulunamadı'); _supabaseEnabled=false; return false; }
+    _supabase = client;
+    _supabaseEnabled = true;
+    console.log('[Supabase] Baglanti hazir.');
+    return true;
+  }catch(e){
+    console.error('[Supabase] Baslatma hatasi:', e);
+    _supabaseEnabled = false;
+    return false;
   }
-  _supabaseEnabled = false;
-  return false;
 }
 
 // Supabase'e tam DB'yi kaydet (tek satır, id=1)
@@ -3240,26 +3242,22 @@ function loadDB(){
   }catch(e){}
 }
 
-// İlk yükleme: Supabase'i başlat ve öncelikli olarak buluttan al
-initSupabase();
-loadDB(); // localStorage fallback
+// İlk yükleme: önce localStorage fallback
+loadDB();
 
-// Supabase hazırsa buluttan yükle ve UI'ı güncelle
-(async function initLoad(){
-  if(_supabaseEnabled){
-    const ok = await loadDBFromSupabase();
-    if(ok){
-      // UI henüz hazır olmayabilir, DOMContentLoaded'ı bekle
-      if(document.readyState==='loading'){
-        document.addEventListener('DOMContentLoaded', ()=>{
-          try{ updateStats();renderDashboard();populateSelects(); }catch(e){}
-        });
-      } else {
-        try{ updateStats();renderDashboard();populateSelects(); }catch(e){}
-      }
+// Supabase SDK yüklendikten sonra bağlan ve buluttan veri çek
+window.addEventListener('load', async function(){
+  const ok = initSupabase();
+  if(ok){
+    console.log('[Supabase] Buluttan veri yukleniyor...');
+    const loaded = await loadDBFromSupabase();
+    if(loaded){
+      try{ updateStats();renderDashboard();populateSelects(); }catch(e){}
+      console.log('[Supabase] Veriler guncellendi.');
     }
+    updateSBStatusUI();
   }
-})();
+});
 
 // ==============================
 // HELPERS
@@ -9553,6 +9551,8 @@ document.addEventListener('DOMContentLoaded', function(){
   setTimeout(updateSBStatusUI, 500);
 });
 
+
+</script>
 
 <!-- KASA TAM EKRAN MODAL -->
 <div id="kasa-fullscreen-overlay" onclick="kasaTamEkranKapat()"></div>
