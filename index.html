@@ -3033,6 +3033,12 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <div id="login-toggle-msg" style="margin-top:8px;font-size:11px;color:var(--muted);min-height:16px;"></div>
         </div>
         <div class="set-card">
+          <h4>🔑 Şifreyi Sıfırla</h4>
+          <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">Giriş şifrenizi unuttuysanız buradan <b>admin</b> olarak sıfırlayın.</p>
+          <button class="btn btn-danger btn-sm" onclick="resetPasswordToAdmin()">🔄 Şifreyi "admin" Olarak Sıfırla</button>
+          <div id="reset-pw-msg" style="margin-top:8px;font-size:11px;min-height:16px;"></div>
+        </div>
+        <div class="set-card">
           <h4>ℹ️ Güvenlik Notu</h4>
           <p style="font-size:11px;color:var(--muted);line-height:1.7;">
             Şifreli giriş <b>açıkken</b>: Her açılışta kullanıcı adı ve şifre istenir.<br><br>
@@ -9671,7 +9677,7 @@ async function doLogin(){
   const username=gv('login-username').trim().toLowerCase();
   const password=gv('login-password');
   // Tek kullanıcı modu: kullanıcı adı boş, sadece şifre ile giriş
-  const singlePw=localStorage.getItem('mkSinglePw')||await sha256('mmm');
+  const singlePw=localStorage.getItem('mkSinglePw')||await sha256('admin');
   if(!username){
     const ok = await pwMatch(password, singlePw);
     if(ok){
@@ -9752,11 +9758,23 @@ async function addUser(){
   renderUsers();toast('Kullanıcı eklendi','success');
 }
 
+async function resetPasswordToAdmin(){
+  sha256("admin").then(function(hashed){
+    localStorage.setItem("mkSinglePw", hashed);
+    var users=loadUsers();
+    var adminIdx=users.findIndex(function(u){return u.username==="admin";});
+    if(adminIdx>-1){users[adminIdx].password=hashed;saveUsers(users);}
+    var msg=byId("reset-pw-msg");
+    if(msg){msg.style.color="var(--success)";msg.textContent="✅ Şifre \"admin\" olarak sıfırlandı. Çıkış yapıp tekrar giriş deneyin.";}
+    toast("Şifre sıfırlandı! Yeni şifre: admin","success");
+  });
+}
+
 async function changeSinglePassword(){
   const cur=gv('single-cur-pw');
   const nw=gv('single-new-pw');
   const nw2=gv('single-new-pw2');
-  const stored=localStorage.getItem('mkSinglePw')||await sha256('mmm');
+  const stored=localStorage.getItem('mkSinglePw')||await sha256('admin');
   const msg=byId('single-pw-msg');
   const curOk=await pwMatch(cur, stored);
   if(!curOk){
@@ -10289,7 +10307,7 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   // Varsayılan şifreyi hash'e yükselt (ilk çalıştırma)
   const stored=localStorage.getItem('mkSinglePw');
   if(!stored || (stored.length!==64)){
-    const defaultPw = stored||'mmm';
+    const defaultPw = stored||'admin';
     if(defaultPw.length!==64) localStorage.setItem('mkSinglePw', await sha256(defaultPw));
   }
   // Varsayılan admin kullanıcısını hash'e yükselt
