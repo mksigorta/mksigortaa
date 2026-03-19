@@ -6703,6 +6703,7 @@ function saveIptal(){
   const obj={id:uid(),musteriId:mid,policeId:pid,tanzim:p.tanzim,baslama:p.baslama,bitis:p.bitis,
     iptaltarihi:gv('ii-iptaltarihi'),polNo:p.polNo,sirket:p.sirket,acenteId:p.acenteId,
     sebep:gv('ii-sebep'),..._iptalCalc,mkIade,
+    mkIadeDurum:'bekliyor',
     noterIsmi:gv('ii-noter-ismi')||'',noterNo:gv('ii-noter-no')||'',aciklama:gv('ii-aciklama')||'',
     iadAcenteId:gv('ii-acente-sec')||'',
     docs:{senet:_iiDocsTemp.senet?{..._iiDocsTemp.senet}:null,pdf:_iiDocsTemp.pdf?{..._iiDocsTemp.pdf}:null}};
@@ -6914,6 +6915,17 @@ function _openDocViewerById(iid, dtype){
   const ii = DB.iptaller.find(x=>x.id===iid);
   if(!ii||!ii.docs||!ii.docs[dtype]){toast('Belge bulunamadı','error');return;}
   _openDocViewer(ii.docs[dtype]);
+}
+
+function mkIadeDurumToggle(iid){
+  const ii = DB.iptaller.find(x=>x.id===iid);
+  if(!ii){toast('Kayıt bulunamadı','error');return;}
+  const eskiDurum = ii.mkIadeDurum || 'bekliyor';
+  ii.mkIadeDurum = eskiDurum === 'odendi' ? 'bekliyor' : 'odendi';
+  saveDB();
+  const label = ii.mkIadeDurum === 'odendi' ? '✅ Ödendi' : '⏳ Bekliyor';
+  toast('Durum güncellendi: '+label, ii.mkIadeDurum==='odendi'?'success':'');
+  renderDashboard();
 }
 
 function editIptal(id){
@@ -8071,8 +8083,14 @@ function renderDashboard(){
   const mkIadeToplEl = byId('dash-mk-iade-toplam');
   const mkIadeList = (DB.iptaller||[]).filter(ii=>(parseFloat(ii.mkIade)||0)>0)
     .sort((a,b)=>(b.iptaltarihi||'').localeCompare(a.iptaltarihi||''));
-  const mkIadeToplam = mkIadeList.reduce((s,ii)=>s+(parseFloat(ii.mkIade)||0),0);
-  if(mkIadeToplEl) mkIadeToplEl.textContent = mkIadeList.length ? 'Toplam: ₺'+fmt(mkIadeToplam) : '';
+  const mkIadeToplam   = mkIadeList.reduce((s,ii)=>s+(parseFloat(ii.mkIade)||0),0);
+  const mkIadeOdendi   = mkIadeList.filter(ii=>(ii.mkIadeDurum||'bekliyor')==='odendi').reduce((s,ii)=>s+(parseFloat(ii.mkIade)||0),0);
+  const mkIadeBekliyor = mkIadeList.filter(ii=>(ii.mkIadeDurum||'bekliyor')!=='odendi').reduce((s,ii)=>s+(parseFloat(ii.mkIade)||0),0);
+  if(mkIadeToplEl) mkIadeToplEl.innerHTML = mkIadeList.length
+    ? `<span style="color:var(--warning);font-weight:800;">Toplam: ₺${fmt(mkIadeToplam)}</span>`
+      +`<span style="margin-left:10px;color:var(--success);font-size:11px;">✅ Ödendi: ₺${fmt(mkIadeOdendi)}</span>`
+      +`<span style="margin-left:8px;color:var(--danger);font-size:11px;">⏳ Bekliyor: ₺${fmt(mkIadeBekliyor)}</span>`
+    : '';
   if(mkIadeEl){
     if(mkIadeList.length){
       mkIadeEl.innerHTML = `
@@ -8086,6 +8104,7 @@ function renderDashboard(){
                 <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Sebep</th>
                 <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Noter</th>
                 <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">Belgeler</th>
+                <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">Durum</th>
                 <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">MK İade</th>
               </tr>
             </thead>
@@ -8094,14 +8113,11 @@ function renderDashboard(){
                 const m = getMusteri(ii.musteriId);
                 const p = DB.policeler.find(x=>x.id===ii.policeId);
                 const bg = idx%2===0?'':'background:var(--bg);';
-                // Şirket
                 const sirket = ii.sirket || (p?p.sirket:'') || '';
-                // Noter
                 const noterStr = (ii.noterIsmi||ii.noterNo)
                   ? `<div style="font-size:11px;font-weight:600;color:var(--primary);">${ii.noterIsmi||''}</div>`
                     + (ii.noterNo?`<div style="font-size:10px;color:var(--muted);">No: ${ii.noterNo}</div>`:'')
                   : '<span style="color:var(--muted);font-size:11px;">—</span>';
-                // Belgeler
                 const hasSenet = ii.docs && ii.docs.senet && ii.docs.senet.data;
                 const hasPdf   = ii.docs && ii.docs.pdf   && ii.docs.pdf.data;
                 const belgeHtml = (hasSenet||hasPdf)
@@ -8110,6 +8126,15 @@ function renderDashboard(){
                       ${hasPdf?`<button onclick="event.stopPropagation();_openDocViewerById('${ii.id}','pdf')" style="background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border:1px solid var(--danger);border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer;">📑 PDF</button>`:''}
                     </div>`
                   : '<span style="color:var(--muted);font-size:11px;">—</span>';
+                // Durum
+                const durum = ii.mkIadeDurum || 'bekliyor';
+                const durumCfg = durum === 'odendi'
+                  ? {label:'✅ Ödendi',   bg:'color-mix(in srgb,var(--success) 15%,transparent)', color:'var(--success)', border:'var(--success)'}
+                  : {label:'⏳ Bekliyor', bg:'color-mix(in srgb,var(--warning) 15%,transparent)', color:'var(--warning)', border:'var(--warning)'};
+                const durumBtn = `<button onclick="event.stopPropagation();mkIadeDurumToggle('${ii.id}')"
+                  style="border:1px solid ${durumCfg.border};background:${durumCfg.bg};color:${durumCfg.color};
+                         border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s;"
+                  title="Durumu değiştirmek için tıklayın">${durumCfg.label}</button>`;
                 return `<tr style="${bg}cursor:pointer;" onclick="showPage('iptal-liste')">
                   <td style="padding:7px 10px;font-weight:600;">${m?m.ad:'-'}</td>
                   <td style="padding:7px 10px;">
@@ -8120,11 +8145,12 @@ function renderDashboard(){
                   <td style="padding:7px 10px;color:var(--muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ii.sebep||'-'}</td>
                   <td style="padding:7px 10px;">${noterStr}</td>
                   <td style="padding:7px 10px;text-align:center;">${belgeHtml}</td>
+                  <td style="padding:7px 10px;text-align:center;">${durumBtn}</td>
                   <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--warning);">₺${fmt(ii.mkIade)}</td>
                 </tr>`;
               }).join('')}
               <tr style="border-top:2px solid var(--border);background:color-mix(in srgb,var(--warning) 8%,transparent);">
-                <td colspan="6" style="padding:8px 10px;font-weight:700;font-size:12px;">TOPLAM</td>
+                <td colspan="7" style="padding:8px 10px;font-weight:700;font-size:12px;">TOPLAM</td>
                 <td style="padding:8px 10px;text-align:right;font-weight:900;font-size:14px;color:var(--warning);">₺${fmt(mkIadeToplam)}</td>
               </tr>
             </tbody>
