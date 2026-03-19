@@ -9689,7 +9689,7 @@ function saveUsers(users){
   // Supabase aktifse buluta da kaydet
   if(_supabaseEnabled && _supabase){
     _supabase.from('mk_users').upsert(
-      users.map(u=>({username:u.username, password:u.password, role:u.role||'user'})),
+      users.map(u=>({username:u.username, password_hash:u.password, role:u.role||'user'})),
       {onConflict:'username'}
     ).then(({error})=>{ if(error) console.warn('[Supabase] Kullanıcı kaydedilemedi:',error.message); });
   }
@@ -9699,10 +9699,12 @@ function saveUsers(users){
 async function loadUsersFromSupabase(){
   if(!_supabaseEnabled || !_supabase) return false;
   try{
-    const {data, error} = await _supabase.from('mk_users').select('username,password,role');
+    const {data, error} = await _supabase.from('mk_users').select('username,password_hash,role');
     if(error){ console.warn('[Supabase] Kullanıcı yükleme hatası:',error.message); return false; }
     if(data && data.length>0){
-      localStorage.setItem(USERS_KEY, JSON.stringify(data));
+      // password_hash -> password olarak map et (yerel sistemle uyumlu)
+      const mapped = data.map(u=>({username:u.username, password:u.password_hash, role:u.role||'user'}));
+      localStorage.setItem(USERS_KEY, JSON.stringify(mapped));
       console.log('[Supabase] Kullanıcılar yüklendi ✓');
       return true;
     }
@@ -9807,6 +9809,9 @@ async function resetPasswordToAdmin(){
     var users=loadUsers();
     var adminIdx=users.findIndex(function(u){return u.username==="admin";});
     if(adminIdx>-1){users[adminIdx].password=hashed;saveUsers(users);}
+    if(typeof _supabase!=='undefined'&&_supabase){
+      _supabase.from('mk_users').update({password_hash:hashed}).eq('username','admin').then(function(){});
+    }
     var msg=byId("reset-pw-msg");
     if(msg){msg.style.color="var(--success)";msg.textContent="✅ Şifre \"admin\" olarak sıfırlandı. Çıkış yapıp tekrar giriş deneyin.";}
     toast("Şifre sıfırlandı! Yeni şifre: admin","success");
