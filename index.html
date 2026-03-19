@@ -937,7 +937,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <a onclick="showPage('kasa-gen')" id="nav-kasa-gen" style="padding-left:22px;font-size:11.5px;"><span class="ico" style="font-size:12px;">🏆</span>Toplam Kazanç</a>
     <a onclick="showPage('acente')" id="nav-acente"><span class="ico">🏢</span>Acente</a>
     <div class="nav-sec">İşlemler</div>
-    <a onclick="showPage('iptal-iade')" id="nav-iptal-iade"><span class="ico">🔄</span>İptal &amp; İadeler</a>
+    <a onclick="showPage('iptal-ekle')" id="nav-iptal-ekle"><span class="ico">🔄</span>İptal &amp; İade Ekle</a>
+    <a onclick="showPage('iptal-liste')" id="nav-iptal-liste"><span class="ico">📋</span>İptal &amp; İade Listesi</a>
     <a onclick="showPage('not-defteri')" id="nav-not-defteri"><span class="ico">📝</span>Not Defteri</a>
     <a onclick="showPage('whatsapp')" id="nav-whatsapp"><span class="ico">💬</span>WhatsApp</a>
     <div class="nav-sec">Sistem</div>
@@ -1012,7 +1013,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <div class="sc-btn" onclick="showPage('police-ekle')"><div class="sc-ico">📋</div>Poliçe Ekle</div>
     <div class="sc-btn" onclick="showPage('tahsilat')"><div class="sc-ico">💳</div>Tahsilat Ekle</div>
     <div class="sc-btn" onclick="showPage('cari')"><div class="sc-ico">💰</div>Cari Ekle</div>
-    <div class="sc-btn" onclick="showPage('iptal-iade')"><div class="sc-ico">🔄</div>İptal &amp; İade</div>
+    <div class="sc-btn" onclick="showPage('iptal-ekle')"><div class="sc-ico">🔄</div>İptal &amp; İade</div>
   </div>
 
   <!-- İstatistikler (tıklanabilir) -->
@@ -1027,40 +1028,45 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="stat-value" id="st-police">0</div>
       <div class="stat-sub">↗ Listeye git</div>
     </div>
-    <div class="stat-card green" data-icon="💳" onclick="showPage('tahsilat')" title="Tahsilat">
-      <div class="stat-label">Toplam Tahsilat</div>
-      <div class="stat-value" id="st-tahsilat">₺0</div>
-      <div class="stat-sub">Alınan ödeme</div>
-    </div>
-    <div class="stat-card blue" data-icon="💰" onclick="showPage('cari')" title="Cari">
-      <div class="stat-label">Toplam Borç</div>
-      <div class="stat-value" id="st-borc">₺0</div>
-      <div class="stat-sub">Net bekleyen</div>
-    </div>
     <div class="stat-card purple" data-icon="🏢" onclick="showPage('acente')" title="Acente Listesi">
       <div class="stat-label">Acente Sayısı</div>
       <div class="stat-value" id="st-acente">0</div>
       <div class="stat-sub">↗ Listeye git</div>
     </div>
-    <div class="stat-card orange" data-icon="🔄" onclick="showPage('iptal-iade')" title="İptal & İadeler">
+    <div class="stat-card orange" data-icon="🔄" onclick="showPage('iptal-ekle')" title="İptal & İadeler">
       <div class="stat-label">İptal Sayısı</div>
       <div class="stat-value" id="st-iptal">0</div>
       <div class="stat-sub">↗ Listeye git</div>
     </div>
-    <div class="stat-card red" data-icon="📤" onclick="showPage('cari')" title="Cari Borç">
-      <div class="stat-label">Toplam Borç</div>
-      <div class="stat-value" id="st-cari-borc" style="font-size:20px;">₺0</div>
-      <div class="stat-sub">Cari borç toplamı</div>
+    <div class="stat-card red" data-icon="💸" onclick="showPage('iptal-ekle')" title="Gerçek İade Toplamı">
+      <div class="stat-label">Gerçek İade Toplamı</div>
+      <div class="stat-value" id="st-gercek-iade">₺0</div>
+      <div class="stat-sub">Müşteriye iade edilen</div>
     </div>
-    <div class="stat-card green" data-icon="📥" onclick="showPage('cari')" title="Cari Tahsilat">
-      <div class="stat-label">Toplam Tahsilat</div>
-      <div class="stat-value" id="st-cari-tahsilat" style="font-size:20px;">₺0</div>
-      <div class="stat-sub">Cari tahsilat toplamı</div>
+    <div class="stat-card green" data-icon="🔁" onclick="showPage('iptal-ekle')" title="MK İade Toplamı">
+      <div class="stat-label">MK İade Toplamı</div>
+      <div class="stat-value" id="st-mk-iade">₺0</div>
+      <div class="stat-sub">MK'ya iade edilen</div>
+    </div>
+    <div class="stat-card gold" data-icon="💵" onclick="showPage('police-listesi')" title="Poliçe Brüt Toplam">
+      <div class="stat-label">Poliçe Brüt</div>
+      <div class="stat-value" id="st-police-brut">₺0</div>
+      <div class="stat-sub">Tüm poliçe brüt toplamı</div>
+    </div>
+    <div class="stat-card red" data-icon="📤" onclick="showPage('cari')" title="Cari Borç">
+      <div class="stat-label">Cari Borç</div>
+      <div class="stat-value" id="st-cari-borc">₺0</div>
+      <div class="stat-sub">Cari borç kayıtları</div>
+    </div>
+    <div class="stat-card green" data-icon="📥" onclick="showPage('cari')" title="Cari Alacak">
+      <div class="stat-label">Cari Alacak</div>
+      <div class="stat-value" id="st-cari-tahsilat">₺0</div>
+      <div class="stat-sub">Tahsilat + İade toplamı</div>
     </div>
     <div class="stat-card blue" data-icon="⚖️" onclick="showPage('cari')" title="Kalan Bakiye">
       <div class="stat-label">Kalan Bakiye</div>
-      <div class="stat-value" id="st-cari-kalan" style="font-size:20px;">₺0</div>
-      <div class="stat-sub">Borç − Tahsilat</div>
+      <div class="stat-value" id="st-cari-kalan">₺0</div>
+      <div class="stat-sub" id="st-cari-kalan-sub">Cari Borç − Alacak</div>
     </div>
   </div>
 
@@ -1074,6 +1080,28 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <div class="card">
       <div class="card-header"><div class="card-title">💳 Son Tahsilatlar</div></div>
       <div id="dash-recent"><div style="color:var(--muted);font-size:12px;">Kayıt bulunamadı</div></div>
+    </div>
+  </div>
+
+  <!-- SON EKLENEN POLİÇELER -->
+  <div class="card" style="margin-top:14px;">
+    <div class="card-header">
+      <div class="card-title" style="cursor:pointer;" onclick="showPage('police-listesi')">📋 Son Eklenen Poliçeler ↗</div>
+      <div id="dash-son-police-count" style="font-size:11px;color:var(--muted);"></div>
+    </div>
+    <div id="dash-son-police-list">
+      <div style="color:var(--muted);font-size:12px;padding:8px;">Poliçe kaydı bulunamadı</div>
+    </div>
+  </div>
+
+  <!-- MK İADE LİSTESİ -->
+  <div class="card" style="margin-top:14px;">
+    <div class="card-header">
+      <div class="card-title" style="cursor:pointer;" onclick="showPage('iptal-liste')">🔁 MK İade Listesi ↗</div>
+      <div id="dash-mk-iade-toplam" style="font-size:13px;font-weight:800;color:var(--warning);"></div>
+    </div>
+    <div id="dash-mk-iade-list">
+      <div style="color:var(--muted);font-size:12px;padding:8px;">İptal & iade kaydı bulunamadı</div>
     </div>
   </div>
 
@@ -2009,6 +2037,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <th>Açıklama</th><th>İşlem</th>
         </tr></thead>
         <tbody id="tbody-tahsilat"></tbody>
+        <tfoot id="tfoot-tahsilat"></tfoot>
       </table>
     </div>
   </div>
@@ -2172,10 +2201,13 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
 
 </div>
 
-<!-- İPTAL & İADE -->
-<div id="page-iptal-iade" class="page">
+<!-- İPTAL & İADE EKLE -->
+<div id="page-iptal-ekle" class="page">
   <div class="card">
-    <div class="card-header"><div class="card-title">🔄 İptal &amp; İade Ekle</div></div>
+    <div class="card-header">
+      <div class="card-title">🔄 İptal &amp; İade Ekle</div>
+      <button class="btn btn-outline btn-sm" onclick="showPage('iptal-liste')">📋 Listeye Git ↗</button>
+    </div>
 
     <!-- TEMEL BİLGİLER -->
     <div style="font-size:11px;font-weight:800;color:var(--primary);letter-spacing:.5px;margin-bottom:10px;">📌 TEMEL BİLGİLER</div>
@@ -2352,12 +2384,15 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <button class="btn btn-outline" onclick="resetIptalForm()">✖ Temizle</button>
     </div>
   </div>
+</div>
 
-  <!-- LİSTE -->
+<!-- İPTAL & İADE LİSTESİ -->
+<div id="page-iptal-liste" class="page">
   <div class="card">
     <div class="card-header">
       <div class="card-title">📋 İptal &amp; İade Listesi</div>
       <div style="display:flex;gap:7px;flex-wrap:wrap;">
+        <button class="btn btn-success btn-sm" onclick="showPage('iptal-ekle')">➕ Yeni Ekle</button>
         <button class="btn btn-info btn-sm" onclick="exportIptalExcel()">📊 Excel</button>
         <button class="btn btn-danger btn-sm" onclick="exportIptalPDF()">📄 PDF</button>
         <button class="btn btn-outline btn-sm" onclick="printIptalListesi()">🖨️ Yazdır</button>
@@ -2379,6 +2414,9 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     </div>
   </div>
 </div>
+
+<!-- ESKI SAYFA UYUMLULUK KÖPRÜSÜ (iptal-iade → iptal-ekle yönlendirmesi için kalıyor) -->
+<div id="page-iptal-iade" class="page"></div>
 
 <!-- NOT DEFTERİ -->
 <div id="page-not-defteri" class="page">
@@ -2865,7 +2903,44 @@ alter table mk_database disable row level security;</pre>
   </div>
 
   <!-- ÖZET KARTLARI -->
-  <div id="kasa-ozet" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:0;"></div>
+  <div id="kasa-ozet" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px;"></div>
+
+  <!-- TAHSİLAT + BRÜT ÖZET BANDI -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px;" id="kasa-tahsilat-ozet-band">
+    <div style="background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--radius);padding:14px 16px;">
+      <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Poliçe Brüt Toplam</div>
+      <div id="kasa-brut-toplam" style="font-size:20px;font-weight:800;color:var(--accent);margin-top:4px;">₺0</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;">Seçili dönem poliçe brütü</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-left:4px solid var(--success);border-radius:var(--radius);padding:14px 16px;">
+      <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Tahsilat Toplamı</div>
+      <div id="kasa-tahsilat-toplam" style="font-size:20px;font-weight:800;color:var(--success);margin-top:4px;">₺0</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;">Seçili dönem tahsilatlar</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-left:4px solid var(--warning);border-radius:var(--radius);padding:14px 16px;">
+      <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Tahsilat / Brüt Oranı</div>
+      <div id="kasa-tahsilat-oran" style="font-size:20px;font-weight:800;color:var(--warning);margin-top:4px;">%0</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;">Tahsilat oranı</div>
+    </div>
+  </div>
+
+  <!-- AYLIK/YILLIK TAHSİLAT TABLOSU -->
+  <div class="card" id="kasa-tahsilat-donem-kart">
+    <div class="card-header">
+      <div class="card-title">💳 Tahsilat Listesi Özeti</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="btn btn-outline btn-sm" id="kasa-th-btn-aylik" onclick="kasaTahsilatDonem('ay')" style="border-radius:8px;">📅 Aylık</button>
+        <button class="btn btn-primary btn-sm" id="kasa-th-btn-yillik" onclick="kasaTahsilatDonem('yil')" style="border-radius:8px;">📆 Yıllık</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Dönem</th><th>Kayıt Sayısı</th><th>Toplam Borç</th><th>Toplam Alacak</th><th>Kalan</th></tr></thead>
+        <tbody id="kasa-tahsilat-donem-tbody"></tbody>
+        <tfoot><tr id="kasa-tahsilat-donem-foot" style="font-weight:700;background:color-mix(in srgb,var(--success) 8%,transparent);"></tr></tfoot>
+      </table>
+    </div>
+  </div>
 
   <!-- POLİÇELERDEN KAZANÇ (Acente Komisyon) -->
   <div class="card">
@@ -3497,7 +3572,7 @@ setInterval(updateClock,1000);updateClock();
 // ==============================
 // NAVIGATION
 // ==============================
-const pageTitles={dashboard:'Ana Sayfa','kasa-pol':'📋 Acente Komisyon','kasa-ipt':'🔄 MKöçe İptal Kazanç','kasa-acb':'🏢 Acente Bana Kalan','kasa-gen':'🏆 Toplam Kazanç',musteriler:'Müşteriler','police-ekle':'Poliçe Ekle','police-listesi':'Poliçe Listesi','police-takip':'Poliçe Takip',cari:'Cari',tahsilat:'Tahsilat',kasa:'MKöçe Kasa',acente:'Acente','iptal-iade':'İptal & İadeler','not-defteri':'Not Defteri',whatsapp:'WhatsApp',ayarlar:'Ayarlar','gelir-grafigi':'📊 Gelir Grafiği'};
+const pageTitles={dashboard:'Ana Sayfa','kasa-pol':'📋 Acente Komisyon','kasa-ipt':'🔄 MKöçe İptal Kazanç','kasa-acb':'🏢 Acente Bana Kalan','kasa-gen':'🏆 Toplam Kazanç',musteriler:'Müşteriler','police-ekle':'Poliçe Ekle','police-listesi':'Poliçe Listesi','police-takip':'Poliçe Takip',cari:'Cari',tahsilat:'Tahsilat',kasa:'MKöçe Kasa',acente:'Acente','iptal-ekle':'🔄 İptal & İade Ekle','iptal-liste':'📋 İptal & İade Listesi','iptal-iade':'İptal & İadeler','not-defteri':'Not Defteri',whatsapp:'WhatsApp',ayarlar:'Ayarlar','gelir-grafigi':'📊 Gelir Grafiği'};
 
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -3522,8 +3597,8 @@ function showPage(name){
   const vBtn=byId('veri-yonetimi-shortcut');
   if(vBtn){vBtn.style.display=(name==='dashboard')?'inline-flex':'none';}
   closeSidebar();syncBottomNav(name);
-  if(['police-ekle','police-takip','tahsilat','iptal-iade','whatsapp','not-defteri','cari'].includes(name))populateSelects();
-  const renders={dashboard:renderDashboard,musteriler:renderMusteriler,'police-listesi':renderPoliceListesi,'police-takip':renderTakip,cari:renderCari,tahsilat:renderTahsilat,kasa:renderKasa,'kasa-pol':()=>renderKasaAlt('pol'),'kasa-ipt':()=>renderKasaAlt('ipt'),'kasa-acb':()=>renderKasaAlt('acb'),'kasa-gen':()=>renderKasaAlt('gen'),acente:renderAcente,'iptal-iade':renderIptal,'not-defteri':renderNots,whatsapp:initWA,ayarlar:renderAyarlar,'gelir-grafigi':renderGelirGrafigi};
+  if(['police-ekle','police-takip','tahsilat','iptal-ekle','iptal-liste','iptal-iade','whatsapp','not-defteri','cari'].includes(name))populateSelects();
+  const renders={dashboard:renderDashboard,musteriler:renderMusteriler,'police-listesi':renderPoliceListesi,'police-takip':renderTakip,cari:renderCari,tahsilat:renderTahsilat,kasa:renderKasa,'kasa-pol':()=>renderKasaAlt('pol'),'kasa-ipt':()=>renderKasaAlt('ipt'),'kasa-acb':()=>renderKasaAlt('acb'),'kasa-gen':()=>renderKasaAlt('gen'),acente:renderAcente,'iptal-ekle':()=>{},'iptal-liste':renderIptal,'iptal-iade':()=>showPage('iptal-ekle'),'not-defteri':renderNots,whatsapp:initWA,ayarlar:renderAyarlar,'gelir-grafigi':renderGelirGrafigi};
   if(renders[name])renders[name]();
 }
 function toggleSidebar(){byId('sidebar').classList.toggle('open');byId('sb-overlay').classList.toggle('show');}
@@ -3538,7 +3613,8 @@ const _BNAV_ALL=[
   {id:'tahsilat',ico:'💳',lbl:'Tahsilat'},
   {id:'kasa',ico:'🏦',lbl:'Kasa'},
   {id:'cari',ico:'💰',lbl:'Cari'},
-  {id:'iptal-iade',ico:'🔄',lbl:'İptal & İade'},
+  {id:'iptal-ekle',ico:'🔄',lbl:'İptal Ekle'},
+  {id:'iptal-liste',ico:'📋',lbl:'İptal Liste'},
   {id:'acente',ico:'🏢',lbl:'Acente'},
   {id:'whatsapp',ico:'💬',lbl:'WhatsApp'},
   {id:'not-defteri',ico:'📝',lbl:'Notlar'},
@@ -5369,6 +5445,7 @@ function detayPolice(id){
     <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;margin-top:4px;">Poliçe Bilgileri</div>
     ${_sec('Poliçe Türü', p.islemTur||p.polTur||'-', true)}
     ${_sec('Poliçe No', '<span style="font-family:JetBrains Mono,monospace;font-size:12px;">'+(p.polNo||'-')+(p.mPolNo?' / '+p.mPolNo:'')+'</span>', true)}
+    ${p.sirket?_sec('Şirket', p.sirket, true):''}
     ${_sec('Başlangıç', fmtD(p.baslama), true)}
     ${_sec('Bitiş Tarihi', fmtD(p.bitis), true)}
     ${_sec('Süre', sureLabel, true, 'var(--accent)')}
@@ -5705,6 +5782,20 @@ function renderTahsilat(){
       </td>
     </tr>`;
   }).join('');
+  // TFOOT TOPLAM
+  const tf=byId('tfoot-tahsilat');
+  if(tf){
+    const topBorc2=list.reduce((s,t)=>s+(parseFloat(t.borc)||0),0);
+    const topAl2=list.reduce((s,t)=>s+(parseFloat(t.alacak)||0),0);
+    const topKalan2=topBorc2-topAl2;
+    tf.innerHTML=`<tr style="background:var(--grad-1);">
+      <td colspan="17" style="text-align:right;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);padding:9px 12px;">TOPLAM (${list.length} kayıt)</td>
+      <td style="font-weight:800;color:#fde68a;padding:9px 12px;">₺${fmt(topBorc2)}</td>
+      <td style="font-weight:800;color:#6ee7b7;padding:9px 12px;">₺${fmt(topAl2)}</td>
+      <td style="font-weight:800;color:${topKalan2>0?'#fca5a5':'#6ee7b7'};padding:9px 12px;">₺${fmt(Math.abs(topKalan2))}</td>
+      <td colspan="5" style="padding:9px 12px;"></td>
+    </tr>`;
+  }
   // Geciken raporu da güncelle
   if(byId('tbody-gecik'))renderGecikRapor();
 }
@@ -6641,7 +6732,7 @@ function saveIptal(){
       tutar:_iptalCalc.acIade,
       aciklama:'İptal Acente İade Alacağı – '+p.polNo+(iadA?' ('+iadA.ad+')':''),tip:'iade'});
   }
-  saveDB();renderIptal();toast('Poli\xe7e iptal edildi, cari ve iade kay\u0131tlar\u0131 olu\u015fturuldu','success');resetIptalForm();updateStats();
+  saveDB();renderIptal();toast('Poli\xe7e iptal edildi, cari ve iade kay\u0131tlar\u0131 olu\u015fturuldu','success');resetIptalForm();updateStats();showPage('iptal-liste');
 }
 function resetIptalForm(){
   ['ii-musteri','ii-police','ii-iptaltarihi','ii-baslama','ii-bitis',
@@ -6665,7 +6756,7 @@ function renderIptal(){
     const noterInfo=(ii.noterIsmi||ii.noterNo)
       ?'<div style="font-size:10px;"><b>'+(ii.noterIsmi||'-')+'</b>'+(ii.noterNo?'<br><span style="color:var(--muted);">No: '+ii.noterNo+'</span>':'')+'</div>'
       :'<span style="color:var(--muted);font-size:10px;">-</span>';
-    let docBtns='<div style="display:flex;flex-direction:column;gap:4px;min-width:90px;">';
+    let docBtns='<div style="display:flex;flex-direction:column;gap:4px;min-width:90px;" onclick="event.stopPropagation()">';
     if(docs.senet){
       docBtns+='<div style="font-size:9px;font-weight:700;color:var(--muted);">📄 Senet</div>';
       docBtns+='<div style="display:flex;gap:2px;">'
@@ -6682,8 +6773,8 @@ function renderIptal(){
     }
     if(!hasDocs) docBtns+='<span style="color:var(--muted);font-size:10px;">Belge yok</span>';
     docBtns+='</div>';
-    return '<tr>'+
-      '<td><b style="cursor:pointer;color:var(--info);" onclick="openMusteriDetay(\"'+ ii.musteriId +'\")">'+(m?m.ad:'-')+'</b></td>'+
+    return '<tr style="cursor:pointer;" onclick="openMusteriDetay(\''+ ii.musteriId +'\')">'+
+      '<td><b style="color:var(--info);display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--info);flex-shrink:0;"></span>'+(m?m.ad:'-')+'</b></td>'+
       '<td>'+(ii.polNo||'-')+'</td>'+
       '<td>'+(ii.sirket||'-')+'</td>'+
       '<td>'+fmtD(ii.iptaltarihi)+'</td>'+
@@ -6703,7 +6794,7 @@ function renderIptal(){
       '<td style="color:var(--accent);font-weight:800;background:color-mix(in srgb,var(--accent) 8%,transparent);">\u20ba'+fmt(ii.mkKazanc)+'</td>'+
       '<td style="min-width:100px;">'+noterInfo+(ii.aciklama?'<div style="font-size:10px;color:var(--muted);margin-top:3px;">'+ii.aciklama+'</div>':'')+'</td>'+
       '<td style="min-width:95px;">'+docBtns+'</td>'+
-      '<td style="white-space:nowrap;display:flex;gap:4px;flex-wrap:wrap;">'+
+      '<td style="white-space:nowrap;display:flex;gap:4px;flex-wrap:wrap;" onclick="event.stopPropagation()">'+
         '<button class="btn-act btn-act-primary" onclick=\'editIptal("'+ii.id+'")\'>✏️ Düzenle</button>'+
         '<button class="btn-act btn-act-danger" onclick=\'delIptal("'+ii.id+'")\'>🗑️ Sil</button>'+
       '</td>'+
@@ -6819,6 +6910,12 @@ function _downloadDoc(doc){
   }catch(err){toast('İndirme hatası: '+err.message,'error');}
 }
 
+function _openDocViewerById(iid, dtype){
+  const ii = DB.iptaller.find(x=>x.id===iid);
+  if(!ii||!ii.docs||!ii.docs[dtype]){toast('Belge bulunamadı','error');return;}
+  _openDocViewer(ii.docs[dtype]);
+}
+
 function editIptal(id){
   const ii=DB.iptaller.find(x=>x.id===id);if(!ii)return;
   // Müşteriyi seç ve poliçeleri yükle
@@ -6864,7 +6961,7 @@ function editIptal(id){
       }
       // Düzenleme modunu işaretle
       window._editIptalId=id;
-      byId('page-iptal-iade').querySelector('.card').scrollIntoView({behavior:'smooth'});
+      showPage('iptal-ekle');
       toast('Düzenleme modunda. Değiştirip kaydedin.','');
     },100);
   },50);
@@ -7046,6 +7143,54 @@ function _kasaYillarDoldur(){
   });
 }
 
+function kasaTahsilatDonem(mod){
+  window._kasaThDonem=mod;
+  const {t1,t2}=_kasaGetDateRange();
+  const thAll=DB.tahsilatlar.filter(t=>_kasaInRange(t.tarih,t1,t2));
+  const AYLAR2=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+  const map={};
+  thAll.forEach(t=>{
+    if(!t.tarih)return;
+    const d=new Date(t.tarih);
+    const key=mod==='ay'
+      ?d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')
+      :String(d.getFullYear());
+    if(!map[key])map[key]={key,label:mod==='ay'?AYLAR2[d.getMonth()]+' '+d.getFullYear():String(d.getFullYear()),count:0,borc:0,alacak:0};
+    map[key].count++;
+    map[key].borc+=parseFloat(t.borc)||0;
+    map[key].alacak+=parseFloat(t.alacak)||0;
+  });
+  const rows=Object.values(map).sort((a,b)=>a.key.localeCompare(b.key));
+  const tb=byId('kasa-tahsilat-donem-tbody');
+  const tf=byId('kasa-tahsilat-donem-foot');
+  if(!tb)return;
+  if(!rows.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:14px;">Kayıt yok</td></tr>';if(tf)tf.innerHTML='';return;}
+  tb.innerHTML=rows.map(r=>{
+    const k=r.borc-r.alacak;
+    return `<tr>
+      <td style="font-weight:700;">${r.label}</td>
+      <td style="text-align:center;">${r.count}</td>
+      <td style="color:var(--danger);font-weight:700;">₺${fmt(r.borc)}</td>
+      <td style="color:var(--success);font-weight:700;">₺${fmt(r.alacak)}</td>
+      <td style="font-weight:800;color:${k>0?'var(--danger)':'var(--success)'};">₺${fmt(Math.abs(k))}</td>
+    </tr>`;
+  }).join('');
+  const totB=rows.reduce((s,r)=>s+r.borc,0);
+  const totA=rows.reduce((s,r)=>s+r.alacak,0);
+  const totK=totB-totA;
+  if(tf) tf.innerHTML=`<tr style="background:var(--grad-1);">
+    <td style="font-weight:700;color:#fff;padding:8px 12px;">TOPLAM (${rows.length} dönem)</td>
+    <td style="font-weight:700;color:#fff;text-align:center;padding:8px 12px;">${thAll.length}</td>
+    <td style="font-weight:800;color:#fde68a;padding:8px 12px;">₺${fmt(totB)}</td>
+    <td style="font-weight:800;color:#6ee7b7;padding:8px 12px;">₺${fmt(totA)}</td>
+    <td style="font-weight:800;color:${totK>0?'#fca5a5':'#6ee7b7'};padding:8px 12px;">₺${fmt(Math.abs(totK))}</td>
+  </tr>`;
+  // Buton aktif güncelle
+  ['ay','yil'].forEach(m=>{
+    const b=byId('kasa-th-btn-'+( m==='ay'?'aylik':'yillik'));
+    if(b){b.classList.toggle('btn-primary',m===mod);b.classList.toggle('btn-outline',m!==mod);}
+  });
+}
 function _kasaGetDateRange(){
   if(_kasaDonem==='aralik'){
     return {t1:gv('kf-t1')||'',t2:gv('kf-t2')||''};
@@ -7231,6 +7376,22 @@ function renderKasa(){
 
   byId('kasa-gen-foot').innerHTML=`<td colspan="5" style="text-align:right;">TOPLAM:</td><td class="num" style="color:var(--accent);">₺${fmt(iptTopMK)}</td><td class="num" style="color:var(--info);">₺${fmt(acbTopBK)}</td><td class="num" style="color:var(--primary);">₺${fmt(genTop)}</td><td></td>`;
   byId('kasa-gen-toplam').textContent='Genel Toplam: ₺'+fmt(genTop);
+
+  // --- BRÜT + TAHSİLAT ÖZET BANDI ---
+  const kasaBrutTop = polList.reduce((s,p)=>s+(parseFloat(p.brut)||0),0);
+  // Tahsilatlar — seçili dönem tarihine göre filtrele
+  const thList = DB.tahsilatlar.filter(t=>_kasaInRange(t.tarih,t1,t2));
+  const kasaThTop = thList.reduce((s,t)=>s+(parseFloat(t.alacak)||0),0);
+  const kasaThOran = kasaBrutTop>0 ? (kasaThTop/kasaBrutTop*100).toFixed(1) : 0;
+  const elBrut=byId('kasa-brut-toplam');
+  const elTh=byId('kasa-tahsilat-toplam');
+  const elOr=byId('kasa-tahsilat-oran');
+  if(elBrut) elBrut.textContent='₺'+fmt(kasaBrutTop);
+  if(elTh) elTh.textContent='₺'+fmt(kasaThTop);
+  if(elOr) elOr.textContent='%'+kasaThOran;
+
+  // --- TAHSİLAT DÖNEM TABLOSU ---
+  kasaTahsilatDonem(window._kasaThDonem||'yil');
 
   // --- ÖZET KARTLARI ---
   const ozetEl=byId('kasa-ozet');
@@ -7826,10 +7987,153 @@ function renderDashboard(){
   recEl.innerHTML=recent.length?recent.map(t=>{
     const m=getMusteri(t.musteriId);
     return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--bg);border-radius:7px;margin-bottom:5px;font-size:12px;">
-      <span><b>${m?m.ad:'-'}</b> – ${t.polNo||'-'}</span>
-      <span style="color:var(--success);font-weight:700;">₺${fmt(t.tutar)}</span>
+      <div style="display:flex;flex-direction:column;gap:1px;min-width:0;">
+        <span style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m?m.ad:'-'}</span>
+        <span style="font-size:10px;color:var(--muted);">${fmtD(t.tarih)||'-'} · ${t.polNo||'-'}</span>
+      </div>
+      <span style="color:var(--success);font-weight:700;flex-shrink:0;margin-left:8px;">₺${fmt(t.tutar)}</span>
     </div>`;
   }).join(''):'<div style="color:var(--muted);font-size:12px;padding:8px;">Tahsilat kaydı yok.</div>';
+
+  // Son Eklenen Poliçeler
+  const sonPoliceEl    = byId('dash-son-police-list');
+  const sonPoliceCount = byId('dash-son-police-count');
+  const sonPoliceler   = (DB.policeler||[])
+    .slice()
+    .sort((a,b)=>(b.tanzim||'').localeCompare(a.tanzim||''))
+    .slice(0,10);
+  const toplamNet  = sonPoliceler.reduce((s,p)=>s+(parseFloat(p.net)||0),0);
+  const toplamBrut = sonPoliceler.reduce((s,p)=>s+(parseFloat(p.brut)||0),0);
+  if(sonPoliceCount) sonPoliceCount.textContent = DB.policeler.length ? 'Son 10 / Toplam '+DB.policeler.length : '';
+  if(sonPoliceEl){
+    if(sonPoliceler.length){
+      sonPoliceEl.innerHTML = `
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;">
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Müşteri</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Poliçe No</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Şirket</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Tür</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Plaka</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Tanzim</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Başlama</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Bitiş</th>
+                <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Net</th>
+                <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Brüt</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sonPoliceler.map((p,idx)=>{
+                const m = getMusteri(p.musteriId);
+                const bg = idx%2===0?'':'background:var(--bg);';
+                const bugun = new Date().toISOString().substr(0,10);
+                const aktif = p.bitis && p.bitis >= bugun;
+                const durumRenk = aktif ? 'var(--success)' : 'var(--muted)';
+                const durumDot  = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${durumRenk};margin-right:4px;flex-shrink:0;"></span>`;
+                return `<tr style="${bg}cursor:pointer;" onclick="showPage('police-listesi')"
+                    onmouseover="this.style.background='color-mix(in srgb,var(--accent) 5%,transparent)'"
+                    onmouseout="this.style.background='${idx%2===0?'':'var(--bg)'}'">
+                  <td style="padding:7px 10px;font-weight:600;">${m?m.ad:'-'}</td>
+                  <td style="padding:7px 10px;font-family:monospace;font-size:11px;font-weight:700;color:var(--primary);">${p.polNo||'-'}</td>
+                  <td style="padding:7px 10px;font-weight:600;">${p.sirket||'-'}</td>
+                  <td style="padding:7px 10px;color:var(--muted);font-size:11px;">${p.poltur||p.islemtur||'-'}</td>
+                  <td style="padding:7px 10px;font-size:11px;">${p.plaka||'-'}</td>
+                  <td style="padding:7px 10px;color:var(--muted);font-size:11px;">${fmtD(p.tanzim)||'-'}</td>
+                  <td style="padding:7px 10px;color:var(--info);font-size:11px;">${fmtD(p.baslama)||'-'}</td>
+                  <td style="padding:7px 10px;font-size:11px;">
+                    <span style="display:flex;align-items:center;">
+                      ${durumDot}${fmtD(p.bitis)||'-'}
+                    </span>
+                  </td>
+                  <td style="padding:7px 10px;text-align:right;font-weight:700;color:var(--success);">₺${fmt(p.net)}</td>
+                  <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent);">₺${fmt(p.brut)}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+            <tfoot>
+              <tr style="border-top:2px solid var(--border);background:color-mix(in srgb,var(--accent) 6%,transparent);">
+                <td colspan="8" style="padding:8px 10px;font-weight:700;font-size:12px;color:var(--text);">TOPLAM (Son 10)</td>
+                <td style="padding:8px 10px;text-align:right;font-weight:900;font-size:13px;color:var(--success);">₺${fmt(toplamNet)}</td>
+                <td style="padding:8px 10px;text-align:right;font-weight:900;font-size:13px;color:var(--accent);">₺${fmt(toplamBrut)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>`;
+    } else {
+      sonPoliceEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px;">Poliçe kaydı bulunamadı.</div>';
+    }
+  }
+
+  // MK İade Listesi
+  const mkIadeEl = byId('dash-mk-iade-list');
+  const mkIadeToplEl = byId('dash-mk-iade-toplam');
+  const mkIadeList = (DB.iptaller||[]).filter(ii=>(parseFloat(ii.mkIade)||0)>0)
+    .sort((a,b)=>(b.iptaltarihi||'').localeCompare(a.iptaltarihi||''));
+  const mkIadeToplam = mkIadeList.reduce((s,ii)=>s+(parseFloat(ii.mkIade)||0),0);
+  if(mkIadeToplEl) mkIadeToplEl.textContent = mkIadeList.length ? 'Toplam: ₺'+fmt(mkIadeToplam) : '';
+  if(mkIadeEl){
+    if(mkIadeList.length){
+      mkIadeEl.innerHTML = `
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;">
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Müşteri</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Poliçe No / Şirket</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">İptal Tarihi</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Sebep</th>
+                <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Noter</th>
+                <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">Belgeler</th>
+                <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">MK İade</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${mkIadeList.map((ii,idx)=>{
+                const m = getMusteri(ii.musteriId);
+                const p = DB.policeler.find(x=>x.id===ii.policeId);
+                const bg = idx%2===0?'':'background:var(--bg);';
+                // Şirket
+                const sirket = ii.sirket || (p?p.sirket:'') || '';
+                // Noter
+                const noterStr = (ii.noterIsmi||ii.noterNo)
+                  ? `<div style="font-size:11px;font-weight:600;color:var(--primary);">${ii.noterIsmi||''}</div>`
+                    + (ii.noterNo?`<div style="font-size:10px;color:var(--muted);">No: ${ii.noterNo}</div>`:'')
+                  : '<span style="color:var(--muted);font-size:11px;">—</span>';
+                // Belgeler
+                const hasSenet = ii.docs && ii.docs.senet && ii.docs.senet.data;
+                const hasPdf   = ii.docs && ii.docs.pdf   && ii.docs.pdf.data;
+                const belgeHtml = (hasSenet||hasPdf)
+                  ? `<div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;">
+                      ${hasSenet?`<button onclick="event.stopPropagation();_openDocViewerById('${ii.id}','senet')" style="background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border:1px solid var(--info);border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer;">📄 Senet</button>`:''}
+                      ${hasPdf?`<button onclick="event.stopPropagation();_openDocViewerById('${ii.id}','pdf')" style="background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border:1px solid var(--danger);border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer;">📑 PDF</button>`:''}
+                    </div>`
+                  : '<span style="color:var(--muted);font-size:11px;">—</span>';
+                return `<tr style="${bg}cursor:pointer;" onclick="showPage('iptal-liste')">
+                  <td style="padding:7px 10px;font-weight:600;">${m?m.ad:'-'}</td>
+                  <td style="padding:7px 10px;">
+                    <div style="font-weight:700;">${ii.polNo||(p?p.polNo:'-')||'-'}</div>
+                    ${sirket?`<div style="font-size:10px;color:var(--muted);margin-top:1px;">🏢 ${sirket}</div>`:''}
+                  </td>
+                  <td style="padding:7px 10px;color:var(--muted);">${fmtD(ii.iptaltarihi)||'-'}</td>
+                  <td style="padding:7px 10px;color:var(--muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ii.sebep||'-'}</td>
+                  <td style="padding:7px 10px;">${noterStr}</td>
+                  <td style="padding:7px 10px;text-align:center;">${belgeHtml}</td>
+                  <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--warning);">₺${fmt(ii.mkIade)}</td>
+                </tr>`;
+              }).join('')}
+              <tr style="border-top:2px solid var(--border);background:color-mix(in srgb,var(--warning) 8%,transparent);">
+                <td colspan="6" style="padding:8px 10px;font-weight:700;font-size:12px;">TOPLAM</td>
+                <td style="padding:8px 10px;text-align:right;font-weight:900;font-size:14px;color:var(--warning);">₺${fmt(mkIadeToplam)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>`;
+    } else {
+      mkIadeEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px;">MK iadesi olan iptal kaydı bulunamadı.</div>';
+    }
+  }
 
   // Takvim
   _calYear=new Date().getFullYear();_calMonth=new Date().getMonth();
@@ -7840,27 +8144,41 @@ function updateStats(){
   byId('st-police').textContent=DB.policeler.length;
   byId('st-acente').textContent=DB.acenteler.length;
   byId('st-iptal').textContent=DB.iptaller.length;
-  const tA=DB.tahsilatlar.filter(t=>t.tip==='alacak'||t.tip==='iade').reduce((s,t)=>s+(t.tutar||0),0);
-  const allB=DB.cariler.reduce((s,c)=>s+(parseFloat(c.borc)||0),0);
-  const allA=DB.cariler.reduce((s,c)=>s+(parseFloat(c.alacak)||0),0);
-  const netBorc=Math.max(0,allB-allA);
-  byId('st-tahsilat').textContent='₺'+fmt(tA);
-  byId('st-borc').textContent='₺'+fmt(netBorc);
-  // Cari toplam borç / tahsilat / kalan
-  const cariBorc   = allB;
-  const cariTahsilat = allA;
-  const cariKalan  = allB - allA;
-  const elCB = byId('st-cari-borc');
-  const elCT = byId('st-cari-tahsilat');
-  const elCK = byId('st-cari-kalan');
-  if(elCB) elCB.textContent='₺'+fmt(cariBorc);
-  if(elCT) elCT.textContent='₺'+fmt(cariTahsilat);
+
+  // İptal iade toplamları
+  const gercekIadeToplam = DB.iptaller.reduce((s,ii)=>s+(parseFloat(ii.gercekIade)||0),0);
+  const mkIadeToplam     = DB.iptaller.reduce((s,ii)=>s+(parseFloat(ii.mkIade)||0),0);
+  const elGI = byId('st-gercek-iade');
+  const elMK = byId('st-mk-iade');
+  if(elGI) elGI.textContent = '₺'+fmt(gercekIadeToplam);
+  if(elMK) elMK.textContent = '₺'+fmt(mkIadeToplam);
+
+  // Poliçe brüt toplamı
+  const policeBrut = DB.policeler.reduce((s,p)=>s+(parseFloat(p.brut)||0),0);
+
+  // Cari borç toplamı (borç kayıtları)
+  const cariBorc = DB.cariler.reduce((s,c)=>s+(parseFloat(c.borc)||0),0);
+
+  // Cari alacak toplamı (tahsilat + iade kayıtları)
+  const cariAlacak = DB.cariler.reduce((s,c)=>s+(parseFloat(c.alacak)||0),0);
+
+  // Kalan = Cari Borç - Cari Alacak
+  const kalan = cariBorc - cariAlacak;
+
+  const elBrut = byId('st-police-brut');
+  const elCB   = byId('st-cari-borc');
+  const elCT   = byId('st-cari-tahsilat');
+  const elCK   = byId('st-cari-kalan');
+  const elSub  = byId('st-cari-kalan-sub');
+
+  if(elBrut) elBrut.textContent = '₺'+fmt(policeBrut);
+  if(elCB)   elCB.textContent   = '₺'+fmt(cariBorc);
+  if(elCT)   elCT.textContent   = '₺'+fmt(cariAlacak);
   if(elCK){
-    elCK.textContent='₺'+fmt(Math.abs(cariKalan));
-    elCK.style.color = cariKalan>0 ? 'var(--danger)' : cariKalan<0 ? 'var(--success)' : 'var(--text)';
-    const sub = elCK.parentElement ? elCK.parentElement.querySelector('.stat-sub') : null;
-    if(sub) sub.textContent = cariKalan>0 ? '⬆ Alınacak var' : cariKalan<0 ? '⬇ Fazla ödeme' : '✓ Denge sıfır';
+    elCK.textContent = '₺'+fmt(Math.abs(kalan));
+    elCK.style.color = kalan>0?'var(--danger)':kalan<0?'var(--success)':'var(--text)';
   }
+  if(elSub) elSub.textContent = kalan>0?'⬆ Alınacak var':kalan<0?'⬇ Fazla ödeme':'✓ Denge sıfır';
 }
 
 // ══════════════════════════════════════════
