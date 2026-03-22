@@ -3033,12 +3033,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <div id="login-toggle-msg" style="margin-top:8px;font-size:11px;color:var(--muted);min-height:16px;"></div>
         </div>
         <div class="set-card">
-          <h4>🔑 Şifreyi Sıfırla</h4>
-          <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">Giriş şifrenizi unuttuysanız buradan <b>admin</b> olarak sıfırlayın.</p>
-          <button class="btn btn-danger btn-sm" onclick="resetPasswordToAdmin()">🔄 Şifreyi "admin" Olarak Sıfırla</button>
-          <div id="reset-pw-msg" style="margin-top:8px;font-size:11px;min-height:16px;"></div>
-        </div>
-        <div class="set-card">
           <h4>ℹ️ Güvenlik Notu</h4>
           <p style="font-size:11px;color:var(--muted);line-height:1.7;">
             Şifreli giriş <b>açıkken</b>: Her açılışta kullanıcı adı ve şifre istenir.<br><br>
@@ -3069,29 +3063,15 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- SQL Talimatı -->
       <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px;">
         <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📋 Supabase SQL Editor'de Çalıştırın:</div>
-        <pre style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);margin:0;white-space:pre-wrap;line-height:1.6;">-- Ana veri tablosu
-create table if not exists mk_database (
+        <pre style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);margin:0;white-space:pre-wrap;line-height:1.6;">create table if not exists mk_database (
   id integer primary key default 1,
   data jsonb not null default '{}',
   updated_at timestamptz default now()
 );
+-- Tek satır kısıtı
 create unique index if not exists mk_database_single on mk_database (id);
-alter table mk_database disable row level security;
-
--- Kullanıcı tablosu (çok cihazdan giriş)
-create table if not exists mk_users (
-  id uuid primary key default gen_random_uuid(),
-  username text unique not null,
-  password text not null,
-  role text not null default 'user',
-  created_at timestamptz default now()
-);
-alter table mk_users disable row level security;
-
--- Varsayılan admin kullanıcısı (şifre: admin)
-insert into mk_users (username, password, role)
-values ('admin', 'admin', 'admin')
-on conflict (username) do nothing;</pre>
+-- RLS (Row Level Security) - isteğe bağlı, geliştirme için kapatılabilir
+alter table mk_database disable row level security;</pre>
         <button class="btn btn-outline btn-xs" style="margin-top:8px;" onclick="copySQL()">📋 SQL Kopyala</button>
       </div>
 
@@ -9099,7 +9079,6 @@ function showAyarlarTab(tab){
     });
   }
 }
-}
 
 // ══════════════════════════════════════════════════
 // MODEL YILI YÖNETİM SİSTEMİ
@@ -9680,43 +9659,18 @@ function loadUsers(){
     const d=localStorage.getItem(USERS_KEY);
     if(d)return JSON.parse(d);
   }catch(e){}
+  // Varsayılan kullanıcı
   const defaults=[{username:'admin',password:'admin',role:'admin'}];
   localStorage.setItem(USERS_KEY,JSON.stringify(defaults));
   return defaults;
 }
-function saveUsers(users){
-  localStorage.setItem(USERS_KEY,JSON.stringify(users));
-  // Supabase aktifse buluta da kaydet
-  if(_supabaseEnabled && _supabase){
-    _supabase.from('mk_users').upsert(
-      users.map(u=>({username:u.username, password_hash:u.password, role:u.role||'user'})),
-      {onConflict:'username'}
-    ).then(({error})=>{ if(error) console.warn('[Supabase] Kullanıcı kaydedilemedi:',error.message); });
-  }
-}
-
-// Supabase'den kullanıcıları yükle (bağlantı kurulunca çağrılır)
-async function loadUsersFromSupabase(){
-  if(!_supabaseEnabled || !_supabase) return false;
-  try{
-    const {data, error} = await _supabase.from('mk_users').select('username,password_hash,role');
-    if(error){ console.warn('[Supabase] Kullanıcı yükleme hatası:',error.message); return false; }
-    if(data && data.length>0){
-      // password_hash -> password olarak map et (yerel sistemle uyumlu)
-      const mapped = data.map(u=>({username:u.username, password:u.password_hash, role:u.role||'user'}));
-      localStorage.setItem(USERS_KEY, JSON.stringify(mapped));
-      console.log('[Supabase] Kullanıcılar yüklendi ✓');
-      return true;
-    }
-  }catch(e){ console.error('[Supabase] loadUsers hatası:',e); }
-  return false;
-}
+function saveUsers(users){localStorage.setItem(USERS_KEY,JSON.stringify(users));}
 
 async function doLogin(){
   const username=gv('login-username').trim().toLowerCase();
   const password=gv('login-password');
   // Tek kullanıcı modu: kullanıcı adı boş, sadece şifre ile giriş
-  const singlePw=localStorage.getItem('mkSinglePw')||await sha256('admin');
+  const singlePw=localStorage.getItem('mkSinglePw')||await sha256('mmm');
   if(!username){
     const ok = await pwMatch(password, singlePw);
     if(ok){
@@ -9740,12 +9694,6 @@ async function doLogin(){
     return;
   }
   // Çoklu kullanıcı modu: kullanıcı adı + şifre
-  // Supabase aktifse önce oradan çek, yoksa localStorage kullan
-  if(_supabaseEnabled && _supabase){
-    try{
-      await loadUsersFromSupabase();
-    }catch(e){}
-  }
   const users=loadUsers();
   let user=null;
   for(const u of users){
@@ -9803,26 +9751,11 @@ async function addUser(){
   renderUsers();toast('Kullanıcı eklendi','success');
 }
 
-async function resetPasswordToAdmin(){
-  sha256("admin").then(function(hashed){
-    localStorage.setItem("mkSinglePw", hashed);
-    var users=loadUsers();
-    var adminIdx=users.findIndex(function(u){return u.username==="admin";});
-    if(adminIdx>-1){users[adminIdx].password=hashed;saveUsers(users);}
-    if(typeof _supabase!=='undefined'&&_supabase){
-      _supabase.from('mk_users').update({password_hash:hashed}).eq('username','admin').then(function(){});
-    }
-    var msg=byId("reset-pw-msg");
-    if(msg){msg.style.color="var(--success)";msg.textContent="✅ Şifre \"admin\" olarak sıfırlandı. Çıkış yapıp tekrar giriş deneyin.";}
-    toast("Şifre sıfırlandı! Yeni şifre: admin","success");
-  });
-}
-
 async function changeSinglePassword(){
   const cur=gv('single-cur-pw');
   const nw=gv('single-new-pw');
   const nw2=gv('single-new-pw2');
-  const stored=localStorage.getItem('mkSinglePw')||await sha256('admin');
+  const stored=localStorage.getItem('mkSinglePw')||await sha256('mmm');
   const msg=byId('single-pw-msg');
   const curOk=await pwMatch(cur, stored);
   if(!curOk){
@@ -10355,7 +10288,7 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   // Varsayılan şifreyi hash'e yükselt (ilk çalıştırma)
   const stored=localStorage.getItem('mkSinglePw');
   if(!stored || (stored.length!==64)){
-    const defaultPw = stored||'admin';
+    const defaultPw = stored||'mmm';
     if(defaultPw.length!==64) localStorage.setItem('mkSinglePw', await sha256(defaultPw));
   }
   // Varsayılan admin kullanıcısını hash'e yükselt
@@ -10879,14 +10812,6 @@ function saveSBConfig(){
     updateSBStatusUI();
     // Mevcut veriyi hemen buluta yükle
     saveDBToSupabase().then(()=> sbMsg('✓ Mevcut veriler buluta yüklendi.','success'));
-    // Kullanıcıları Supabase'e yükle, sonra Supabase'den çek
-    loadUsersFromSupabase().then(ok=>{
-      if(!ok){
-        // Supabase'de kullanıcı yoksa localdekini yükle
-        const users=loadUsers();
-        if(users.length>0) saveUsers(users);
-      }
-    });
   } else {
     sbMsg('✗ Bağlantı kurulamadı. URL ve Key bilgilerini kontrol edin.','error');
     updateSBStatusUI();
@@ -10927,29 +10852,13 @@ function clearSBConfig(){
 }
 
 function copySQL(){
-  const sql = `-- Ana veri tablosu
-create table if not exists mk_database (
+  const sql = `create table if not exists mk_database (
   id integer primary key default 1,
   data jsonb not null default '{}',
   updated_at timestamptz default now()
 );
 create unique index if not exists mk_database_single on mk_database (id);
-alter table mk_database disable row level security;
-
--- Kullanıcı tablosu (çok cihazdan giriş)
-create table if not exists mk_users (
-  id uuid primary key default gen_random_uuid(),
-  username text unique not null,
-  password text not null,
-  role text not null default 'user',
-  created_at timestamptz default now()
-);
-alter table mk_users disable row level security;
-
--- Varsayılan admin kullanıcısı (şifre: admin)
-insert into mk_users (username, password, role)
-values ('admin', 'admin', 'admin')
-on conflict (username) do nothing;`;
+alter table mk_database disable row level security;`;
   navigator.clipboard.writeText(sql).then(()=>toast('SQL kopyalandı!','success')).catch(()=>toast('Kopyalanamadı','error'));
 }
 
