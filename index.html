@@ -9626,11 +9626,6 @@ function veriSilOnay(){
 }
 
 function confirmDeleteAll(){ veriSilOnay(); }
-  if(!confirm('TÜM VERİLER SİLİNECEK! Emin misiniz?'))return;
-  if(!confirm('Son onay: Tüm veriler kalıcı silinsin mi?'))return;
-  DB={musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[]};
-  saveDB();renderAyarlar();updateStats();populateSelects();toast('Tüm veriler silindi','error');
-}
 
 // ==============================
 // EXPORT CSV
