@@ -2979,47 +2979,111 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
 
   <!-- VERİ YÖNETİMİ SEKMESİ -->
   <div id="ayarlar-tab-veri" style="display:none;">
-    <!-- OTOMATİK YEDEKLEME -->
+
+    <!-- ── YEDEKLEMELERİM ────────────────────────────────── -->
     <div class="card">
-      <div class="card-header"><div class="card-title">🔄 Otomatik Yedekleme</div></div>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
-        <div style="flex:1;min-width:150px;background:var(--bg);border-radius:9px;padding:10px 14px;border:1px solid var(--border);">
-          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Son Otomatik Yedek</div>
-          <div id="backup-last-time" style="font-size:13px;font-weight:700;margin-top:3px;">—</div>
-        </div>
-        <div style="flex:1;min-width:150px;background:var(--bg);border-radius:9px;padding:10px 14px;border:1px solid var(--border);">
-          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Kayıtlı Yedek</div>
-          <div id="backup-saved-count" style="font-size:13px;font-weight:700;margin-top:3px;">0</div>
-        </div>
-        <div style="flex:1;min-width:150px;background:var(--bg);border-radius:9px;padding:10px 14px;border:1px solid var(--border);">
-          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Sonraki Yedek</div>
-          <div id="backup-next-time" style="font-size:13px;font-weight:700;margin-top:3px;">—</div>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button class="btn btn-accent btn-sm" onclick="backupNow(true)">💾 Şimdi Yedekle</button>
+      <div class="card-header">
+        <div class="card-title">💾 Yedeklerim</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          <button class="btn btn-success btn-sm" onclick="backupNow(true)">💾 Şimdi Yedek Al</button>
           <button class="btn btn-primary btn-sm" onclick="exportData()">📤 JSON İndir</button>
         </div>
       </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📋 Yedek Geçmişi</div>
-        <div id="backup-list"></div>
+      <!-- Özet satırı -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+        <div style="flex:1;min-width:130px;background:var(--bg);border-radius:9px;padding:10px 14px;border:1px solid var(--border);">
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Son Yedek</div>
+          <div id="backup-last-time" style="font-size:12px;font-weight:700;margin-top:3px;">—</div>
+        </div>
+        <div style="flex:1;min-width:130px;background:var(--bg);border-radius:9px;padding:10px 14px;border:1px solid var(--border);">
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Kayıtlı Yedek</div>
+          <div id="backup-saved-count" style="font-size:12px;font-weight:700;margin-top:3px;">0</div>
+        </div>
+        <div style="flex:1;min-width:130px;background:var(--bg);border-radius:9px;padding:10px 14px;border:1px solid var(--border);">
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Sonraki Otomatik</div>
+          <div id="backup-next-time" style="font-size:12px;font-weight:700;margin-top:3px;">—</div>
+        </div>
+      </div>
+      <!-- Yedek listesi -->
+      <div id="backup-list">
+        <div style="color:var(--muted);font-size:12px;padding:10px 0;">Henüz yedek alınmamış.</div>
       </div>
     </div>
 
-    <!-- DEPOLAMA BİLGİSİ -->
-    <div class="set-card" style="margin-bottom:0;">
-      <h4>💾 Depolama Bilgisi</h4>
-      <div id="storage-bar-wrap" style="margin:8px 0;height:10px;background:var(--border);border-radius:10px;overflow:hidden;">
+    <!-- ── VERİ YÜKLE ────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">📥 Yedek Yükle / İçe Aktar</div></div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7;">
+        Daha önce indirdiğiniz <b>.json</b> yedek dosyasını seçin.<br>
+        <span style="color:var(--warning);">⚠️ Mevcut veriler bu dosyadakilerle değiştirilir!</span>
+      </p>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <label style="flex:1;min-width:200px;display:flex;align-items:center;gap:10px;padding:12px 16px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:var(--bg);transition:all .2s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <span style="font-size:24px;">📂</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;">JSON dosyası seç</div>
+            <div style="font-size:10px;color:var(--muted);">mksigorta_YYYY-MM-DD.json</div>
+          </div>
+          <input type="file" accept=".json" onchange="importData(event)" style="display:none;">
+        </label>
+        <div style="font-size:11px;color:var(--muted);max-width:260px;line-height:1.6;">
+          💡 Yedek dosyası yoksa önce <b>Yedeklerim</b> bölümünden JSON İndir butonunu kullanın.
+        </div>
+      </div>
+    </div>
+
+    <!-- ── OTOMATİK YEDEKLEME ────────────────────────────── -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔄 Otomatik Yedekleme</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div id="backup-status-dot" style="width:10px;height:10px;border-radius:50%;background:var(--muted);transition:all .3s;"></div>
+          <span id="backup-status-label" style="font-size:11px;color:var(--muted);font-weight:600;">Kapalı</span>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Sistem belirtilen aralıkta otomatik yedek alır ve geçmişi tutar.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+        <div class="fg" style="margin:0;">
+          <label>Yedekleme Aralığı</label>
+          <select id="backup-interval" style="width:100%;">
+            <option value="0">⛔ Kapalı</option>
+            <option value="15">Her 15 dakika</option>
+            <option value="30">Her 30 dakika</option>
+            <option value="60" selected>Her 1 saat</option>
+            <option value="120">Her 2 saat</option>
+            <option value="360">Her 6 saat</option>
+            <option value="720">Her 12 saat</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0;">
+          <label>Maksimum Yedek Sayısı</label>
+          <select id="backup-count" style="width:100%;">
+            <option value="3">3 yedek</option>
+            <option value="5" selected>5 yedek</option>
+            <option value="10">10 yedek</option>
+            <option value="20">20 yedek</option>
+            <option value="50">50 yedek</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-success" onclick="saveBackupSettings()">💾 Ayarları Kaydet &amp; Uygula</button>
+    </div>
+
+    <!-- ── DEPOLAMA BİLGİSİ ──────────────────────────────── -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">💾 Depolama Bilgisi</div></div>
+      <div id="storage-bar-wrap" style="margin:8px 0;height:12px;background:var(--border);border-radius:10px;overflow:hidden;">
         <div id="storage-bar" style="height:100%;width:0%;border-radius:10px;background:var(--success);transition:width .5s;"></div>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-top:4px;">
         <span id="storage-used-label">0 KB kullanıldı</span>
         <span id="storage-pct-label">%0</span>
       </div>
-      <div id="storage-warn" style="margin-top:6px;font-size:11px;display:none;color:var(--warning);font-weight:600;"></div>
+      <div id="storage-warn" style="margin-top:8px;font-size:11px;display:none;color:var(--warning);font-weight:600;padding:8px 12px;background:color-mix(in srgb,var(--warning) 10%,transparent);border-radius:8px;border:1px solid var(--warning);"></div>
     </div>
 
-    <!-- GİRİŞ GÜVENLİĞİ -->
+    <!-- ── GİRİŞ GÜVENLİĞİ ──────────────────────────────── -->
     <div class="card">
       <div class="card-header"><div class="card-title">🔐 Giriş Güvenliği</div></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;flex-wrap:wrap;">
@@ -3043,24 +3107,45 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </div>
     </div>
 
-    <!-- VERİ YÖNETİMİ -->
+    <!-- ── VERİ YÖNETİMİ ─────────────────────────────────── -->
     <div class="card">
       <div class="card-header"><div class="card-title">📦 Veri Yönetimi</div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+
+        <div class="set-card">
+          <h4>📤 Veriyi Dışa Aktar</h4>
+          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Tüm veriyi JSON dosyası olarak bilgisayarınıza indirin.</p>
+          <button class="btn btn-primary btn-sm" onclick="exportData()">📤 JSON İndir</button>
+        </div>
+
+        <div class="set-card">
+          <h4>📥 Veriyi İçe Aktar</h4>
+          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">JSON yedek dosyasını yükleyin. Mevcut veri değişir.</p>
+          <label style="cursor:pointer;">
+            <span class="btn btn-outline btn-sm">📂 Dosya Seç</span>
+            <input type="file" accept=".json" onchange="importData(event)" style="display:none;">
+          </label>
+        </div>
+
+        <div class="set-card" style="border-color:var(--danger);">
+          <h4 style="color:var(--danger);">🗑️ Tüm Verileri Sil</h4>
+          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Bu işlem geri alınamaz! Önce yedek alın.</p>
+          <button class="btn btn-danger btn-sm" onclick="veriSilOnay()">🗑️ Tümünü Sil</button>
+        </div>
+      </div>
       <div id="ayarlar-veri-content"></div>
     </div>
 
-    <!-- SUPABASE ENTEGRASYONU -->
+    <!-- ── SUPABASE ENTEGRASYONU ─────────────────────────── -->
     <div class="card" style="border:2px solid var(--accent);">
       <div class="card-header">
         <div class="card-title">☁️ Supabase Bulut Veritabanı</div>
         <div id="sb-status-badge" style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:#dcfce7;color:#166534;">Bağlı Değil</div>
       </div>
       <p style="font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.7;">
-        Supabase bağlantısı kurulduğunda tüm veriler gerçek zamanlı olarak buluta kaydedilir. Birden fazla cihazdan erişim sağlanır. 
+        Supabase bağlantısı kurulduğunda tüm veriler gerçek zamanlı olarak buluta kaydedilir. Birden fazla cihazdan erişim sağlanır.
         <b style="color:var(--accent);">Önce Supabase projenizde <code>mk_database</code> tablosunu oluşturun.</b>
       </p>
-
-      <!-- SQL Talimatı -->
       <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px;">
         <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📋 Supabase SQL Editor'de Çalıştırın:</div>
         <pre style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);margin:0;white-space:pre-wrap;line-height:1.6;">create table if not exists mk_database (
@@ -3068,13 +3153,10 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
   data jsonb not null default '{}',
   updated_at timestamptz default now()
 );
--- Tek satır kısıtı
 create unique index if not exists mk_database_single on mk_database (id);
--- RLS (Row Level Security) - isteğe bağlı, geliştirme için kapatılabilir
 alter table mk_database disable row level security;</pre>
         <button class="btn btn-outline btn-xs" style="margin-top:8px;" onclick="copySQL()">📋 SQL Kopyala</button>
       </div>
-
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
         <div class="fg">
           <label>Supabase Project URL</label>
@@ -3085,9 +3167,8 @@ alter table mk_database disable row level security;</pre>
           <input type="text" id="sb-key-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6Ikp..." oninput="sbInputChange()">
         </div>
       </div>
-
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-        <button class="btn btn-primary btn-sm" onclick="saveSBConfig()">💾 Bağlantıyı Kaydet & Bağlan</button>
+        <button class="btn btn-primary btn-sm" onclick="saveSBConfig()">💾 Bağlantıyı Kaydet &amp; Bağlan</button>
         <button class="btn btn-success btn-sm" onclick="syncToSupabase()">⬆️ Buluta Yükle (Tüm Veri)</button>
         <button class="btn btn-info btn-sm" onclick="syncFromSupabase()">⬇️ Buluttan İndir</button>
         <button class="btn btn-danger btn-sm" onclick="clearSBConfig()">🔌 Bağlantıyı Kes</button>
@@ -9445,6 +9526,16 @@ function renderBackupPanel(){
   if(intEl) intEl.value = settings.interval;
   if(cntEl) cntEl.value = settings.count;
 
+  // Durum badge
+  const statusLbl = byId('backup-status-label');
+  if(statusLbl){
+    if(!settings.interval || settings.interval===0){
+      statusLbl.textContent='Kapalı'; statusLbl.style.color='var(--muted)';
+    } else {
+      statusLbl.textContent='Aktif — Her '+settings.interval+' dk'; statusLbl.style.color='var(--success)';
+    }
+  }
+
   // Son yedek zamanı
   const lastEl = byId('backup-last-time');
   if(lastEl){
@@ -9526,7 +9617,15 @@ function initBackupSystem(){
     }
   }
 }
-function confirmDeleteAll(){
+function veriSilOnay(){
+  const onay1 = confirm('⚠️ TÜM VERİLER SİLİNECEK!\n\nMüşteriler, poliçeler, tahsilatlar, cariler, iptaller, notlar ve tüm kayıtlar silinir.\n\nDevam etmek istiyor musunuz?');
+  if(!onay1) return;
+  const onay2 = confirm('Son kez onaylayın — bu işlem GERİ ALINAMAZ.\n\n"Tamam" basarsanız tüm veriler silinir.');
+  if(!onay2) return;
+  deleteAllData();
+}
+
+function confirmDeleteAll(){ veriSilOnay(); }
   if(!confirm('TÜM VERİLER SİLİNECEK! Emin misiniz?'))return;
   if(!confirm('Son onay: Tüm veriler kalıcı silinsin mi?'))return;
   DB={musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[]};
