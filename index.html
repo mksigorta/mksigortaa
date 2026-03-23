@@ -3200,15 +3200,95 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
 
   <!-- AYARLAR SEKMELERİ -->
   <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:18px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:6px;" id="ayarlar-tabs">
-    <button class="btn btn-primary btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('genel')"  id="aytab-genel"  style="border-radius:8px;">⚙️ Genel</button>
-    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('veri')"   id="aytab-veri"   style="border-radius:8px;">🗄️ Veri Yönetimi</button>
-    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('police')" id="aytab-police" style="border-radius:8px;">📋 Poliçe</button>
+    <button class="btn btn-primary btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('genel')"     id="aytab-genel"     style="border-radius:8px;">⚙️ Genel</button>
+    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('veri')"      id="aytab-veri"      style="border-radius:8px;">🗄️ Veri Yönetimi</button>
+    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('police')"    id="aytab-police"    style="border-radius:8px;">📋 Poliçe</button>
+    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('kullanici')" id="aytab-kullanici" style="border-radius:8px;">👤 Kullanıcılar</button>
+    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('tema')"      id="aytab-tema"      style="border-radius:8px;">🎨 Temalar</button>
+    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('modul')"     id="aytab-modul"     style="border-radius:8px;">🧩 Modüller</button>
+    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('duyuru')"    id="aytab-duyuru"    style="border-radius:8px;">📢 Duyurular</button>
+    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('sayfalar')"  id="aytab-sayfalar"  style="border-radius:8px;">📑 Sayfalar</button>
   </div>
 
   <!-- GENEL AYARLAR SEKMESİ -->
   <div id="ayarlar-tab-genel">
+    <div class="card">
+      <div class="card-header"><div class="card-title">⚙️ Genel Ayarlar</div></div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.8;">
+        Bu sayfadan sistemin tüm ayarlarını yönetebilirsiniz.<br>
+        Yukarıdaki sekmeleri kullanarak ilgili bölüme geçiş yapın.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:10px;">
+        ${[
+          ['🗄️','Veri Yönetimi','veri','Yedek, depolama, güvenlik'],
+          ['📋','Poliçe Ayarları','police','Alan sıralaması, listeler'],
+          ['👤','Kullanıcılar','kullanici','Kullanıcı ekle & yönet'],
+          ['🎨','Temalar','tema','Renk & görünüm seç'],
+          ['🧩','Modüller','modul','Menü modüllerini yönet'],
+          ['📢','Duyurular','duyuru','Ana sayfa duyuruları'],
+          ['📑','Sayfalar','sayfalar','Sayfa kısayolları'],
+        ].map(([ico,lbl,tab,desc])=>`
+        <div onclick="showAyarlarTab('${tab}')" style="cursor:pointer;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;transition:all .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:24px;">${ico}</div>
+          <div style="font-size:12px;font-weight:700;margin-top:6px;">${lbl}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:3px;">${desc}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div><!-- /genel tab -->
 
-    <!-- DUYURU / UYARI YÖNETİMİ -->
+  <!-- KULLANICI SEKMESİ -->
+  <div id="ayarlar-tab-kullanici" style="display:none;">
+    <div class="card">
+      <div class="card-header"><div class="card-title">👤 Kullanıcı Yönetimi</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;flex-wrap:wrap;">
+        <div class="set-card">
+          <h4>➕ Yeni Kullanıcı Ekle</h4>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <input type="text" id="new-user-name" placeholder="Kullanıcı adı">
+            <input type="password" id="new-user-pass" placeholder="Şifre">
+            <select id="new-user-role">
+              <option value="admin">Admin</option>
+              <option value="kullanici">Kullanıcı</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="addNewUser()">➕ Ekle</button>
+          </div>
+        </div>
+        <div class="set-card">
+          <h4>👥 Mevcut Kullanıcılar</h4>
+          <div id="user-list" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /kullanici tab -->
+
+  <!-- TEMA SEKMESİ -->
+  <div id="ayarlar-tab-tema" style="display:none;">
+    <div class="card">
+      <div class="card-header"><div class="card-title">🎨 Tema Seç</div></div>
+      <div id="theme-grid-ayarlar" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;"></div>
+      <div class="set-card" style="margin-top:12px;">
+        <h4>🎨 Özel Renk Sistemi</h4>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Tema renklerini özelleştirin.</p>
+        <div id="ft-panel-wrap-ayarlar"></div>
+      </div>
+    </div>
+  </div><!-- /tema tab -->
+
+  <!-- MODÜL SEKMESİ -->
+  <div id="ayarlar-tab-modul" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🧩 Modül Yönetimi</div>
+        <button class="btn btn-success btn-sm" onclick="openOzelModulModal()">➕ Yeni Modül Ekle</button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Kapatılan modüller sol menüden gizlenir. Ana Sayfa ve Ayarlar her zaman görünür.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;" id="modul-grid"></div>
+    </div>
+  </div><!-- /modul tab -->
+
+  <!-- DUYURU SEKMESİ -->
+  <div id="ayarlar-tab-duyuru" style="display:none;">
     <div class="card">
       <div class="card-header">
         <div class="card-title">📢 Duyuru &amp; Uyarı Yönetimi</div>
@@ -3216,9 +3296,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </div>
       <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">
         Ana sayfada karşılama bandının hemen altında <b>yukarıdan aşağıya</b> sırayla gösterilir.
-        Birden fazla duyuru eklenebilir, sıraları sürükle-bırak ile değiştirilebilir.
+        Birden fazla duyuru eklenebilir.
       </p>
-
       <!-- YENİ / DÜZENLE FORMU -->
       <div id="uyari-form-wrap" style="display:none;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:14px;">
         <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;" id="uyari-form-baslik-lbl">➕ Yeni Duyuru</div>
@@ -3263,7 +3342,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
             </select>
           </div>
         </div>
-        <!-- Önizleme -->
         <div style="margin-top:12px;">
           <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">👁️ Önizleme</div>
           <div id="uyari-onizleme" style="background:var(--grad-1);border-radius:10px;padding:12px 16px;min-height:44px;"></div>
@@ -3273,59 +3351,51 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <button class="btn btn-outline" onclick="uyariFormKapat()">✖ İptal</button>
         </div>
       </div>
-
-      <!-- DUYURU LİSTESİ -->
       <div id="uyari-ayar-listesi">
         <div style="color:var(--muted);font-size:12px;padding:8px 0;">Henüz duyuru eklenmedi.</div>
       </div>
     </div>
+  </div><!-- /duyuru tab -->
 
-    <!-- MODÜL YÖNETİMİ -->
+  <!-- SAYFALAR SEKMESİ -->
+  <div id="ayarlar-tab-sayfalar" style="display:none;">
     <div class="card">
-      <div class="card-header">
-        <div class="card-title">🧩 Modül Yönetimi</div>
-        <button class="btn btn-success btn-sm" onclick="openOzelModulModal()">➕ Yeni Modül Ekle</button>
-      </div>
-      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Kapatılan modüller sol menüden gizlenir. Ana Sayfa ve Ayarlar her zaman görünür.</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;" id="modul-grid"></div>
-    </div>
-
-    <!-- KULLANICI YÖNETİMİ -->
-    <div class="card">
-      <div class="card-header"><div class="card-title">👤 Kullanıcı Yönetimi</div></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;flex-wrap:wrap;">
-        <div class="set-card">
-          <h4>➕ Yeni Kullanıcı Ekle</h4>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <input type="text" id="new-user-name" placeholder="Kullanıcı adı">
-            <input type="password" id="new-user-pass" placeholder="Şifre">
-            <select id="new-user-role">
-              <option value="admin">Admin</option>
-              <option value="kullanici">Kullanıcı</option>
-            </select>
-            <button class="btn btn-primary btn-sm" onclick="addNewUser()">➕ Ekle</button>
-          </div>
-        </div>
-        <div class="set-card">
-          <h4>👥 Mevcut Kullanıcılar</h4>
-          <div id="user-list" style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;"></div>
-        </div>
-      </div>
-    </div>
-
-
-
-    <!-- TEMA SEÇ -->
-    <div class="card" style="margin-top:12px;">
-      <div class="card-header"><div class="card-title">🎨 Tema Seç</div></div>
-      <div id="theme-grid-ayarlar" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;"></div>
-      <div class="set-card" style="margin-top:12px;">
-        <h4>🎨 Özel Renk Sistemi</h4>
-        <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Tema renklerini özelleştirin.</p>
-        <div id="ft-panel-wrap-ayarlar"></div>
+      <div class="card-header"><div class="card-title">📑 Sayfa Kısayolları</div></div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Sisteme ait tüm sayfalara buradan hızlıca erişebilirsiniz.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;">
+        ${[
+          ['🏠','Ana Sayfa','dashboard'],
+          ['👤','Müşteriler','musteriler'],
+          ['📁','Poliçeler','policeler'],
+          ['➕','Poliçe Ekle','police-ekle'],
+          ['📋','Poliçe Listesi','police-listesi'],
+          ['🔍','Poliçe Takip','police-takip'],
+          ['📌','Ekstra Kayıt Ekle','pt-ekstra-ekle'],
+          ['📋','Ekstra Kayıtlar','pt-ekstra-liste'],
+          ['💼','Finans','finans'],
+          ['💰','Cari Ekle','cari'],
+          ['📋','Cari Listesi','cari-liste'],
+          ['💳','Tahsilat Ekle','tahsilat'],
+          ['📋','Tahsilat Listesi','tahsilat-liste'],
+          ['🏦','MKöçe Kasa','kasa'],
+          ['🏢','Acente','acente'],
+          ['🔄','İptal & İade Ekle','iptal-ekle'],
+          ['📋','İptal & İade Listesi','iptal-liste'],
+          ['📄','Teklif Oluştur','teklif'],
+          ['📞','İletişim Geçmişi','iletisim'],
+          ['☑️','Toplu İşlemler','toplu-islem'],
+          ['🔍','Belge & Akıllı Arama','belge-arama'],
+          ['📝','Not Defteri','not-defteri'],
+          ['💬','WhatsApp','whatsapp'],
+          ['📊','Gelir Grafiği','gelir-grafigi'],
+        ].map(([ico,lbl,page])=>`
+        <div onclick="showPage('${page}')" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:9px;transition:all .15s;" onmouseover="this.style.background='color-mix(in srgb,var(--accent) 8%,transparent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='var(--bg)';this.style.borderColor='var(--border)'">
+          <span style="font-size:18px;">${ico}</span>
+          <span style="font-size:12px;font-weight:600;">${lbl}</span>
+        </div>`).join('')}
       </div>
     </div>
-  </div><!-- /genel tab -->
+  </div><!-- /sayfalar tab -->
 
   <!-- VERİ YÖNETİMİ SEKMESİ -->
   <div id="ayarlar-tab-veri" style="display:none;">
@@ -9801,7 +9871,8 @@ function aracCinsSil(idx){
 // AYARLAR SEKMELERİ
 // ══════════════════════════════════════════════════
 function showAyarlarTab(tab){
-  ['genel','veri','police'].forEach(function(t){
+  const ALL_TABS=['genel','veri','police','kullanici','tema','modul','duyuru','sayfalar'];
+  ALL_TABS.forEach(function(t){
     const el=byId('ayarlar-tab-'+t);
     const btn=byId('aytab-'+t);
     if(el) el.style.display=t===tab?'':'none';
@@ -9811,26 +9882,23 @@ function showAyarlarTab(tab){
     }
   });
   localStorage.setItem('ayarlarTab', tab);
-  if(tab==='police'){ renderPoliceFieldOrderUI(); renderAracCinsListesi(); renderModelYiliListesi(); renderIptalSebebiListesi(); }
-  if(tab==='genel'){ uyariAyarlarYukle(); uyariOnizle(); }
+  if(tab==='police'){  renderPoliceFieldOrderUI(); renderAracCinsListesi(); renderModelYiliListesi(); renderIptalSebebiListesi(); }
+  if(tab==='kullanici'){ renderUsers(); }
+  if(tab==='tema'){    const tg=byId('theme-grid-ayarlar');if(tg){tg.innerHTML='';buildThemeGrid();} }
+  if(tab==='modul'){   renderModulGrid(); }
+  if(tab==='duyuru'){  uyariAyarlarYukle(); uyariOnizle(); }
   if(tab==='veri'){
     updateSBStatusUI();
-    // Veri yönetimi içeriğini render et
     if(typeof renderAyarlarVeri==='function') renderAyarlarVeri();
-    // Yedek listesini güncelle
-    if(typeof renderBackupList==='function') renderBackupList();
+    if(typeof renderBackupPanel==='function') renderBackupPanel();
     if(typeof updateLoginToggleUI==='function') updateLoginToggleUI();
-    // Depolama bilgisi
     getStorageInfo().then(function(info){
       const bar=byId('storage-bar');const used=byId('storage-used-label');const pct=byId('storage-pct-label');const warn=byId('storage-warn');
-      if(bar)  bar.style.width=Math.min(parseFloat(info.pct||0),100)+'%';
-      if(bar)  bar.style.background=parseFloat(info.pct||0)>80?'var(--danger)':parseFloat(info.pct||0)>60?'var(--warning)':'var(--success)';
+      if(bar) bar.style.width=Math.min(parseFloat(info.pct||0),100)+'%';
+      if(bar) bar.style.background=parseFloat(info.pct||0)>80?'var(--danger)':parseFloat(info.pct||0)>60?'var(--warning)':'var(--success)';
       if(used) used.textContent=info.usageKB+' KB kullanıldı / '+(info.quotaMB||'?')+' MB';
       if(pct)  pct.textContent='%'+info.pct;
-      if(warn){
-        if(parseFloat(info.pct||0)>80){warn.style.display='block';warn.textContent='⚠️ Depolama alanı dolmak üzere! Yedek alıp eski verileri silin.';}
-        else warn.style.display='none';
-      }
+      if(warn){ if(parseFloat(info.pct||0)>80){warn.style.display='block';warn.textContent='⚠️ Depolama dolmak üzere!';}else warn.style.display='none'; }
     });
   }
 }
@@ -10060,13 +10128,12 @@ document.addEventListener('click',function(e){
 });
 
 async function renderAyarlar(){
-  // Aktif sekmeyi yükle
+  // Aktif sekmeyi yükle — sekme kendi render'ını tetikler
   const savedTab=localStorage.getItem('ayarlarTab')||'genel';
   showAyarlarTab(savedTab);
-  // Tema grid — her zaman render et
-  const tg=byId('theme-grid-ayarlar');
-  if(tg){ tg.innerHTML=''; buildThemeGrid(); }
-  renderUsers(); renderModulGrid(); renderLoginToggle(); renderBackupPanel();
+  // Her zaman gerekli temel yüklemeler
+  renderLoginToggle();
+  renderBackupPanel();
   rebuildIptalSebepSelect(loadIptalSebepler());
   rebuildModelYiliSelect(loadModelYillari());
   rebuildAracCinsSelect(loadAracCinsleri());
