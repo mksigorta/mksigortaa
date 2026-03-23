@@ -441,6 +441,14 @@ nav a:hover .ico,.active .ico{opacity:1;}
 }
 .sc-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .sc-ico{font-size:22px;}
+.sayfa-kis{cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:9px;transition:all .15s;font-size:12px;font-weight:600;}
+.sayfa-kis:hover{background:color-mix(in srgb,var(--accent) 8%,transparent);border-color:var(--accent);}
+.sayfa-kis span:first-child{font-size:18px;}
+.ayar-hub-kart{cursor:pointer;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;transition:all .2s;}
+.ayar-hub-kart:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.ayar-hub-ico{font-size:24px;}
+.ayar-hub-lbl{font-size:12px;font-weight:700;margin-top:6px;}
+.ayar-hub-desc{font-size:10px;color:var(--muted);margin-top:3px;}
 
 /* ══════════════════════════════════════════
    TABLES
@@ -2794,65 +2802,169 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
      TEKLİF OLUŞTUR
 ══════════════════════════════════════ -->
 <div id="page-teklif" class="page">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
 
-    <!-- FORM -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">📄 Yeni Teklif Oluştur</div>
+  <!-- FORM KARTI -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-header">
+      <div class="card-title">📄 Yeni Teklif Oluştur</div>
+      <div style="display:flex;gap:7px;">
         <button class="btn btn-outline btn-sm" onclick="resetTeklifForm()">✖ Temizle</button>
       </div>
-      <input type="hidden" id="teklif-edit-id">
-      <div class="form-grid">
-        <div class="fg"><label>Müşteri</label>
-          <div style="position:relative;">
-            <input type="text" id="teklif-musteri-search" placeholder="🔍 Müşteri ara..." autocomplete="off"
-              oninput="mkSearch('teklif-musteri',this.value)" onfocus="mkSearch('teklif-musteri',this.value)" style="width:100%;">
-            <input type="hidden" id="teklif-musteri">
-            <div id="teklif-musteri-dd" style="display:none;position:absolute;z-index:500;width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-height:200px;overflow-y:auto;margin-top:2px;"></div>
-          </div>
+    </div>
+    <input type="hidden" id="teklif-edit-id">
+
+    <!-- TEMEL BİLGİLER -->
+    <div class="form-grid">
+      <!-- Müşteri -->
+      <div class="fg" style="grid-column:1/-1;">
+        <label>👤 Müşteri *</label>
+        <div style="position:relative;">
+          <input type="text" id="teklif-musteri-search" placeholder="🔍 Müşteri ara..." autocomplete="off"
+            oninput="mkSearch('teklif-musteri',this.value)" onfocus="mkSearch('teklif-musteri',this.value)" style="width:100%;">
+          <input type="hidden" id="teklif-musteri">
+          <div id="teklif-musteri-dd" style="display:none;position:absolute;z-index:500;width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-height:200px;overflow-y:auto;margin-top:2px;"></div>
         </div>
-        <div class="fg"><label>Poliçe Türü</label>
-          <select id="teklif-poltur">
-            <option value="">-- Seçin --</option>
-            <option>Kasko</option><option>Trafik</option><option>Konut</option><option>DASK</option>
-            <option>Sağlık</option><option>Seyahat</option><option>Hayat</option><option>Diğer</option>
-          </select>
-        </div>
-        <div class="fg"><label>Sigorta Şirketi</label><input type="text" id="teklif-sirket" placeholder="Şirket adı"></div>
-        <div class="fg"><label>Geçerlilik Tarihi</label><input type="date" id="teklif-gecerlilik"></div>
-        <div class="fg"><label>Net Prim (₺)</label><input type="number" id="teklif-net" placeholder="0.00" step="0.01" oninput="teklifCalc()"></div>
-        <div class="fg"><label>Brüt Prim (₺)</label><input type="number" id="teklif-brut" placeholder="0.00" step="0.01" oninput="teklifCalc()"></div>
-        <div class="fg"><label>Teminat Tutarı (₺)</label><input type="number" id="teklif-teminat" placeholder="0.00" step="0.01"></div>
-        <div class="fg"><label>Muafiyet</label><input type="text" id="teklif-muafiyet" placeholder="Örn: %10, 5.000₺"></div>
-        <div class="fg" style="grid-column:1/-1;"><label>Özel Notlar / Teklif Detayı</label>
-          <textarea id="teklif-notlar" rows="3" placeholder="Teklif açıklaması, özel koşullar..." style="width:100%;resize:vertical;"></textarea>
-        </div>
-        <div class="fg"><label>Durum</label>
-          <select id="teklif-durum">
-            <option value="beklemede">⏳ Beklemede</option>
-            <option value="onaylandi">✅ Onaylandı</option>
-            <option value="reddedildi">❌ Reddedildi</option>
-            <option value="suresi-doldu">⌛ Süresi Doldu</option>
-          </select>
-        </div>
-        <div class="fg"><label>Teklif No</label><input type="text" id="teklif-no" placeholder="Otomatik" readonly style="color:var(--muted)"></div>
       </div>
-      <div class="btn-group" style="margin-top:14px;">
-        <button class="btn btn-success" onclick="saveTeklif()">💾 Kaydet</button>
-        <button class="btn btn-primary" onclick="teklifPdfIndir()" id="teklif-pdf-btn" style="display:none;">📄 PDF İndir</button>
+      <!-- Tanzim Tarihi -->
+      <div class="fg">
+        <label>📅 Tanzim Tarihi *</label>
+        <input type="date" id="teklif-tanzim" onchange="teklifTanzimDegisti()">
+      </div>
+      <!-- Geçerlilik Tarihi -->
+      <div class="fg">
+        <label>📅 Geçerlilik Tarihi</label>
+        <input type="date" id="teklif-gecerlilik">
+      </div>
+      <!-- Poliçe Türü -->
+      <div class="fg">
+        <label>📋 Poliçe Türü *</label>
+        <select id="teklif-poltur">
+          <option value="">-- Seçin --</option>
+          <option>Kasko</option><option>Trafik</option><option>Konut</option><option>DASK</option>
+          <option>Sağlık</option><option>Seyahat</option><option>Hayat</option><option>Diğer</option>
+        </select>
+      </div>
+      <!-- Seçilen Şirket -->
+      <div class="fg">
+        <label>🏢 Seçilen Şirket</label>
+        <input type="text" id="teklif-sirket" placeholder="Teklif verilen şirket">
+      </div>
+      <!-- Brüt Prim -->
+      <div class="fg">
+        <label>💰 Brüt Prim (₺)</label>
+        <input type="number" id="teklif-brut" placeholder="0.00" step="0.01">
+      </div>
+      <!-- Durum -->
+      <div class="fg">
+        <label>📌 Durum</label>
+        <select id="teklif-durum">
+          <option value="beklemede">⏳ Beklemede</option>
+          <option value="onaylandi">✅ Onaylandı</option>
+          <option value="reddedildi">❌ Reddedildi</option>
+          <option value="suresi-doldu">⌛ Süresi Doldu</option>
+        </select>
+      </div>
+      <!-- Teklif No -->
+      <div class="fg">
+        <label>🔢 Teklif No</label>
+        <input type="text" id="teklif-no" placeholder="Otomatik" readonly style="color:var(--muted);">
       </div>
     </div>
 
-    <!-- LİSTE -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">📋 Teklifler</div>
-        <input type="text" id="srch-teklif" placeholder="🔍 Ara..." oninput="renderTeklifListesi()" style="width:160px;padding:5px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);">
+    <!-- ŞİRKET KARŞILAŞTIRMA -->
+    <div style="margin-top:16px;margin-bottom:8px;">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">🏢 Şirket Teklif Karşılaştırması <small style="font-weight:400;text-transform:none;">(isteğe bağlı)</small></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="teklif-sirket-grid">
+
+        <div style="display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px 12px;">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);min-width:18px;text-align:center;">1</span>
+          <input type="text" id="teklif-s1-ad" placeholder="Şirket adı" style="flex:1;min-width:0;font-size:12px;border:none;background:transparent;outline:none;color:var(--text);" oninput="teklifSirketOnizle()">
+          <span style="color:var(--muted);font-size:12px;">₺</span>
+          <input type="number" id="teklif-s1-brut" placeholder="Tutar" step="0.01" min="0" style="width:90px;font-size:12px;border:none;background:transparent;outline:none;color:var(--success);font-weight:700;text-align:right;" oninput="teklifSirketOnizle()">
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px 12px;">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);min-width:18px;text-align:center;">2</span>
+          <input type="text" id="teklif-s2-ad" placeholder="Şirket adı" style="flex:1;min-width:0;font-size:12px;border:none;background:transparent;outline:none;color:var(--text);" oninput="teklifSirketOnizle()">
+          <span style="color:var(--muted);font-size:12px;">₺</span>
+          <input type="number" id="teklif-s2-brut" placeholder="Tutar" step="0.01" min="0" style="width:90px;font-size:12px;border:none;background:transparent;outline:none;color:var(--success);font-weight:700;text-align:right;" oninput="teklifSirketOnizle()">
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px 12px;">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);min-width:18px;text-align:center;">3</span>
+          <input type="text" id="teklif-s3-ad" placeholder="Şirket adı" style="flex:1;min-width:0;font-size:12px;border:none;background:transparent;outline:none;color:var(--text);" oninput="teklifSirketOnizle()">
+          <span style="color:var(--muted);font-size:12px;">₺</span>
+          <input type="number" id="teklif-s3-brut" placeholder="Tutar" step="0.01" min="0" style="width:90px;font-size:12px;border:none;background:transparent;outline:none;color:var(--success);font-weight:700;text-align:right;" oninput="teklifSirketOnizle()">
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px 12px;">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);min-width:18px;text-align:center;">4</span>
+          <input type="text" id="teklif-s4-ad" placeholder="Şirket adı" style="flex:1;min-width:0;font-size:12px;border:none;background:transparent;outline:none;color:var(--text);" oninput="teklifSirketOnizle()">
+          <span style="color:var(--muted);font-size:12px;">₺</span>
+          <input type="number" id="teklif-s4-brut" placeholder="Tutar" step="0.01" min="0" style="width:90px;font-size:12px;border:none;background:transparent;outline:none;color:var(--success);font-weight:700;text-align:right;" oninput="teklifSirketOnizle()">
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px 12px;">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);min-width:18px;text-align:center;">5</span>
+          <input type="text" id="teklif-s5-ad" placeholder="Şirket adı" style="flex:1;min-width:0;font-size:12px;border:none;background:transparent;outline:none;color:var(--text);" oninput="teklifSirketOnizle()">
+          <span style="color:var(--muted);font-size:12px;">₺</span>
+          <input type="number" id="teklif-s5-brut" placeholder="Tutar" step="0.01" min="0" style="width:90px;font-size:12px;border:none;background:transparent;outline:none;color:var(--success);font-weight:700;text-align:right;" oninput="teklifSirketOnizle()">
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px 12px;">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);min-width:18px;text-align:center;">6</span>
+          <input type="text" id="teklif-s6-ad" placeholder="Şirket adı" style="flex:1;min-width:0;font-size:12px;border:none;background:transparent;outline:none;color:var(--text);" oninput="teklifSirketOnizle()">
+          <span style="color:var(--muted);font-size:12px;">₺</span>
+          <input type="number" id="teklif-s6-brut" placeholder="Tutar" step="0.01" min="0" style="width:90px;font-size:12px;border:none;background:transparent;outline:none;color:var(--success);font-weight:700;text-align:right;" oninput="teklifSirketOnizle()">
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px 12px;">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);min-width:18px;text-align:center;">7</span>
+          <input type="text" id="teklif-s7-ad" placeholder="Şirket adı" style="flex:1;min-width:0;font-size:12px;border:none;background:transparent;outline:none;color:var(--text);" oninput="teklifSirketOnizle()">
+          <span style="color:var(--muted);font-size:12px;">₺</span>
+          <input type="number" id="teklif-s7-brut" placeholder="Tutar" step="0.01" min="0" style="width:90px;font-size:12px;border:none;background:transparent;outline:none;color:var(--success);font-weight:700;text-align:right;" oninput="teklifSirketOnizle()">
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px 12px;">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);min-width:18px;text-align:center;">8</span>
+          <input type="text" id="teklif-s8-ad" placeholder="Şirket adı" style="flex:1;min-width:0;font-size:12px;border:none;background:transparent;outline:none;color:var(--text);" oninput="teklifSirketOnizle()">
+          <span style="color:var(--muted);font-size:12px;">₺</span>
+          <input type="number" id="teklif-s8-brut" placeholder="Tutar" step="0.01" min="0" style="width:90px;font-size:12px;border:none;background:transparent;outline:none;color:var(--success);font-weight:700;text-align:right;" oninput="teklifSirketOnizle()">
+        </div>
+
       </div>
-      <div id="teklif-listesi" style="max-height:520px;overflow-y:auto;"></div>
+    </div>
+
+    <!-- Özel Notlar -->
+    <div class="fg" style="margin-top:12px;">
+      <label>📝 Özel Notlar / Teklif Detayı</label>
+      <textarea id="teklif-notlar" rows="3" placeholder="Teklif açıklaması, özel koşullar, notlar..." style="width:100%;resize:vertical;"></textarea>
+    </div>
+
+    <!-- ŞİRKET KARŞILAŞTIRMA ÖNİZLEME -->
+    <div id="teklif-sirket-ozet-wrap" style="display:none;margin-top:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <div style="padding:8px 14px;font-size:11px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px;">📊 Şirket Karşılaştırması</div>
+      <div id="teklif-sirket-ozet"></div>
+    </div>
+
+    <div class="btn-group" style="margin-top:14px;">
+      <button class="btn btn-success" onclick="saveTeklif()">💾 Kaydet</button>
+      <button class="btn btn-primary" id="teklif-pdf-btn" style="display:none;" onclick="">📄 PDF İndir</button>
     </div>
   </div>
+
+  <!-- LİSTE KARTI -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📋 Teklifler</div>
+      <div style="display:flex;gap:7px;align-items:center;">
+        <input type="text" id="srch-teklif" placeholder="🔍 Ara..." oninput="renderTeklifListesi()" style="width:160px;padding:5px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);">
+        <button class="btn btn-info btn-sm" onclick="exportTableCSV('tbl-teklif-list','teklifler')">📊 Excel</button>
+      </div>
+    </div>
+    <div id="teklif-listesi"></div>
+  </div>
+
 </div>
 
 <!-- ══════════════════════════════════════
@@ -3216,23 +3328,46 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="card-header"><div class="card-title">⚙️ Genel Ayarlar</div></div>
       <p style="font-size:12px;color:var(--muted);line-height:1.8;">
         Bu sayfadan sistemin tüm ayarlarını yönetebilirsiniz.<br>
-        Yukarıdaki sekmeleri kullanarak ilgili bölüme geçiş yapın.
+        Aşağıdaki kartlara veya sekme butonlarına tıklayarak ilgili bölüme geçiş yapın.
       </p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:10px;">
-        ${[
-          ['🗄️','Veri Yönetimi','veri','Yedek, depolama, güvenlik'],
-          ['📋','Poliçe Ayarları','police','Alan sıralaması, listeler'],
-          ['👤','Kullanıcılar','kullanici','Kullanıcı ekle & yönet'],
-          ['🎨','Temalar','tema','Renk & görünüm seç'],
-          ['🧩','Modüller','modul','Menü modüllerini yönet'],
-          ['📢','Duyurular','duyuru','Ana sayfa duyuruları'],
-          ['📑','Sayfalar','sayfalar','Sayfa kısayolları'],
-        ].map(([ico,lbl,tab,desc])=>`
-        <div onclick="showAyarlarTab('${tab}')" style="cursor:pointer;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;transition:all .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-          <div style="font-size:24px;">${ico}</div>
-          <div style="font-size:12px;font-weight:700;margin-top:6px;">${lbl}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:3px;">${desc}</div>
-        </div>`).join('')}
+
+        <div onclick="showAyarlarTab('veri')" class="ayar-hub-kart">
+          <div class="ayar-hub-ico">🗄️</div>
+          <div class="ayar-hub-lbl">Veri Yönetimi</div>
+          <div class="ayar-hub-desc">Yedek, depolama, güvenlik</div>
+        </div>
+        <div onclick="showAyarlarTab('police')" class="ayar-hub-kart">
+          <div class="ayar-hub-ico">📋</div>
+          <div class="ayar-hub-lbl">Poliçe Ayarları</div>
+          <div class="ayar-hub-desc">Alan sıralaması, listeler</div>
+        </div>
+        <div onclick="showAyarlarTab('kullanici')" class="ayar-hub-kart">
+          <div class="ayar-hub-ico">👤</div>
+          <div class="ayar-hub-lbl">Kullanıcılar</div>
+          <div class="ayar-hub-desc">Kullanıcı ekle &amp; yönet</div>
+        </div>
+        <div onclick="showAyarlarTab('tema')" class="ayar-hub-kart">
+          <div class="ayar-hub-ico">🎨</div>
+          <div class="ayar-hub-lbl">Temalar</div>
+          <div class="ayar-hub-desc">Renk &amp; görünüm seç</div>
+        </div>
+        <div onclick="showAyarlarTab('modul')" class="ayar-hub-kart">
+          <div class="ayar-hub-ico">🧩</div>
+          <div class="ayar-hub-lbl">Modüller</div>
+          <div class="ayar-hub-desc">Menü modüllerini yönet</div>
+        </div>
+        <div onclick="showAyarlarTab('duyuru')" class="ayar-hub-kart">
+          <div class="ayar-hub-ico">📢</div>
+          <div class="ayar-hub-lbl">Duyurular</div>
+          <div class="ayar-hub-desc">Ana sayfa duyuruları</div>
+        </div>
+        <div onclick="showAyarlarTab('sayfalar')" class="ayar-hub-kart">
+          <div class="ayar-hub-ico">📑</div>
+          <div class="ayar-hub-lbl">Sayfalar</div>
+          <div class="ayar-hub-desc">Sayfa kısayolları</div>
+        </div>
+
       </div>
     </div>
   </div><!-- /genel tab -->
@@ -3363,36 +3498,30 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="card-header"><div class="card-title">📑 Sayfa Kısayolları</div></div>
       <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Sisteme ait tüm sayfalara buradan hızlıca erişebilirsiniz.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;">
-        ${[
-          ['🏠','Ana Sayfa','dashboard'],
-          ['👤','Müşteriler','musteriler'],
-          ['📁','Poliçeler','policeler'],
-          ['➕','Poliçe Ekle','police-ekle'],
-          ['📋','Poliçe Listesi','police-listesi'],
-          ['🔍','Poliçe Takip','police-takip'],
-          ['📌','Ekstra Kayıt Ekle','pt-ekstra-ekle'],
-          ['📋','Ekstra Kayıtlar','pt-ekstra-liste'],
-          ['💼','Finans','finans'],
-          ['💰','Cari Ekle','cari'],
-          ['📋','Cari Listesi','cari-liste'],
-          ['💳','Tahsilat Ekle','tahsilat'],
-          ['📋','Tahsilat Listesi','tahsilat-liste'],
-          ['🏦','MKöçe Kasa','kasa'],
-          ['🏢','Acente','acente'],
-          ['🔄','İptal & İade Ekle','iptal-ekle'],
-          ['📋','İptal & İade Listesi','iptal-liste'],
-          ['📄','Teklif Oluştur','teklif'],
-          ['📞','İletişim Geçmişi','iletisim'],
-          ['☑️','Toplu İşlemler','toplu-islem'],
-          ['🔍','Belge & Akıllı Arama','belge-arama'],
-          ['📝','Not Defteri','not-defteri'],
-          ['💬','WhatsApp','whatsapp'],
-          ['📊','Gelir Grafiği','gelir-grafigi'],
-        ].map(([ico,lbl,page])=>`
-        <div onclick="showPage('${page}')" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:9px;transition:all .15s;" onmouseover="this.style.background='color-mix(in srgb,var(--accent) 8%,transparent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='var(--bg)';this.style.borderColor='var(--border)'">
-          <span style="font-size:18px;">${ico}</span>
-          <span style="font-size:12px;font-weight:600;">${lbl}</span>
-        </div>`).join('')}
+        <div onclick="showPage('dashboard')" class="sayfa-kis"><span>🏠</span><span>Ana Sayfa</span></div>
+        <div onclick="showPage('musteriler')" class="sayfa-kis"><span>👤</span><span>Müşteriler</span></div>
+        <div onclick="showPage('policeler')" class="sayfa-kis"><span>📁</span><span>Poliçeler</span></div>
+        <div onclick="showPage('police-ekle')" class="sayfa-kis"><span>➕</span><span>Poliçe Ekle</span></div>
+        <div onclick="showPage('police-listesi')" class="sayfa-kis"><span>📋</span><span>Poliçe Listesi</span></div>
+        <div onclick="showPage('police-takip')" class="sayfa-kis"><span>🔍</span><span>Poliçe Takip</span></div>
+        <div onclick="showPage('pt-ekstra-ekle')" class="sayfa-kis"><span>📌</span><span>Ekstra Kayıt Ekle</span></div>
+        <div onclick="showPage('pt-ekstra-liste')" class="sayfa-kis"><span>📋</span><span>Ekstra Kayıtlar</span></div>
+        <div onclick="showPage('finans')" class="sayfa-kis"><span>💼</span><span>Finans</span></div>
+        <div onclick="showPage('cari')" class="sayfa-kis"><span>💰</span><span>Cari Ekle</span></div>
+        <div onclick="showPage('cari-liste')" class="sayfa-kis"><span>📋</span><span>Cari Listesi</span></div>
+        <div onclick="showPage('tahsilat')" class="sayfa-kis"><span>💳</span><span>Tahsilat Ekle</span></div>
+        <div onclick="showPage('tahsilat-liste')" class="sayfa-kis"><span>📋</span><span>Tahsilat Listesi</span></div>
+        <div onclick="showPage('kasa')" class="sayfa-kis"><span>🏦</span><span>MKöçe Kasa</span></div>
+        <div onclick="showPage('acente')" class="sayfa-kis"><span>🏢</span><span>Acente</span></div>
+        <div onclick="showPage('iptal-ekle')" class="sayfa-kis"><span>🔄</span><span>İptal &amp; İade Ekle</span></div>
+        <div onclick="showPage('iptal-liste')" class="sayfa-kis"><span>📋</span><span>İptal &amp; İade Listesi</span></div>
+        <div onclick="showPage('teklif')" class="sayfa-kis"><span>📄</span><span>Teklif Oluştur</span></div>
+        <div onclick="showPage('iletisim')" class="sayfa-kis"><span>📞</span><span>İletişim Geçmişi</span></div>
+        <div onclick="showPage('toplu-islem')" class="sayfa-kis"><span>☑️</span><span>Toplu İşlemler</span></div>
+        <div onclick="showPage('belge-arama')" class="sayfa-kis"><span>🔍</span><span>Belge &amp; Akıllı Arama</span></div>
+        <div onclick="showPage('not-defteri')" class="sayfa-kis"><span>📝</span><span>Not Defteri</span></div>
+        <div onclick="showPage('whatsapp')" class="sayfa-kis"><span>💬</span><span>WhatsApp</span></div>
+        <div onclick="showPage('gelir-grafigi')" class="sayfa-kis"><span>📊</span><span>Gelir Grafiği</span></div>
       </div>
     </div>
   </div><!-- /sayfalar tab -->
@@ -4223,7 +4352,16 @@ alter table mk_database disable row level security;</pre>
         <label>Renk <small style="color:var(--muted);font-weight:400;">(sol kenarlık ve vurgu)</small></label>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center;">
           <span id="ozel-modul-renk-val" data-renk="#3b82f6"></span>
-          ${['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#f97316','#64748b','#0f172a'].map(r=>`<div onclick="secModulRenk('${r}')" style="width:26px;height:26px;border-radius:50%;background:${r};cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="${r}"></div>`).join('')}
+          <div onclick="secModulRenk('#3b82f6')" style="width:26px;height:26px;border-radius:50%;background:#3b82f6;cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="#3b82f6"></div>
+          <div onclick="secModulRenk('#10b981')" style="width:26px;height:26px;border-radius:50%;background:#10b981;cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="#10b981"></div>
+          <div onclick="secModulRenk('#f59e0b')" style="width:26px;height:26px;border-radius:50%;background:#f59e0b;cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="#f59e0b"></div>
+          <div onclick="secModulRenk('#ef4444')" style="width:26px;height:26px;border-radius:50%;background:#ef4444;cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="#ef4444"></div>
+          <div onclick="secModulRenk('#8b5cf6')" style="width:26px;height:26px;border-radius:50%;background:#8b5cf6;cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="#8b5cf6"></div>
+          <div onclick="secModulRenk('#ec4899')" style="width:26px;height:26px;border-radius:50%;background:#ec4899;cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="#ec4899"></div>
+          <div onclick="secModulRenk('#06b6d4')" style="width:26px;height:26px;border-radius:50%;background:#06b6d4;cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="#06b6d4"></div>
+          <div onclick="secModulRenk('#f97316')" style="width:26px;height:26px;border-radius:50%;background:#f97316;cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="#f97316"></div>
+          <div onclick="secModulRenk('#64748b')" style="width:26px;height:26px;border-radius:50%;background:#64748b;cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="#64748b"></div>
+          <div onclick="secModulRenk('#0f172a')" style="width:26px;height:26px;border-radius:50%;background:#0f172a;cursor:pointer;border:2px solid transparent;transition:border .15s;" class="renk-dot" data-r="#0f172a"></div>
         </div>
       </div>
 
@@ -11842,6 +11980,49 @@ function teklifCalc(){
   const brut=parseFloat(byId('teklif-brut')&&byId('teklif-brut').value)||0;
   if(net>0&&brut===0) sv('teklif-brut',(net*1.18).toFixed(2));
 }
+
+function teklifTanzimDegisti(){
+  // Tanzim tarihinden 30 gün sonrasını geçerlilik olarak öner
+  const t=gv('teklif-tanzim');
+  if(!t) return;
+  const d=new Date(t);d.setDate(d.getDate()+30);
+  if(!gv('teklif-gecerlilik')) sv('teklif-gecerlilik',d.toISOString().substr(0,10));
+}
+
+function teklifSirketOnizle(){
+  const wrap=byId('teklif-sirket-ozet-wrap');
+  const el=byId('teklif-sirket-ozet');
+  if(!wrap||!el) return;
+  const satirlar=[];
+  for(let i=1;i<=8;i++){
+    const ad=(byId('teklif-s'+i+'-ad')||{}).value||'';
+    const brut=parseFloat((byId('teklif-s'+i+'-brut')||{}).value)||0;
+    if(ad||brut>0) satirlar.push({sira:i,ad:ad||'Şirket '+i,brut});
+  }
+  if(!satirlar.length){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  // En ucuzu bul
+  const minBrut=Math.min(...satirlar.filter(s=>s.brut>0).map(s=>s.brut));
+  el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:12px;">
+    <thead><tr style="background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;">
+      <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border);">Sıra</th>
+      <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border);">Şirket</th>
+      <th style="padding:7px 12px;text-align:right;border-bottom:1px solid var(--border);">Brüt Prim</th>
+      <th style="padding:7px 12px;text-align:center;border-bottom:1px solid var(--border);">Durum</th>
+    </tr></thead>
+    <tbody>${satirlar.sort((a,b)=>a.brut-b.brut).map((s,i)=>{
+      const enUcuz=s.brut>0&&s.brut===minBrut;
+      const bg=i%2?'background:var(--bg);':'';
+      return `<tr style="${bg}${enUcuz?'background:color-mix(in srgb,var(--success) 8%,transparent);':''}">
+        <td style="padding:7px 12px;font-weight:700;color:var(--muted);">${s.sira}</td>
+        <td style="padding:7px 12px;font-weight:600;">${s.ad}</td>
+        <td style="padding:7px 12px;text-align:right;font-weight:800;color:${s.brut>0?'var(--success)':'var(--muted)'};">${s.brut>0?'₺'+fmt(s.brut):'—'}</td>
+        <td style="padding:7px 12px;text-align:center;">${enUcuz?'<span style="font-size:10px;font-weight:700;color:var(--success);background:color-mix(in srgb,var(--success) 15%,transparent);padding:2px 8px;border-radius:20px;">🏆 En Uygun</span>':''}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
 function saveTeklif(){
   const mid=gv('teklif-musteri');
   if(!mid){toast('Müşteri seçiniz','error');return;}
@@ -11849,72 +12030,160 @@ function saveTeklif(){
   const eid=gv('teklif-edit-id');
   const no=eid ? (DB.teklifler.find(t=>t.id===eid)||{}).no : 'TKL-'+(++_teklifNo);
   localStorage.setItem('_teklifNoSay',String(_teklifNo));
-  const obj={id:eid||uid(),musteriId:mid,no,poltur:gv('teklif-poltur'),sirket:gv('teklif-sirket'),
-    gecerlilik:gv('teklif-gecerlilik'),net:parseFloat(gv('teklif-net'))||0,brut:parseFloat(gv('teklif-brut'))||0,
-    teminat:parseFloat(gv('teklif-teminat'))||0,muafiyet:gv('teklif-muafiyet'),
-    notlar:gv('teklif-notlar'),durum:gv('teklif-durum'),tarih:new Date().toISOString().substr(0,10)};
+  // 8 şirket verisi
+  const sirketler=[];
+  for(let i=1;i<=8;i++){
+    const ad=(byId('teklif-s'+i+'-ad')||{}).value||'';
+    const brut=parseFloat((byId('teklif-s'+i+'-brut')||{}).value)||0;
+    if(ad||brut>0) sirketler.push({sira:i,ad,brut});
+  }
+  const obj={
+    id:eid||uid(), musteriId:mid, no,
+    poltur:gv('teklif-poltur'), sirket:gv('teklif-sirket'),
+    tanzim:gv('teklif-tanzim'), gecerlilik:gv('teklif-gecerlilik'),
+    brut:parseFloat(gv('teklif-brut'))||0,
+    notlar:gv('teklif-notlar'), durum:gv('teklif-durum'),
+    sirketler, tarih:new Date().toISOString().substr(0,10)
+  };
   if(eid) DB.teklifler=DB.teklifler.filter(t=>t.id!==eid);
   DB.teklifler.push(obj);
-  saveDB();renderTeklifListesi();resetTeklifForm();
+  saveDB(); renderTeklifListesi(); resetTeklifForm();
   sv('teklif-edit-id','');
   toast('Teklif kaydedildi','success');
-  byId('teklif-pdf-btn').style.display='inline-flex';
-  byId('teklif-pdf-btn').onclick=()=>_teklifPdfGoster(obj.id);
+  if(byId('teklif-pdf-btn')){
+    byId('teklif-pdf-btn').style.display='inline-flex';
+    byId('teklif-pdf-btn').onclick=()=>_teklifPdfGoster(obj.id);
+  }
 }
+
 function resetTeklifForm(){
-  ['teklif-edit-id','teklif-musteri','teklif-poltur','teklif-sirket','teklif-gecerlilik',
-   'teklif-net','teklif-brut','teklif-teminat','teklif-muafiyet','teklif-notlar'].forEach(id=>sv(id,''));
-  sv('teklif-durum','beklemede');sv('teklif-no','');
+  ['teklif-edit-id','teklif-musteri','teklif-poltur','teklif-sirket','teklif-tanzim',
+   'teklif-gecerlilik','teklif-brut','teklif-notlar'].forEach(id=>sv(id,''));
+  sv('teklif-durum','beklemede'); sv('teklif-no','');
+  for(let i=1;i<=8;i++){
+    const ad=byId('teklif-s'+i+'-ad'); const br=byId('teklif-s'+i+'-brut');
+    if(ad) ad.value=''; if(br) br.value='';
+  }
   mkSearchClear('teklif-musteri');
+  const w=byId('teklif-sirket-ozet-wrap');if(w)w.style.display='none';
   if(byId('teklif-pdf-btn')) byId('teklif-pdf-btn').style.display='none';
 }
+
 function renderTeklif(){
   renderTeklifListesi();
-  // Teklif no placeholder
   const noEl=byId('teklif-no');
   if(noEl&&!noEl.value) noEl.placeholder='TKL-'+(_teklifNo+1);
+  if(!gv('teklif-tanzim')) sv('teklif-tanzim', new Date().toISOString().substr(0,10));
 }
+
 function renderTeklifListesi(){
   const q=(gv('srch-teklif')||'').toLowerCase();
-  const el=byId('teklif-listesi');if(!el)return;
+  const el=byId('teklif-listesi'); if(!el) return;
   const list=(DB.teklifler||[]).slice().reverse().filter(t=>{
-    if(!q)return true;
+    if(!q) return true;
     const m=getMusteri(t.musteriId);
-    return (m&&m.ad.toLowerCase().includes(q))||(t.no||'').toLowerCase().includes(q)||(t.sirket||'').toLowerCase().includes(q)||(t.poltur||'').toLowerCase().includes(q);
+    return (m&&m.ad.toLowerCase().includes(q))||(t.no||'').toLowerCase().includes(q)||
+      (t.sirket||'').toLowerCase().includes(q)||(t.poltur||'').toLowerCase().includes(q);
   });
   const DURUM={beklemede:{lbl:'⏳ Beklemede',c:'var(--warning)'},onaylandi:{lbl:'✅ Onaylandı',c:'var(--success)'},reddedildi:{lbl:'❌ Reddedildi',c:'var(--danger)'},'suresi-doldu':{lbl:'⌛ Süresi Doldu',c:'var(--muted)'}};
-  el.innerHTML=list.length?list.map(t=>{
-    const m=getMusteri(t.musteriId);
-    const d=DURUM[t.durum]||DURUM.beklemede;
-    return `<div style="padding:11px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;cursor:pointer;"
-      onmouseover="this.style.background='color-mix(in srgb,var(--accent) 5%,transparent)'" onmouseout="this.style.background=''">
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <span style="font-weight:700;font-size:13px;">${m?m.ad:'—'}</span>
-          <span style="font-size:10px;font-family:monospace;color:var(--muted);">${t.no||''}</span>
-          <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:color-mix(in srgb,${d.c} 15%,transparent);color:${d.c};font-weight:700;">${d.lbl}</span>
-        </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:3px;">${t.poltur||''} · ${t.sirket||''} · Brüt: <b style="color:var(--accent);">₺${fmt(t.brut)}</b></div>
-        ${t.notlar?`<div style="font-size:10px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.notlar}</div>`:''}
-      </div>
-      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
-        <button class="btn btn-outline btn-xs" onclick="editTeklif('${t.id}')">✏️</button>
-        <button class="btn btn-info btn-xs" onclick="_teklifPdfGoster('${t.id}')">📄</button>
-        <button class="btn btn-danger btn-xs" onclick="delTeklif('${t.id}')">🗑️</button>
-      </div>
-    </div>`;
-  }).join(''):'<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Teklif bulunamadı</div>';
+  if(!list.length){
+    el.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Teklif bulunamadı</div>';
+    return;
+  }
+  el.innerHTML=`<table id="tbl-teklif-list" style="width:100%;border-collapse:collapse;font-size:12px;">
+    <thead><tr style="background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;">
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Müşteri</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">No</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Tür</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Şirket</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Tanzim</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Geçerlilik</th>
+      <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Brüt</th>
+      <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">Durum</th>
+      <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">Şirketler</th>
+      <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">İşlem</th>
+    </tr></thead>
+    <tbody>${list.map((t,i)=>{
+      const m=getMusteri(t.musteriId);
+      const d=DURUM[t.durum]||DURUM.beklemede;
+      const bg=i%2?'background:var(--bg);':'';
+      const sirketSay=(t.sirketler||[]).filter(s=>s.ad||s.brut>0).length;
+      const minBrut=sirketSay>0?Math.min(...(t.sirketler||[]).filter(s=>s.brut>0).map(s=>s.brut)):0;
+      return `<tr style="${bg}cursor:pointer;"
+          onmouseover="this.style.background='color-mix(in srgb,var(--accent) 5%,transparent)'"
+          onmouseout="this.style.background='${i%2?'var(--bg)':''}'">
+        <td style="padding:7px 10px;font-weight:600;" onclick="openMusteriDetay('${t.musteriId}')">${m?m.ad:'—'}</td>
+        <td style="padding:7px 10px;font-family:monospace;font-size:11px;color:var(--muted);">${t.no||''}</td>
+        <td style="padding:7px 10px;">${t.poltur||'—'}</td>
+        <td style="padding:7px 10px;">${t.sirket||'—'}</td>
+        <td style="padding:7px 10px;font-size:11px;color:var(--muted);">${fmtD(t.tanzim)||'—'}</td>
+        <td style="padding:7px 10px;font-size:11px;color:var(--muted);">${fmtD(t.gecerlilik)||'—'}</td>
+        <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--success);">${t.brut>0?'₺'+fmt(t.brut):'—'}</td>
+        <td style="padding:7px 10px;text-align:center;">
+          <span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;background:color-mix(in srgb,${d.c} 15%,transparent);color:${d.c};">${d.lbl}</span>
+        </td>
+        <td style="padding:7px 10px;text-align:center;" onclick="event.stopPropagation()">
+          ${sirketSay>0
+            ?`<button onclick="teklifSirketDetay('${t.id}')" style="border:none;background:color-mix(in srgb,var(--info) 12%,transparent);color:var(--info);border-radius:6px;padding:3px 8px;font-size:10px;cursor:pointer;">${sirketSay} şirket${minBrut>0?' · ₺'+fmt(minBrut):''}</button>`
+            :'<span style="color:var(--muted);font-size:11px;">—</span>'}
+        </td>
+        <td style="padding:7px 10px;text-align:center;white-space:nowrap;" onclick="event.stopPropagation()">
+          <button onclick="editTeklif('${t.id}')" style="border:none;background:color-mix(in srgb,var(--warning) 15%,transparent);color:var(--warning);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:3px;">✏️</button>
+          <button onclick="_teklifPdfGoster('${t.id}')" style="border:none;background:color-mix(in srgb,var(--info) 12%,transparent);color:var(--info);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:3px;">📄</button>
+          <button onclick="delTeklif('${t.id}')" style="border:none;background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
 }
+
+function teklifSirketDetay(id){
+  const t=DB.teklifler.find(x=>x.id===id); if(!t) return;
+  const m=getMusteri(t.musteriId);
+  const liste=(t.sirketler||[]).filter(s=>s.ad||s.brut>0);
+  if(!liste.length){toast('Şirket karşılaştırması yok','');return;}
+  const minBrut=Math.min(...liste.filter(s=>s.brut>0).map(s=>s.brut));
+  hizliModalAc('🏢 Şirket Karşılaştırması — '+(m?m.ad:''),
+    `<div style="margin-bottom:10px;font-size:12px;color:var(--muted);">${t.poltur||''} · ${fmtD(t.tanzim)||''}</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr style="background:var(--bg);font-size:10px;color:var(--muted);text-transform:uppercase;">
+        <th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);">Şirket</th>
+        <th style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border);">Brüt Prim</th>
+        <th style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--border);"></th>
+      </tr></thead>
+      <tbody>${liste.sort((a,b)=>a.brut-b.brut).map((s,i)=>{
+        const enUcuz=s.brut>0&&s.brut===minBrut;
+        return `<tr style="${i%2?'background:var(--bg);':''}${enUcuz?'background:color-mix(in srgb,var(--success) 8%,transparent);':''}">
+          <td style="padding:9px 12px;font-weight:600;">${s.ad||'Şirket '+s.sira}</td>
+          <td style="padding:9px 12px;text-align:right;font-weight:800;color:${s.brut>0?'var(--success)':'var(--muted)'};">${s.brut>0?'₺'+fmt(s.brut):'—'}</td>
+          <td style="padding:9px 12px;text-align:center;">${enUcuz?'<span style="font-size:10px;font-weight:700;color:var(--success);">🏆 En Uygun</span>':''}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`,
+    `<button class="btn btn-outline" onclick="hizliModalKapat()">Kapat</button>
+     <button class="btn btn-primary btn-sm" onclick="hizliModalKapat();editTeklif('${id}')">✏️ Düzenle</button>`
+  );
+}
+
 function editTeklif(id){
-  const t=DB.teklifler.find(x=>x.id===id);if(!t)return;
-  sv('teklif-edit-id',t.id);sv('teklif-no',t.no||'');
+  const t=DB.teklifler.find(x=>x.id===id); if(!t) return;
+  sv('teklif-edit-id',t.id); sv('teklif-no',t.no||'');
   sv('teklif-musteri',t.musteriId);
-  const m=getMusteri(t.musteriId);const si=byId('teklif-musteri-search');if(si&&m)si.value=m.ad;
-  sv('teklif-poltur',t.poltur||'');sv('teklif-sirket',t.sirket||'');sv('teklif-gecerlilik',t.gecerlilik||'');
-  sv('teklif-net',t.net||'');sv('teklif-brut',t.brut||'');sv('teklif-teminat',t.teminat||'');
-  sv('teklif-muafiyet',t.muafiyet||'');sv('teklif-notlar',t.notlar||'');sv('teklif-durum',t.durum||'beklemede');
+  const m=getMusteri(t.musteriId);
+  const si=byId('teklif-musteri-search'); if(si&&m) si.value=m.ad;
+  sv('teklif-poltur',t.poltur||''); sv('teklif-sirket',t.sirket||'');
+  sv('teklif-tanzim',t.tanzim||''); sv('teklif-gecerlilik',t.gecerlilik||'');
+  sv('teklif-brut',t.brut||''); sv('teklif-notlar',t.notlar||'');
+  sv('teklif-durum',t.durum||'beklemede');
+  // 8 şirket alanlarını doldur
+  for(let i=1;i<=8;i++){
+    const s=(t.sirketler||[]).find(x=>x.sira===i)||{};
+    const ad=byId('teklif-s'+i+'-ad'); const br=byId('teklif-s'+i+'-brut');
+    if(ad) ad.value=s.ad||''; if(br) br.value=s.brut||'';
+  }
+  teklifSirketOnizle();
   if(byId('teklif-pdf-btn')){byId('teklif-pdf-btn').style.display='inline-flex';byId('teklif-pdf-btn').onclick=()=>_teklifPdfGoster(t.id);}
-  byId('page-teklif').querySelector('.card').scrollIntoView({behavior:'smooth'});
+  byId('page-teklif').scrollIntoView({behavior:'smooth'});
 }
 function delTeklif(id){if(!confirm('Teklif silinsin mi?'))return;DB.teklifler=DB.teklifler.filter(t=>t.id!==id);saveDB();renderTeklifListesi();toast('Silindi','error');}
 function _teklifPdfGoster(id){
