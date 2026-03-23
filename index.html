@@ -932,8 +932,11 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <a onclick="showPage('pt-ekstra-ekle')" id="nav-pt-ekstra-ekle"><span class="ico">📌</span>Ekstra Kayıt Ekle</a>
     <a onclick="showPage('pt-ekstra-liste')" id="nav-pt-ekstra-liste"><span class="ico">📋</span>Ekstra Kayıtlar</a>
     <div class="nav-sec">Finans</div>
+    <a onclick="showPage('finans')" id="nav-finans"><span class="ico">💼</span>Finans</a>
     <a onclick="showPage('cari')" id="nav-cari"><span class="ico">💰</span>Cari</a>
-    <a onclick="showPage('tahsilat')" id="nav-tahsilat"><span class="ico">💳</span>Tahsilat</a>
+    <a onclick="showPage('cari-liste')" id="nav-cari-liste"><span class="ico">📋</span>Cari Listesi</a>
+    <a onclick="showPage('tahsilat')" id="nav-tahsilat"><span class="ico">💳</span>Tahsilat Ekle</a>
+    <a onclick="showPage('tahsilat-liste')" id="nav-tahsilat-liste"><span class="ico">📋</span>Tahsilat Listesi</a>
     <a onclick="showPage('kasa')" id="nav-kasa"><span class="ico">🏦</span>MKöçe Kasa</a>
     <a onclick="showPage('kasa-pol')" id="nav-kasa-pol" style="padding-left:22px;font-size:11.5px;"><span class="ico" style="font-size:12px;">📋</span>Acente Komisyon</a>
     <a onclick="showPage('kasa-ipt')" id="nav-kasa-ipt" style="padding-left:22px;font-size:11.5px;"><span class="ico" style="font-size:12px;">🔄</span>MKöçe İptal Kazanç</a>
@@ -1026,6 +1029,9 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <div class="sc-btn" onclick="showPage('cari')"><div class="sc-ico">💰</div>Cari Ekle</div>
     <div class="sc-btn" onclick="showPage('iptal-ekle')"><div class="sc-ico">🔄</div>İptal &amp; İade</div>
     <div class="sc-btn" onclick="showPage('teklif')"><div class="sc-ico">📄</div>Teklif Oluştur</div>
+    <div class="sc-btn" onclick="showPage('pt-ekstra-ekle')"><div class="sc-ico">📌</div>Ekstra Kayıt</div>
+    <div class="sc-btn" onclick="showPage('iletisim')"><div class="sc-ico">📞</div>İletişim Kaydı</div>
+    <div class="sc-btn" onclick="showPage('not-defteri')"><div class="sc-ico">📝</div>Not Ekle</div>
   </div>
 
   <!-- İstatistikler (tıklanabilir) -->
@@ -1142,6 +1148,20 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     </div>
     <div id="dash-mk-iade-list">
       <div style="color:var(--muted);font-size:12px;padding:8px;">İptal & iade kaydı bulunamadı</div>
+    </div>
+  </div>
+
+  <!-- EKSTRA TAKİP KAYITLARI -->
+  <div class="card" style="margin-top:14px;">
+    <div class="card-header">
+      <div class="card-title" style="cursor:pointer;" onclick="showPage('pt-ekstra-liste')">📌 Ekstra Takip Kayıtları ↗</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div id="dash-pt-ekstra-ozet" style="font-size:11px;"></div>
+        <button class="btn btn-success btn-sm" onclick="showPage('pt-ekstra-ekle')">➕ Yeni Ekle</button>
+      </div>
+    </div>
+    <div id="dash-pt-ekstra-liste">
+      <div style="color:var(--muted);font-size:12px;padding:8px;">Ekstra kayıt bulunamadı</div>
     </div>
   </div>
 
@@ -1329,8 +1349,34 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <button class="btn btn-info btn-sm" onclick="exportTableCSV('tbl-pt-extra-2','ekstra-takip')">📊 Excel</button>
       </div>
     </div>
-    <div class="search-bar">
-      <input type="text" id="srch-pt-ekstra" placeholder="🔍 Müşteri / Poliçe No / Plaka / Şirket ara..." oninput="renderPtEkstraListe()">
+    <div class="search-bar" style="flex-wrap:wrap;gap:6px;">
+      <input type="text" id="srch-pt-ekstra" placeholder="🔍 Genel arama..." oninput="renderPtEkstraListe()" style="min-width:160px;">
+      <input type="text" id="srch-pt-musteri" placeholder="👤 Müşteri" oninput="renderPtEkstraListe()" style="min-width:120px;">
+      <input type="text" id="srch-pt-polno"   placeholder="🔢 Poliçe No" oninput="renderPtEkstraListe()" style="min-width:110px;">
+      <input type="text" id="srch-pt-plaka"   placeholder="🚗 Plaka" oninput="renderPtEkstraListe()" style="min-width:90px;">
+      <select id="srch-pt-yil" onchange="renderPtEkstraListe()" style="min-width:80px;">
+        <option value="">Tüm Yıllar</option>
+        <option value="2026">2026</option><option value="2025">2025</option>
+        <option value="2024">2024</option><option value="2023">2023</option>
+        <option value="2022">2022</option><option value="2021">2021</option>
+      </select>
+      <select id="srch-pt-ay" onchange="renderPtEkstraListe()" style="min-width:90px;">
+              <option value="">Tüm Aylar</option>
+              <option value="01">Ocak</option>
+              <option value="02">Şubat</option>
+              <option value="03">Mart</option>
+              <option value="04">Nisan</option>
+              <option value="05">Mayıs</option>
+              <option value="06">Haziran</option>
+              <option value="07">Temmuz</option>
+              <option value="08">Ağustos</option>
+              <option value="09">Eylül</option>
+              <option value="10">Ekim</option>
+              <option value="11">Kasım</option>
+              <option value="12">Aralık</option>
+      </select>
+      <input type="date" id="srch-pt-t1" onchange="renderPtEkstraListe()">
+      <input type="date" id="srch-pt-t2" onchange="renderPtEkstraListe()">
     </div>
     <div id="pt-ekstra-liste-icerik">
       <div style="color:var(--muted);font-size:12px;padding:10px;">Ekstra kayıt bulunamadı</div>
@@ -1974,6 +2020,27 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <input type="text" placeholder="Poliçe No" id="pl-sn" oninput="_dRenderPoliceListesi()">
       <input type="text" placeholder="Plaka" id="pl-sp" oninput="_dRenderPoliceListesi()">
       <select id="pl-sac" onchange="renderPoliceListesi()"><option value="">Tüm Acenteler</option></select>
+      <select id="pl-yil" onchange="renderPoliceListesi()" style="min-width:80px;">
+        <option value="">Tüm Yıllar</option>
+        <option value="2026">2026</option><option value="2025">2025</option>
+        <option value="2024">2024</option><option value="2023">2023</option>
+        <option value="2022">2022</option><option value="2021">2021</option>
+      </select>
+      <select id="pl-ay" onchange="renderPoliceListesi()" style="min-width:90px;">
+              <option value="">Tüm Aylar</option>
+              <option value="01">Ocak</option>
+              <option value="02">Şubat</option>
+              <option value="03">Mart</option>
+              <option value="04">Nisan</option>
+              <option value="05">Mayıs</option>
+              <option value="06">Haziran</option>
+              <option value="07">Temmuz</option>
+              <option value="08">Ağustos</option>
+              <option value="09">Eylül</option>
+              <option value="10">Ekim</option>
+              <option value="11">Kasım</option>
+              <option value="12">Aralık</option>
+      </select>
       <input type="date" id="pl-t1" onchange="renderPoliceListesi()">
       <input type="date" id="pl-t2" onchange="renderPoliceListesi()">
       <button class="btn btn-outline btn-sm" onclick="plSort('az')">A→Z</button>
@@ -1998,8 +2065,26 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <button class="btn btn-info btn-sm" onclick="exportTableCSV('tbl-takip','takip')">📊 Excel</button>
       </div>
     </div>
-    <div class="search-bar">
-      <input type="text" placeholder="🔍 Müşteri / Poliçe No / Plaka" id="srch-takip" oninput="_dRenderTakip()">
+    <div class="search-bar" style="flex-wrap:wrap;gap:6px;">
+      <input type="text" placeholder="🔍 Genel arama..." id="srch-takip" oninput="_dRenderTakip()" style="min-width:160px;">
+      <input type="text" placeholder="👤 Müşteri" id="srch-takip-musteri" oninput="_dRenderTakip()" style="min-width:120px;">
+      <input type="text" placeholder="🔢 Poliçe No" id="srch-takip-polno" oninput="_dRenderTakip()" style="min-width:110px;">
+      <input type="text" placeholder="🚗 Plaka" id="srch-takip-plaka" oninput="_dRenderTakip()" style="min-width:90px;">
+      <select id="srch-takip-yil" onchange="renderTakip()" style="min-width:80px;">
+        <option value="">Tüm Yıllar</option>
+        <option value="2026">2026</option><option value="2025">2025</option>
+        <option value="2024">2024</option><option value="2023">2023</option>
+        <option value="2022">2022</option><option value="2021">2021</option>
+      </select>
+      <select id="srch-takip-ay" onchange="renderTakip()" style="min-width:90px;">
+        <option value="">Tüm Aylar</option>
+        <option value="01">Ocak</option><option value="02">Şubat</option>
+        <option value="03">Mart</option><option value="04">Nisan</option>
+        <option value="05">Mayıs</option><option value="06">Haziran</option>
+        <option value="07">Temmuz</option><option value="08">Ağustos</option>
+        <option value="09">Eylül</option><option value="10">Ekim</option>
+        <option value="11">Kasım</option><option value="12">Aralık</option>
+      </select>
       <input type="date" id="takip-t1" onchange="renderTakip()">
       <input type="date" id="takip-t2" onchange="renderTakip()">
     </div>
@@ -2024,6 +2109,105 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <thead><tr><th>Müşteri</th><th>Başlama</th><th>Bitiş</th><th>Poliçe No</th><th>Şirket</th><th>Plaka</th><th>Belge Seri</th><th>Açıklama</th><th>İşlem</th></tr></thead>
         <tbody id="tbody-pt-extra"></tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- FİNANS HUB -->
+<div id="page-finans" class="page">
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:20px;">
+    <div onclick="showPage('cari')" style="cursor:pointer;background:var(--card);border:2px solid var(--success);border-radius:14px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:all .2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+      <div style="width:50px;height:50px;border-radius:12px;background:color-mix(in srgb,var(--success) 15%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;">➕</div>
+      <div><div style="font-size:14px;font-weight:800;">Cari Ekle</div><div style="font-size:11px;color:var(--muted);margin-top:3px;">Yeni cari hareketi</div></div>
+    </div>
+    <div onclick="showPage('cari-liste')" style="cursor:pointer;background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:all .2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+      <div style="width:50px;height:50px;border-radius:12px;background:color-mix(in srgb,var(--primary) 12%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;">💰</div>
+      <div><div style="font-size:14px;font-weight:800;">Cari Listesi</div><div style="font-size:11px;color:var(--muted);margin-top:3px;">Müşteri bakiyeleri</div></div>
+      <div id="hub-cari-stat" style="font-size:10px;color:var(--primary);font-weight:700;"></div>
+    </div>
+    <div onclick="showPage('tahsilat')" style="cursor:pointer;background:var(--card);border:2px solid var(--warning);border-radius:14px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:all .2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+      <div style="width:50px;height:50px;border-radius:12px;background:color-mix(in srgb,var(--warning) 12%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;">💳</div>
+      <div><div style="font-size:14px;font-weight:800;">Tahsilat Ekle</div><div style="font-size:11px;color:var(--muted);margin-top:3px;">Yeni tahsilat kaydı</div></div>
+    </div>
+    <div onclick="showPage('tahsilat-liste')" style="cursor:pointer;background:var(--card);border:2px solid var(--info);border-radius:14px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:all .2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+      <div style="width:50px;height:50px;border-radius:12px;background:color-mix(in srgb,var(--info) 12%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;">📋</div>
+      <div><div style="font-size:14px;font-weight:800;">Tahsilat Listesi</div><div style="font-size:11px;color:var(--muted);margin-top:3px;">Tüm tahsilatlar</div></div>
+      <div id="hub-tahsilat-stat" style="font-size:10px;color:var(--info);font-weight:700;"></div>
+    </div>
+  </div>
+  <!-- Özet -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">📊 Finans Özeti</div></div>
+    <div id="finans-hub-ozet" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:4px 0;">
+      <div style="color:var(--muted);font-size:12px;">Yükleniyor...</div>
+    </div>
+  </div>
+</div>
+
+<!-- CARİ LİSTESİ (ayrı sayfa) -->
+<div id="page-cari-liste" class="page">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">💰 Cari Listesi</div>
+      <div style="display:flex;gap:7px;">
+        <button class="btn btn-success btn-sm" onclick="showPage('cari')">➕ Cari Ekle</button>
+        <button class="btn btn-info btn-sm" onclick="exportTableCSV('tbl-cari-liste2','cari-liste')">📊 Excel</button>
+      </div>
+    </div>
+    <div class="search-bar">
+      <input type="text" placeholder="🔍 Müşteri ara..." id="srch-cari-liste" oninput="renderCariListe()">
+      <button class="btn btn-outline btn-sm" onclick="cariFilter='all';renderCariListe()">Tümü</button>
+      <button class="btn btn-warning btn-sm" onclick="cariFilter='borclu';renderCariListe()">Borçlular</button>
+      <button class="btn btn-success btn-sm" onclick="cariFilter='alacakli';renderCariListe()">Alacaklılar</button>
+    </div>
+    <div id="cari-liste-icerik">
+      <div style="color:var(--muted);font-size:12px;padding:10px;">Yükleniyor...</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAHSİLAT LİSTESİ (ayrı sayfa) -->
+<div id="page-tahsilat-liste" class="page">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📋 Tahsilat Listesi</div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;">
+        <button class="btn btn-success btn-sm" onclick="showPage('tahsilat')">➕ Tahsilat Ekle</button>
+        <button class="btn btn-info btn-sm" onclick="exportTableCSV('tbl-tahsilat-liste2','tahsilat-liste')">📊 Excel</button>
+        <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ Yazdır</button>
+      </div>
+    </div>
+    <div class="search-bar" style="flex-wrap:wrap;gap:6px;">
+      <input type="text" placeholder="🔍 Genel arama..." id="srch-th-liste" oninput="renderTahsilatListe()" style="min-width:150px;">
+      <input type="text" placeholder="👤 Müşteri" id="srch-th-liste-musteri" oninput="renderTahsilatListe()" style="min-width:120px;">
+      <input type="text" placeholder="🔢 Poliçe No" id="srch-th-liste-polno" oninput="renderTahsilatListe()" style="min-width:110px;">
+      <select id="srch-th-liste-durum" onchange="renderTahsilatListe()">
+        <option value="">Tüm Durumlar</option>
+        <option value="bekliyor">Bekliyor</option>
+        <option value="tahsil-edildi">Tahsil Edildi</option>
+        <option value="gecikti">Gecikti</option>
+        <option value="iptal">İptal</option>
+      </select>
+      <select id="srch-th-liste-yil" onchange="renderTahsilatListe()" style="min-width:80px;">
+        <option value="">Tüm Yıllar</option>
+        <option value="2026">2026</option><option value="2025">2025</option>
+        <option value="2024">2024</option><option value="2023">2023</option>
+        <option value="2022">2022</option><option value="2021">2021</option>
+      </select>
+      <select id="srch-th-liste-ay" onchange="renderTahsilatListe()" style="min-width:90px;">
+        <option value="">Tüm Aylar</option>
+        <option value="01">Ocak</option><option value="02">Şubat</option>
+        <option value="03">Mart</option><option value="04">Nisan</option>
+        <option value="05">Mayıs</option><option value="06">Haziran</option>
+        <option value="07">Temmuz</option><option value="08">Ağustos</option>
+        <option value="09">Eylül</option><option value="10">Ekim</option>
+        <option value="11">Kasım</option><option value="12">Aralık</option>
+      </select>
+      <input type="date" id="srch-th-liste-t1" onchange="renderTahsilatListe()">
+      <input type="date" id="srch-th-liste-t2" onchange="renderTahsilatListe()">
+    </div>
+    <div id="tahsilat-liste-icerik">
+      <div style="color:var(--muted);font-size:12px;padding:10px;">Yükleniyor...</div>
     </div>
   </div>
 </div>
@@ -2349,7 +2533,35 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
   <!-- ACENTE TAHSİLAT LİSTESİ -->
   <div id="acente-tab-tahsilat-liste" style="display:none;">
   <div class="card">
-    <div class="card-header"><div class="card-title">📊 Acente Tahsilat Listesi</div></div>
+    <div class="card-header">
+      <div class="card-title">📊 Acente Tahsilat Listesi</div>
+      <button class="btn btn-info btn-sm" onclick="exportTableCSV('tbl-at','acente-tahsilat')">📊 Excel</button>
+    </div>
+    <div class="search-bar" style="flex-wrap:wrap;gap:6px;">
+      <input type="text" id="srch-at-genel"   placeholder="🔍 Genel arama..."  oninput="renderAtList()" style="min-width:150px;">
+      <input type="text" id="srch-at-musteri" placeholder="👤 Müşteri"         oninput="renderAtList()" style="min-width:120px;">
+      <input type="text" id="srch-at-polno"   placeholder="🔢 Poliçe No"       oninput="renderAtList()" style="min-width:110px;">
+      <input type="text" id="srch-at-plaka"   placeholder="🚗 Plaka"           oninput="renderAtList()" style="min-width:90px;">
+      <select id="srch-at-yil" onchange="renderAtList()" style="min-width:80px;">
+        <option value="">Tüm Yıllar</option>
+        <option value="2026">2026</option><option value="2025">2025</option>
+        <option value="2024">2024</option><option value="2023">2023</option>
+        <option value="2022">2022</option><option value="2021">2021</option>
+      </select>
+      <select id="srch-at-ay" onchange="renderAtList()" style="min-width:90px;">
+        <option value="">Tüm Aylar</option>
+        <option value="01">Ocak</option><option value="02">Şubat</option>
+        <option value="03">Mart</option><option value="04">Nisan</option>
+        <option value="05">Mayıs</option><option value="06">Haziran</option>
+        <option value="07">Temmuz</option><option value="08">Ağustos</option>
+        <option value="09">Eylül</option><option value="10">Ekim</option>
+        <option value="11">Kasım</option><option value="12">Aralık</option>
+      </select>
+      <input type="date" id="srch-at-t1" onchange="renderAtList()">
+      <input type="date" id="srch-at-t2" onchange="renderAtList()">
+      <button class="btn btn-outline btn-sm" onclick="atFiltreSifirla()">🔄 Sıfırla</button>
+    </div>
+    <div id="at-liste-ozet" style="display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 4px 0;font-size:11px;color:var(--muted);padding:0 4px;"></div>
     <div class="table-wrap">
       <table id="tbl-at">
         <thead><tr><th>Tarih</th><th>Acente</th><th>Şirket</th><th>Poliçe Türü</th><th>İşlem Türü</th><th>TC</th><th>Vergi No</th><th>Müşteri</th><th>Pol.No</th><th>Plaka</th><th>Belge Seri</th><th>Tanzim</th><th>Başlama</th><th>Bitiş</th><th>Net Tutar</th><th>Brüt Tutar</th><th>Ac.Komisyon</th><th>Kom.İadesi</th><th>Tahsilat Tutarı</th><th>Açıklama</th><th>İşlem</th></tr></thead>
@@ -4192,7 +4404,7 @@ setInterval(updateClock,1000);updateClock();
 // ==============================
 // NAVIGATION
 // ==============================
-const pageTitles={dashboard:'Ana Sayfa','kasa-pol':'📋 Acente Komisyon','kasa-ipt':'🔄 MKöçe İptal Kazanç','kasa-acb':'🏢 Acente Bana Kalan','kasa-gen':'🏆 Toplam Kazanç',musteriler:'Müşteriler','police-ekle':'Poliçe Ekle','police-listesi':'Poliçe Listesi','police-takip':'Poliçe Takip',policeler:'📁 Poliçeler','pt-ekstra-ekle':'📌 Ekstra Takip Kayıt Ekle','pt-ekstra-liste':'📋 Ekstra Takip Kayıtları',cari:'Cari',tahsilat:'Tahsilat',kasa:'MKöçe Kasa',acente:'Acente','iptal-ekle':'🔄 İptal & İade Ekle','iptal-liste':'📋 İptal & İade Listesi','iptal-iade':'İptal & İadeler','not-defteri':'Not Defteri',whatsapp:'WhatsApp',ayarlar:'Ayarlar','gelir-grafigi':'📊 Gelir Grafiği',teklif:'📄 Teklif Oluştur',iletisim:'📞 İletişim Geçmişi','toplu-islem':'☑️ Toplu İşlemler','belge-arama':'🔍 Belge & Akıllı Arama'};
+const pageTitles={dashboard:'Ana Sayfa','kasa-pol':'📋 Acente Komisyon','kasa-ipt':'🔄 MKöçe İptal Kazanç','kasa-acb':'🏢 Acente Bana Kalan','kasa-gen':'🏆 Toplam Kazanç',musteriler:'Müşteriler','police-ekle':'Poliçe Ekle','police-listesi':'Poliçe Listesi','police-takip':'Poliçe Takip',policeler:'📁 Poliçeler','pt-ekstra-ekle':'📌 Ekstra Takip Kayıt Ekle','pt-ekstra-liste':'📋 Ekstra Takip Kayıtları',finans:'💼 Finans',cari:'💰 Cari Ekle','cari-liste':'📋 Cari Listesi',tahsilat:'💳 Tahsilat Ekle','tahsilat-liste':'📋 Tahsilat Listesi',kasa:'MKöçe Kasa',acente:'Acente','iptal-ekle':'🔄 İptal & İade Ekle','iptal-liste':'📋 İptal & İade Listesi','iptal-iade':'İptal & İadeler','not-defteri':'Not Defteri',whatsapp:'WhatsApp',ayarlar:'Ayarlar','gelir-grafigi':'📊 Gelir Grafiği',teklif:'📄 Teklif Oluştur',iletisim:'📞 İletişim Geçmişi','toplu-islem':'☑️ Toplu İşlemler','belge-arama':'🔍 Belge & Akıllı Arama'};
 
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -4218,7 +4430,7 @@ function showPage(name){
   if(vBtn){vBtn.style.display=(name==='dashboard')?'inline-flex':'none';}
   closeSidebar();syncBottomNav(name);
   if(['police-ekle','police-takip','tahsilat','iptal-ekle','iptal-liste','iptal-iade','whatsapp','not-defteri','cari','teklif','iletisim','toplu-islem'].includes(name))populateSelects();
-  const renders={dashboard:renderDashboard,musteriler:renderMusteriler,'police-listesi':renderPoliceListesi,'police-takip':renderTakip,policeler:renderPolicelerHub,'pt-ekstra-ekle':()=>populateSelects(),'pt-ekstra-liste':renderPtEkstraListe,cari:renderCari,tahsilat:renderTahsilat,kasa:renderKasa,'kasa-pol':()=>renderKasaAlt('pol'),'kasa-ipt':()=>renderKasaAlt('ipt'),'kasa-acb':()=>renderKasaAlt('acb'),'kasa-gen':()=>renderKasaAlt('gen'),acente:renderAcente,'iptal-ekle':()=>{},'iptal-liste':renderIptal,'iptal-iade':()=>showPage('iptal-ekle'),'not-defteri':renderNots,whatsapp:initWA,ayarlar:renderAyarlar,'gelir-grafigi':renderGelirGrafigi,teklif:renderTeklif,iletisim:renderIletisim,'toplu-islem':renderTopluIslem,'belge-arama':renderBelgeArama};
+  const renders={dashboard:renderDashboard,musteriler:renderMusteriler,'police-listesi':renderPoliceListesi,'police-takip':renderTakip,policeler:renderPolicelerHub,'pt-ekstra-ekle':()=>populateSelects(),'pt-ekstra-liste':renderPtEkstraListe,finans:renderFinansHub,cari:renderCari,'cari-liste':renderCariListe,tahsilat:renderTahsilat,'tahsilat-liste':renderTahsilatListe,kasa:renderKasa,'kasa-pol':()=>renderKasaAlt('pol'),'kasa-ipt':()=>renderKasaAlt('ipt'),'kasa-acb':()=>renderKasaAlt('acb'),'kasa-gen':()=>renderKasaAlt('gen'),acente:renderAcente,'iptal-ekle':()=>{},'iptal-liste':renderIptal,'iptal-iade':()=>showPage('iptal-ekle'),'not-defteri':renderNots,whatsapp:initWA,ayarlar:renderAyarlar,'gelir-grafigi':renderGelirGrafigi,teklif:renderTeklif,iletisim:renderIletisim,'toplu-islem':renderTopluIslem,'belge-arama':renderBelgeArama};
   if(renders[name])renders[name]();
 }
 function toggleSidebar(){byId('sidebar').classList.toggle('open');byId('sb-overlay').classList.toggle('show');}
@@ -5765,6 +5977,8 @@ function renderPoliceListesi(){
   const sp=gv('pl-sp').toLowerCase();
   const sac=gv('pl-sac');
   const t1=gv('pl-t1');const t2=gv('pl-t2');
+  const yil=gv('pl-yil')||'';
+  const ay=gv('pl-ay')||'';
   let list=DB.policeler.filter(p=>{
     const m=getMusteri(p.musteriId);
     if(sm&&!(m&&m.ad.toLowerCase().includes(sm)))return false;
@@ -5773,6 +5987,8 @@ function renderPoliceListesi(){
     if(sac&&p.acenteId!==sac)return false;
     if(t1&&p.tanzim&&p.tanzim<t1)return false;
     if(t2&&p.tanzim&&p.tanzim>t2)return false;
+    if(yil&&p.tanzim&&!p.tanzim.startsWith(yil))return false;
+    if(ay&&p.tanzim&&p.tanzim.slice(5,7)!==ay)return false;
     return true;
   });
   const tb=byId('tbody-pl');
@@ -6157,15 +6373,28 @@ function takipTab(el,t){
   el.classList.add('active');takipTabFilter=t;renderTakip();
 }
 function renderTakip(){
-  const srch=gv('srch-takip').toLowerCase();
+  const srch   = (gv('srch-takip')||'').toLowerCase();
+  const musteri= (gv('srch-takip-musteri')||'').toLowerCase();
+  const polno  = (gv('srch-takip-polno')||'').toLowerCase();
+  const plaka  = (gv('srch-takip-plaka')||'').toLowerCase();
+  const yil    = gv('srch-takip-yil')||'';
+  const ay     = gv('srch-takip-ay')||'';
   const t1=gv('takip-t1');const t2=gv('takip-t2');
   const today=new Date();
 
   let list=DB.policeler.filter(p=>{
     const m=getMusteri(p.musteriId);
-    if(srch&&!(m&&m.ad.toLowerCase().includes(srch))&&!p.polNo.toLowerCase().includes(srch)&&!(p.plaka||'').toLowerCase().includes(srch))return false;
+    const mAd=(m?m.ad:'').toLowerCase();
+    const pNo=(p.polNo||'').toLowerCase();
+    const pPlaka=(p.plaka||'').toLowerCase();
+    if(srch&&!mAd.includes(srch)&&!pNo.includes(srch)&&!pPlaka.includes(srch))return false;
+    if(musteri&&!mAd.includes(musteri))return false;
+    if(polno&&!pNo.includes(polno))return false;
+    if(plaka&&!pPlaka.includes(plaka))return false;
     if(t1&&p.baslama&&p.baslama<t1)return false;
     if(t2&&p.bitis&&p.bitis>t2)return false;
+    if(yil&&p.baslama&&!p.baslama.startsWith(yil))return false;
+    if(ay&&p.baslama&&p.baslama.slice(5,7)!==ay)return false;
     if(takipTabFilter==='30'){
       if(!p.bitis)return false;
       const b=new Date(p.bitis);
@@ -7120,10 +7349,62 @@ function saveAtTahsilat(){
 }
 function renderAtList(){
   const tb=byId('tbody-at');
-  if(!DB.atList.length){tb.innerHTML='<tr><td colspan="21" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';return;}
-  tb.innerHTML=DB.atList.map(t=>{
+  if(!tb) return;
+
+  // Filtreler
+  const genel  =(gv('srch-at-genel')||'').toLowerCase();
+  const musteri=(gv('srch-at-musteri')||'').toLowerCase();
+  const polno  =(gv('srch-at-polno')||'').toLowerCase();
+  const plaka  =(gv('srch-at-plaka')||'').toLowerCase();
+  const yil    = gv('srch-at-yil')||'';
+  const ay     = gv('srch-at-ay')||'';
+  const t1     = gv('srch-at-t1')||'';
+  const t2     = gv('srch-at-t2')||'';
+
+  const filtered = (DB.atList||[]).filter(t=>{
     const a=getAcente(t.acenteId);
-    // Poliçeyi bul: policeId → polNo+acente → polNo genel
+    const p=t.policeId?getPolice(t.policeId)
+      :t.polNo?(DB.policeler.find(x=>x.acenteId===t.acenteId&&x.polNo===t.polNo)||DB.policeler.find(x=>x.polNo===t.polNo))
+      :null;
+    const m=p?getMusteri(p.musteriId):t.musteriId?getMusteri(t.musteriId):null;
+    const mAd  =(m?m.ad:'').toLowerCase();
+    const pNo  =(p?p.polNo||p.mPolNo:t.polNo||'').toLowerCase();
+    const pPlak=(p?p.plaka:t.plaka||'').toLowerCase();
+    const sir  =(p?p.sirket||t.sirket:t.sirket||'').toLowerCase();
+    const aAd  =(a?a.ad:'').toLowerCase();
+
+    if(genel&&!mAd.includes(genel)&&!pNo.includes(genel)&&!pPlak.includes(genel)&&!sir.includes(genel)&&!aAd.includes(genel))return false;
+    if(musteri&&!mAd.includes(musteri))return false;
+    if(polno&&!pNo.includes(polno))return false;
+    if(plaka&&!pPlak.includes(plaka))return false;
+    if(yil&&t.tarih&&!t.tarih.startsWith(yil))return false;
+    if(ay&&t.tarih&&(t.tarih||'').slice(5,7)!==ay)return false;
+    if(t1&&t.tarih&&t.tarih<t1)return false;
+    if(t2&&t.tarih&&t.tarih>t2)return false;
+    return true;
+  });
+
+  // Özet
+  const ozet=byId('at-liste-ozet');
+  if(ozet){
+    const toplamTutar=filtered.reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+    const tahsilat=filtered.filter(t=>t.tip!=='iade').reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+    const iade=filtered.filter(t=>t.tip==='iade').reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+    ozet.innerHTML=filtered.length
+      ?`<span>📋 <b>${filtered.length}</b> kayıt</span>`
+       +`<span style="color:var(--success);">✅ Tahsilat: <b>₺${fmt(tahsilat)}</b></span>`
+       +`<span style="color:var(--warning);">🔄 İade: <b>₺${fmt(iade)}</b></span>`
+       +`<span style="color:var(--primary);">💰 Toplam: <b>₺${fmt(toplamTutar)}</b></span>`
+      :'<span style="color:var(--muted);">Sonuç yok</span>';
+  }
+
+  if(!filtered.length){
+    tb.innerHTML='<tr><td colspan="21" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';
+    return;
+  }
+
+  tb.innerHTML=filtered.map(t=>{
+    const a=getAcente(t.acenteId);
     const p=t.policeId?getPolice(t.policeId)
       :t.polNo?(DB.policeler.find(x=>x.acenteId===t.acenteId&&x.polNo===t.polNo)||DB.policeler.find(x=>x.polNo===t.polNo))
       :null;
@@ -7161,6 +7442,12 @@ function renderAtList(){
       +'</td>'
       +'</tr>';
   }).join('');
+}
+
+function atFiltreSifirla(){
+  ['srch-at-genel','srch-at-musteri','srch-at-polno','srch-at-plaka','srch-at-yil','srch-at-ay','srch-at-t1','srch-at-t2']
+    .forEach(id=>sv(id,''));
+  renderAtList();
 }
 function atSil(id){
   if(!confirm('Bu tahsilat kaydı silinsin mi?'))return;
@@ -8967,6 +9254,81 @@ function renderDashboard(){
         </div>`;
     } else {
       mkIadeEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px;">MK iadesi olan iptal kaydı bulunamadı.</div>';
+    }
+  }
+
+  // Ekstra Takip Kayıtları
+  const dashPtEl   = byId('dash-pt-ekstra-liste');
+  const dashPtOzet = byId('dash-pt-ekstra-ozet');
+  const bugunPt    = new Date();
+  const ptListe    = (DB.ptExtras||[]).slice().sort((a,b)=>(b.baslama||'').localeCompare(a.baslama||'')).slice(0,10);
+  const ptToplam   = (DB.ptExtras||[]).length;
+  const ptBitmek   = (DB.ptExtras||[]).filter(t=>{
+    if(!t.bitis) return false;
+    const diff=(new Date(t.bitis)-bugunPt)/(1000*60*60*24);
+    return diff>=0&&diff<=30;
+  }).length;
+  const ptGecmis   = (DB.ptExtras||[]).filter(t=>t.bitis&&new Date(t.bitis)<bugunPt).length;
+
+  if(dashPtOzet) dashPtOzet.innerHTML = ptToplam
+    ? `<span style="color:var(--muted);">Toplam: <b>${ptToplam}</b></span>`
+      +(ptBitmek?`<span style="margin-left:8px;color:var(--warning);">⚠️ ${ptBitmek} bitiyor</span>`:'')
+      +(ptGecmis?`<span style="margin-left:6px;color:var(--danger);">⛔ ${ptGecmis} geçmiş</span>`:'')
+    : '';
+
+  if(dashPtEl){
+    if(ptListe.length){
+      dashPtEl.innerHTML=`<div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;">
+              <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Müşteri</th>
+              <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Poliçe No</th>
+              <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Şirket</th>
+              <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Plaka</th>
+              <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Başlama</th>
+              <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Bitiş</th>
+              <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Açıklama</th>
+              <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">İşlem</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${ptListe.map((t,idx)=>{
+              const m=getMusteri(t.musteriId);
+              const bg=idx%2===0?'':'background:var(--bg);';
+              const bitis=t.bitis?new Date(t.bitis):null;
+              const kalan=bitis?Math.ceil((bitis-bugunPt)/(1000*60*60*24)):null;
+              const bitisRenk=kalan!==null?(kalan<0?'var(--danger)':kalan<=30?'var(--warning)':'var(--success)'):'var(--muted)';
+              const bitisLbl=kalan!==null?(kalan<0?'⛔ Geçmiş':kalan<=30?'⚠️ '+kalan+'g':'✅ '+kalan+'g'):'';
+              return `<tr style="${bg}cursor:pointer;"
+                  onclick="openMusteriDetay('${t.musteriId}')"
+                  onmouseover="this.style.background='color-mix(in srgb,var(--accent) 5%,transparent)'"
+                  onmouseout="this.style.background='${idx%2===0?'':'var(--bg)'}'">
+                <td style="padding:7px 10px;font-weight:600;">${m?'<span style="color:var(--info);margin-right:4px;">●</span>'+m.ad:'-'}</td>
+                <td style="padding:7px 10px;font-family:monospace;font-size:11px;">${t.polNo||'-'}</td>
+                <td style="padding:7px 10px;">${t.sirket||'-'}</td>
+                <td style="padding:7px 10px;font-weight:700;">${t.plaka||'-'}</td>
+                <td style="padding:7px 10px;color:var(--muted);font-size:11px;">${fmtD(t.baslama)||'-'}</td>
+                <td style="padding:7px 10px;font-size:11px;font-weight:700;color:${bitisRenk};">
+                  ${fmtD(t.bitis)||'-'}
+                  ${bitisLbl?`<div style="font-size:9px;">${bitisLbl}</div>`:''}
+                </td>
+                <td style="padding:7px 10px;font-size:11px;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.aciklama||'-'}</td>
+                <td style="padding:7px 10px;text-align:center;white-space:nowrap;" onclick="event.stopPropagation()">
+                  <button onclick="detayPtExtra('${t.id}')" title="Detay"
+                    style="border:none;background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:2px;">🔎</button>
+                  <button onclick="editPtExtra('${t.id}')" title="Düzenle"
+                    style="border:none;background:color-mix(in srgb,var(--warning) 15%,transparent);color:var(--warning);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:2px;">✏️</button>
+                  <button onclick="silPtExtra('${t.id}')" title="Sil"
+                    style="border:none;background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">🗑️</button>
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    } else {
+      dashPtEl.innerHTML='<div style="color:var(--muted);font-size:12px;padding:12px;">Ekstra takip kaydı yok. <span style="color:var(--accent);cursor:pointer;" onclick="showPage(\'pt-ekstra-ekle\')">➕ İlk kaydı ekleyin →</span></div>';
     }
   }
 
@@ -12423,7 +12785,178 @@ function uyariAyarListesiRender(){
 function uyariTemizle(){ /* eski compat */ }
 
 // ══════════════════════════════════════════════════════════════
-// POLİÇELER HUB & EKSTRA TAKİP
+// FİNANS HUB & CARİ LİSTE & TAHSİLAT LİSTE
+// ══════════════════════════════════════════════════════════════
+function renderFinansHub(){
+  const toplamBorc   = (DB.cariler||[]).reduce((s,c)=>s+(parseFloat(c.borc)||0),0);
+  const toplamAlacak = (DB.cariler||[]).reduce((s,c)=>s+(parseFloat(c.alacak)||0),0);
+  const bakiye       = toplamBorc - toplamAlacak;
+  const tahToplam    = (DB.tahsilatlar||[]).length;
+  const tahBekliyor  = (DB.tahsilatlar||[]).filter(t=>t.durum==='bekliyor').length;
+
+  const statC=byId('hub-cari-stat');
+  if(statC) statC.textContent=(DB.musteriler||[]).length+' müşteri';
+  const statT=byId('hub-tahsilat-stat');
+  if(statT) statT.textContent=tahToplam+' kayıt'+(tahBekliyor?` · ⏳ ${tahBekliyor}`:'');
+
+  const ozet=byId('finans-hub-ozet');
+  if(ozet) ozet.innerHTML=[
+    {ico:'📤',lbl:'Toplam Borç',   val:'₺'+fmt(toplamBorc),   c:'var(--danger)'},
+    {ico:'📥',lbl:'Toplam Alacak', val:'₺'+fmt(toplamAlacak), c:'var(--success)'},
+    {ico:'⚖️',lbl:'Net Bakiye',    val:'₺'+fmt(Math.abs(bakiye)), c:bakiye>0?'var(--danger)':'var(--success)'},
+    {ico:'💳',lbl:'Tahsilat Sayısı',val:tahToplam,             c:'var(--primary)'},
+    {ico:'⏳',lbl:'Bekleyen',       val:tahBekliyor,            c:'var(--warning)'},
+  ].map(s=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;">
+    <div style="font-size:18px;">${s.ico}</div>
+    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px;">${s.lbl}</div>
+    <div style="font-size:15px;font-weight:800;color:${s.c};margin-top:4px;">${s.val}</div>
+  </div>`).join('');
+}
+
+function renderCariListe(){
+  const el=byId('cari-liste-icerik');
+  if(!el) return;
+  const srch=(gv('srch-cari-liste')||'').toLowerCase();
+  const filter=window.cariFilter||'all';
+  let list=(DB.musteriler||[]).map(m=>{
+    const cs=DB.cariler.filter(c=>c.musteriId===m.id);
+    const borc  =cs.reduce((s,c)=>s+(parseFloat(c.borc)||0),0);
+    const alacak=cs.reduce((s,c)=>s+(parseFloat(c.alacak)||0),0);
+    return {...m,borc,alacak,bakiye:borc-alacak};
+  }).filter(m=>{
+    if(srch&&!m.ad.toLowerCase().includes(srch))return false;
+    if(filter==='borclu'&&m.bakiye<=0)return false;
+    if(filter==='alacakli'&&m.bakiye>=0)return false;
+    return true;
+  });
+  if(!list.length){
+    el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:12px;">Kayıt bulunamadı.</div>';
+    return;
+  }
+  el.innerHTML=`<div style="overflow-x:auto;"><table id="tbl-cari-liste2" style="width:100%;border-collapse:collapse;font-size:12px;">
+    <thead><tr style="background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;">
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Müşteri</th>
+      <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Toplam Borç</th>
+      <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Toplam Alacak</th>
+      <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Bakiye</th>
+      <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">Durum</th>
+      <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">İşlem</th>
+    </tr></thead>
+    <tbody>${list.map((m,i)=>{
+      const bg=i%2?'background:var(--bg);':'';
+      const dur=m.bakiye>0?{lbl:'Borçlu',c:'var(--danger)'}:m.bakiye<0?{lbl:'Alacaklı',c:'var(--success)'}:{lbl:'Sıfır',c:'var(--muted)'};
+      return `<tr style="${bg}cursor:pointer;"
+          onclick="openMusteriDetay('${m.id}')"
+          onmouseover="this.style.background='color-mix(in srgb,var(--accent) 5%,transparent)'"
+          onmouseout="this.style.background='${i%2?'var(--bg)':''}'">
+        <td style="padding:7px 10px;font-weight:600;"><span style="color:var(--info);margin-right:4px;">●</span>${m.ad}</td>
+        <td style="padding:7px 10px;text-align:right;color:var(--danger);font-weight:700;">₺${fmt(m.borc)}</td>
+        <td style="padding:7px 10px;text-align:right;color:var(--success);font-weight:700;">₺${fmt(m.alacak)}</td>
+        <td style="padding:7px 10px;text-align:right;font-weight:800;color:${dur.c};">₺${fmt(Math.abs(m.bakiye))}</td>
+        <td style="padding:7px 10px;text-align:center;">
+          <span style="padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;background:color-mix(in srgb,${dur.c} 12%,transparent);color:${dur.c};">${dur.lbl}</span>
+        </td>
+        <td style="padding:7px 10px;text-align:center;" onclick="event.stopPropagation()">
+          <button onclick="showPage('cari')" style="border:none;background:color-mix(in srgb,var(--success) 15%,transparent);color:var(--success);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:2px;">➕</button>
+          <button onclick="openMusteriDetay('${m.id}')" style="border:none;background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">🔎</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+    <tfoot><tr style="border-top:2px solid var(--border);background:color-mix(in srgb,var(--accent) 5%,transparent);">
+      <td style="padding:8px 10px;font-weight:700;">TOPLAM</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:800;color:var(--danger);">₺${fmt(list.reduce((s,m)=>s+m.borc,0))}</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:800;color:var(--success);">₺${fmt(list.reduce((s,m)=>s+m.alacak,0))}</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:800;">₺${fmt(Math.abs(list.reduce((s,m)=>s+m.bakiye,0)))}</td>
+      <td colspan="2"></td>
+    </tr></tfoot>
+  </table></div>`;
+}
+
+function renderTahsilatListe(){
+  const el=byId('tahsilat-liste-icerik');
+  if(!el) return;
+  const srch   =(gv('srch-th-liste')||'').toLowerCase();
+  const musteri=(gv('srch-th-liste-musteri')||'').toLowerCase();
+  const polno  =(gv('srch-th-liste-polno')||'').toLowerCase();
+  const durum  = gv('srch-th-liste-durum')||'';
+  const yil    = gv('srch-th-liste-yil')||'';
+  const ay     = gv('srch-th-liste-ay')||'';
+  const t1     = gv('srch-th-liste-t1')||'';
+  const t2     = gv('srch-th-liste-t2')||'';
+
+  const liste=(DB.tahsilatlar||[]).filter(t=>{
+    const m=getMusteri(t.musteriId);
+    const mAd=(m?m.ad:'').toLowerCase();
+    const pNo=(t.polNo||'').toLowerCase();
+    if(srch&&!mAd.includes(srch)&&!pNo.includes(srch)&&!(t.sirket||'').toLowerCase().includes(srch))return false;
+    if(musteri&&!mAd.includes(musteri))return false;
+    if(polno&&!pNo.includes(polno))return false;
+    if(durum&&t.durum!==durum)return false;
+    if(yil&&t.tarih&&!t.tarih.startsWith(yil))return false;
+    if(ay&&t.tarih&&t.tarih.slice(5,7)!==ay)return false;
+    if(t1&&t.tarih&&t.tarih<t1)return false;
+    if(t2&&t.tarih&&t.tarih>t2)return false;
+    return true;
+  }).sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
+
+  if(!liste.length){
+    el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:12px;">Kayıt bulunamadı.</div>';
+    return;
+  }
+  const DURUM_CFG={
+    'bekliyor':      {lbl:'⏳ Bekliyor',   c:'var(--warning)'},
+    'tahsil-edildi': {lbl:'✅ Tahsil',     c:'var(--success)'},
+    'gecikti':       {lbl:'⚠️ Gecikti',   c:'var(--danger)'},
+    'kismi':         {lbl:'🔸 Kısmi',     c:'var(--info)'},
+    'iptal':         {lbl:'❌ İptal',      c:'var(--muted)'},
+  };
+  el.innerHTML=`<div style="overflow-x:auto;"><table id="tbl-tahsilat-liste2" style="width:100%;border-collapse:collapse;font-size:12px;">
+    <thead><tr style="background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;">
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Tarih</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Müşteri</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Poliçe No</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Şirket</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Tür</th>
+      <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Tutar</th>
+      <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Borç</th>
+      <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Alacak</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Yöntem</th>
+      <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">Durum</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Açıklama</th>
+    </tr></thead>
+    <tbody>${liste.map((t,i)=>{
+      const m=getMusteri(t.musteriId);
+      const bg=i%2?'background:var(--bg);':'';
+      const dur=DURUM_CFG[t.durum||'bekliyor']||DURUM_CFG.bekliyor;
+      return `<tr style="${bg}cursor:pointer;"
+          onclick="openMusteriDetay('${t.musteriId}')"
+          onmouseover="this.style.background='color-mix(in srgb,var(--accent) 5%,transparent)'"
+          onmouseout="this.style.background='${i%2?'var(--bg)':''}'">
+        <td style="padding:7px 10px;color:var(--muted);font-size:11px;white-space:nowrap;">${fmtD(t.tarih)||'-'}</td>
+        <td style="padding:7px 10px;font-weight:600;">${m?m.ad:'-'}</td>
+        <td style="padding:7px 10px;font-family:monospace;font-size:11px;">${t.polNo||'-'}</td>
+        <td style="padding:7px 10px;">${t.sirket||'-'}</td>
+        <td style="padding:7px 10px;font-size:11px;">${t.tip||'-'}</td>
+        <td style="padding:7px 10px;text-align:right;font-weight:700;">₺${fmt(t.tutar)}</td>
+        <td style="padding:7px 10px;text-align:right;color:var(--danger);">${(parseFloat(t.borc)||0)>0?'₺'+fmt(t.borc):'-'}</td>
+        <td style="padding:7px 10px;text-align:right;color:var(--success);">${(parseFloat(t.alacak)||0)>0?'₺'+fmt(t.alacak):'-'}</td>
+        <td style="padding:7px 10px;font-size:11px;color:var(--muted);">${t.odemeyontemi||'-'}</td>
+        <td style="padding:7px 10px;text-align:center;">
+          <span style="padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;background:color-mix(in srgb,${dur.c} 12%,transparent);color:${dur.c};">${dur.lbl}</span>
+        </td>
+        <td style="padding:7px 10px;font-size:11px;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.aciklama||'-'}</td>
+      </tr>`;
+    }).join('')}</tbody>
+    <tfoot><tr style="border-top:2px solid var(--border);background:color-mix(in srgb,var(--accent) 5%,transparent);">
+      <td colspan="5" style="padding:8px 10px;font-weight:700;">TOPLAM (${liste.length} kayıt)</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:800;">₺${fmt(liste.reduce((s,t)=>s+(parseFloat(t.tutar)||0),0))}</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:800;color:var(--danger);">₺${fmt(liste.reduce((s,t)=>s+(parseFloat(t.borc)||0),0))}</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:800;color:var(--success);">₺${fmt(liste.reduce((s,t)=>s+(parseFloat(t.alacak)||0),0))}</td>
+      <td colspan="3"></td>
+    </tr></tfoot>
+  </table></div>`;
+}
+
 // ══════════════════════════════════════════════════════════════
 function renderPolicelerHub(){
   const toplam   = (DB.policeler||[]).length;
@@ -12496,12 +13029,29 @@ function renderPolicelerHub(){
 function renderPtEkstraListe(){
   const el=byId('pt-ekstra-liste-icerik');
   if(!el) return;
-  const srch=(gv('srch-pt-ekstra')||'').toLowerCase();
+  const srch   =(gv('srch-pt-ekstra')||'').toLowerCase();
+  const musteri=(gv('srch-pt-musteri')||'').toLowerCase();
+  const polno  =(gv('srch-pt-polno')||'').toLowerCase();
+  const plaka  =(gv('srch-pt-plaka')||'').toLowerCase();
+  const yil    = gv('srch-pt-yil')||'';
+  const ay     = gv('srch-pt-ay')||'';
+  const t1     = gv('srch-pt-t1')||'';
+  const t2     = gv('srch-pt-t2')||'';
   const liste=(DB.ptExtras||[]).filter(t=>{
-    if(!srch) return true;
     const m=getMusteri(t.musteriId);
-    return (m&&m.ad.toLowerCase().includes(srch))||(t.polNo&&t.polNo.toLowerCase().includes(srch))
-      ||(t.plaka&&t.plaka.toLowerCase().includes(srch))||(t.sirket&&t.sirket.toLowerCase().includes(srch));
+    const mAd=(m?m.ad:'').toLowerCase();
+    const pNo=(t.polNo||'').toLowerCase();
+    const pPl=(t.plaka||'').toLowerCase();
+    const sir=(t.sirket||'').toLowerCase();
+    if(srch&&!mAd.includes(srch)&&!pNo.includes(srch)&&!pPl.includes(srch)&&!sir.includes(srch))return false;
+    if(musteri&&!mAd.includes(musteri))return false;
+    if(polno&&!pNo.includes(polno))return false;
+    if(plaka&&!pPl.includes(plaka))return false;
+    if(yil&&t.baslama&&!t.baslama.startsWith(yil))return false;
+    if(ay&&t.baslama&&t.baslama.slice(5,7)!==ay)return false;
+    if(t1&&t.baslama&&t.baslama<t1)return false;
+    if(t2&&t.bitis&&t.bitis>t2)return false;
+    return true;
   }).sort((a,b)=>(b.baslama||'').localeCompare(a.baslama||''));
 
   if(!liste.length){
