@@ -10376,37 +10376,63 @@ function importData(e){
 // ══════════════════════════════════════════
 // OTOMATİK YEDEKLEME SİSTEMİ
 // ══════════════════════════════════════════
-const BACKUP_KEY = 'mksigorta_backups';
+const BACKUP_KEY = 'mksigorta_backups'; // localStorage fallback
 const BACKUP_SETTINGS_KEY = 'mksigorta_backup_settings';
 let _backupTimer = null;
 let _backupNextAt = null;
 
 function loadBackupSettings(){
-  try{ return JSON.parse(localStorage.getItem(BACKUP_SETTINGS_KEY))||{interval:60,count:5}; }catch(e){ return {interval:60,count:5}; }
+  try{ return JSON.parse(localStorage.getItem(BACKUP_SETTINGS_KEY))||{interval:60,count:10}; }catch(e){ return {interval:60,count:10}; }
 }
 function saveBackupSettings(){
   const interval = parseInt(byId('backup-interval')?byId('backup-interval').value:60)||60;
-  const count = parseInt(byId('backup-count')?byId('backup-count').value:5)||5;
+  const count = parseInt(byId('backup-count')?byId('backup-count').value:10)||10;
   localStorage.setItem(BACKUP_SETTINGS_KEY, JSON.stringify({interval,count}));
   restartBackupTimer();
   renderBackupPanel();
   toast('Yedekleme ayarları kaydedildi','success');
 }
 
-function loadBackups(){
+// ── Supabase'den yedekleri çek ───────────────────────────────
+async function loadBackups(){
+  if(_supabase){
+    try{
+      const {data,error}=await _supabase.from('mk_backups').select('*').order('created_at',{ascending:false}).limit(50);
+      if(!error && data) return data;
+    }catch(e){}
+  }
+  // Fallback: localStorage
   try{ return JSON.parse(localStorage.getItem(BACKUP_KEY))||[]; }catch(e){ return []; }
 }
-function saveBackups(backups){
-  try{ localStorage.setItem(BACKUP_KEY, JSON.stringify(backups)); }catch(e){ toast('Yedek kaydedilemedi (alan dolu olabilir)','error'); }
+
+// ── Supabase'e yedek kaydet ──────────────────────────────────
+async function saveBackupToCloud(snapshot){
+  if(_supabase){
+    try{
+      const {error}=await _supabase.from('mk_backups').insert([{
+        id: snapshot.id,
+        label: snapshot.label,
+        tarih: snapshot.tarih,
+        saat: snapshot.saat,
+        kayit_sayisi: snapshot.kayitSayisi,
+        boyut_kb: parseFloat(snapshot.boyut)||0,
+        data: snapshot.data,
+        created_at: new Date().toISOString()
+      }]);
+      if(error){ console.warn('[Backup] Supabase hata:',error.message); return false; }
+      return true;
+    }catch(e){ console.warn('[Backup] Supabase exception:',e); return false; }
+  }
+  return false;
 }
 
-function backupNow(manual){
+// ── Yedek al ─────────────────────────────────────────────────
+async function backupNow(manual){
   const settings = loadBackupSettings();
-  const backups = loadBackups();
   const now = new Date();
   const label = manual ? 'Manuel' : 'Otomatik';
   const snapshot = {
-    id: now.getTime(),
+    id: String(now.getTime()),
     tarih: now.toLocaleDateString('tr-TR'),
     saat: now.toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'}),
     label,
@@ -10414,147 +10440,192 @@ function backupNow(manual){
     boyut: (new Blob([JSON.stringify(DB)]).size/1024).toFixed(1),
     data: JSON.stringify(DB)
   };
-  backups.unshift(snapshot);
-  // Max sayıyı aş olanları sil
-  const trimmed = backups.slice(0, settings.count);
-  saveBackups(trimmed);
+
+  // Supabase'e kaydet
+  const cloudOk = await saveBackupToCloud(snapshot);
+
+  // localStorage fallback (ve eski temizlik)
+  const localList = JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]');
+  localList.unshift(snapshot);
+  const trimmed = localList.slice(0, settings.count);
+  try{ localStorage.setItem(BACKUP_KEY, JSON.stringify(trimmed)); }catch(e){}
   localStorage.setItem('mksigorta_last_backup', now.toISOString());
-  if(manual) toast('✅ Yedek alındı: '+snapshot.tarih+' '+snapshot.saat,'success');
+
+  if(manual){
+    if(cloudOk) toast('✅ Yedek Supabase\'e kaydedildi: '+snapshot.tarih+' '+snapshot.saat,'success');
+    else        toast('✅ Yedek yerel olarak kaydedildi (bulut bağlantısı yok)','');
+  }
   renderBackupPanel();
-  // Topbar'da son yedek göster
   updateBackupStatusDot(true);
+  // Eski bulut yedeklerini temizle (max count'u aşanlar)
+  if(_supabase && cloudOk) await _trimCloudBackups(settings.count);
 }
 
-function restoreBackup(id){
-  if(!confirm('Bu yedeği geri yüklemek istediğinizden emin misiniz? Mevcut veriler değişecek!'))return;
-  const backups = loadBackups();
-  const bk = backups.find(b=>b.id===id);
-  if(!bk){ toast('Yedek bulunamadı','error'); return; }
+// ── Eski yedekleri temizle ───────────────────────────────────
+async function _trimCloudBackups(maxCount){
   try{
-    DB = Object.assign({musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]}, JSON.parse(bk.data));
-    saveDB(); updateStats(); populateSelects(); renderAyarlar();
-    toast('✅ Yedek geri yüklendi: '+bk.tarih+' '+bk.saat,'success');
-  }catch(e){ toast('Yedek geri yüklenemedi!','error'); }
+    const {data,error}=await _supabase.from('mk_backups').select('id,created_at').order('created_at',{ascending:false});
+    if(error||!data) return;
+    if(data.length > maxCount){
+      const toDelete = data.slice(maxCount).map(r=>r.id);
+      await _supabase.from('mk_backups').delete().in('id',toDelete);
+    }
+  }catch(e){}
 }
 
-function downloadBackup(id){
-  const backups = loadBackups();
-  const bk = backups.find(b=>b.id===id);
-  if(!bk)return;
-  const a = document.createElement('a');
-  a.href = 'data:application/json,'+encodeURIComponent(bk.data);
-  a.download = 'mksigorta_yedek_'+bk.tarih.replace(/\./g,'-')+'_'+bk.saat.replace(':','')+'.json';
+// ── Geri yükle ───────────────────────────────────────────────
+async function restoreBackup(id){
+  if(!confirm('Bu yedeği geri yüklemek istediğinizden emin misiniz?\nMevcut veriler değişecek!')) return;
+  let bkData = null;
+
+  // Önce Supabase'den dene
+  if(_supabase){
+    try{
+      const {data,error}=await _supabase.from('mk_backups').select('data,tarih,saat').eq('id',String(id)).single();
+      if(!error && data) bkData=data;
+    }catch(e){}
+  }
+  // Fallback localStorage
+  if(!bkData){
+    const localList=JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]');
+    bkData=localList.find(b=>String(b.id)===String(id));
+  }
+  if(!bkData){ toast('Yedek bulunamadı','error'); return; }
+  try{
+    DB=Object.assign({musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]},JSON.parse(bkData.data));
+    saveDB(); updateStats(); populateSelects(); renderAyarlar();
+    toast('✅ Yedek geri yüklendi: '+(bkData.tarih||'')+ ' '+(bkData.saat||''),'success');
+  }catch(e){ toast('Yedek geri yüklenemedi: '+e.message,'error'); }
+}
+
+// ── İndir ────────────────────────────────────────────────────
+async function downloadBackup(id){
+  let bkData=null;
+  if(_supabase){
+    try{
+      const {data,error}=await _supabase.from('mk_backups').select('*').eq('id',String(id)).single();
+      if(!error&&data) bkData=data;
+    }catch(e){}
+  }
+  if(!bkData){
+    const localList=JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]');
+    bkData=localList.find(b=>String(b.id)===String(id));
+  }
+  if(!bkData){ toast('Yedek bulunamadı','error'); return; }
+  const a=document.createElement('a');
+  a.href='data:application/json,'+encodeURIComponent(bkData.data);
+  a.download='mksigorta_yedek_'+(bkData.tarih||'').replace(/\./g,'-')+'_'+(bkData.saat||'').replace(':','')+'.json';
   a.click();
   toast('Yedek indirildi','success');
 }
 
-function deleteBackup(id){
-  if(!confirm('Bu yedek silinsin mi?'))return;
-  const backups = loadBackups().filter(b=>b.id!==id);
-  saveBackups(backups);
+// ── Sil ──────────────────────────────────────────────────────
+async function deleteBackup(id){
+  if(!confirm('Bu yedek silinsin mi?')) return;
+  if(_supabase){
+    try{ await _supabase.from('mk_backups').delete().eq('id',String(id)); }catch(e){}
+  }
+  const localList=JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]').filter(b=>String(b.id)!==String(id));
+  try{ localStorage.setItem(BACKUP_KEY,JSON.stringify(localList)); }catch(e){}
   renderBackupPanel();
-  toast('Yedek silindi','error');
+  toast('Yedek silindi','');
 }
 
-function renderBackupPanel(){
+// ── Panel render ─────────────────────────────────────────────
+async function renderBackupPanel(){
   const settings = loadBackupSettings();
-  const backups = loadBackups();
-  const lastRaw = localStorage.getItem('mksigorta_last_backup');
+  const lastRaw  = localStorage.getItem('mksigorta_last_backup');
+  const backups  = await loadBackups(); // async — Supabase'den çeker
 
-  // Ayarlar dropdown'larını güncelle
-  const intEl = byId('backup-interval');
-  const cntEl = byId('backup-count');
-  if(intEl) intEl.value = settings.interval;
-  if(cntEl) cntEl.value = settings.count;
+  const intEl=byId('backup-interval'); const cntEl=byId('backup-count');
+  if(intEl) intEl.value=settings.interval;
+  if(cntEl) cntEl.value=settings.count;
 
-  // Durum badge
-  const statusLbl = byId('backup-status-label');
+  const statusLbl=byId('backup-status-label');
   if(statusLbl){
-    if(!settings.interval || settings.interval===0){
-      statusLbl.textContent='Kapalı'; statusLbl.style.color='var(--muted)';
-    } else {
-      statusLbl.textContent='Aktif — Her '+settings.interval+' dk'; statusLbl.style.color='var(--success)';
-    }
+    if(!settings.interval||settings.interval===0){ statusLbl.textContent='Kapalı'; statusLbl.style.color='var(--muted)'; }
+    else{ statusLbl.textContent='Aktif — Her '+settings.interval+' dk'; statusLbl.style.color='var(--success)'; }
   }
 
-  // Son yedek zamanı
-  const lastEl = byId('backup-last-time');
+  const lastEl=byId('backup-last-time');
   if(lastEl){
-    if(lastRaw){
-      const d = new Date(lastRaw);
-      lastEl.textContent = d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
-    } else { lastEl.textContent = 'Henüz yedek yok'; }
+    if(lastRaw){ const d=new Date(lastRaw); lastEl.textContent=d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); }
+    else lastEl.textContent='Henüz yedek yok';
   }
 
-  // Yedek sayısı
-  const cntDisplay = byId('backup-saved-count');
-  if(cntDisplay) cntDisplay.textContent = backups.length+' / '+settings.count;
+  const cntDisplay=byId('backup-saved-count');
+  if(cntDisplay) cntDisplay.textContent=backups.length+' yedek';
 
-  // Sonraki yedek
-  const nextEl = byId('backup-next-time');
+  const nextEl=byId('backup-next-time');
   if(nextEl){
-    if(settings.interval===0){ nextEl.textContent='Kapalı'; }
-    else if(_backupNextAt){ nextEl.textContent=_backupNextAt.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); }
-    else { nextEl.textContent='—'; }
+    if(settings.interval===0) nextEl.textContent='Kapalı';
+    else if(_backupNextAt) nextEl.textContent=_backupNextAt.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+    else nextEl.textContent='—';
   }
 
   // Yedek listesi
-  const listEl = byId('backup-list');
+  const listEl=byId('backup-list');
   if(!listEl) return;
+
+  const cloudBadge=_supabase
+    ? '<span style="background:color-mix(in srgb,var(--success) 12%,transparent);color:var(--success);font-size:9px;font-weight:700;padding:1px 7px;border-radius:20px;margin-left:5px;">☁️ Bulut</span>'
+    : '<span style="background:color-mix(in srgb,var(--warning) 12%,transparent);color:var(--warning);font-size:9px;font-weight:700;padding:1px 7px;border-radius:20px;margin-left:5px;">📱 Yerel</span>';
+
   if(!backups.length){
     listEl.innerHTML='<div style="color:var(--muted);font-size:12px;padding:10px 0;">Henüz yedek alınmamış. "Şimdi Yedekle" butonuna basın.</div>';
     return;
   }
-  listEl.innerHTML = backups.map((bk,i)=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-radius:9px;border:1px solid var(--border);margin-bottom:6px;">
+  listEl.innerHTML=backups.map((bk,i)=>{
+    const isCloud=!!bk.created_at; // Supabase'den geliyorsa bu alan var
+    const storeBadge=isCloud
+      ? '<span style="background:color-mix(in srgb,var(--success) 12%,transparent);color:var(--success);font-size:9px;padding:1px 7px;border-radius:20px;">☁️ Bulut</span>'
+      : '<span style="background:color-mix(in srgb,var(--muted) 12%,transparent);color:var(--muted);font-size:9px;padding:1px 7px;border-radius:20px;">📱 Yerel</span>';
+    const kayitSayisi=bk.kayit_sayisi||bk.kayitSayisi||'?';
+    const boyut=bk.boyut_kb||bk.boyut||'?';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-radius:9px;border:1px solid var(--border);margin-bottom:6px;">
       <div style="font-size:22px;">${bk.label==='Manuel'?'👤':'🤖'}</div>
-      <div style="flex:1;">
-        <div style="font-size:12px;font-weight:700;">${bk.tarih} — ${bk.saat}
-          ${i===0?'<span style="background:#ede9fe;color:#7c3aed;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:6px;">En Güncel</span>':''}
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:700;display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+          ${bk.tarih||''} — ${bk.saat||''}
+          ${i===0?'<span style="background:#ede9fe;color:#7c3aed;font-size:9px;font-weight:700;padding:1px 7px;border-radius:20px;">En Güncel</span>':''}
+          ${storeBadge}
         </div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px;">${bk.label} · ${bk.kayitSayisi} kayıt · ${bk.boyut} KB</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">${bk.label} · ${kayitSayisi} kayıt · ${boyut} KB</div>
       </div>
-      <div style="display:flex;gap:5px;">
-        <button onclick="downloadBackup(${bk.id})" class="btn btn-outline btn-sm" title="İndir">📤</button>
-        <button onclick="restoreBackup(${bk.id})" class="btn btn-success btn-sm" title="Geri Yükle">↩️ Geri Yükle</button>
-        <button onclick="deleteBackup(${bk.id})" class="btn btn-danger btn-sm" title="Sil">🗑️</button>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        <button onclick="downloadBackup('${bk.id}')" class="btn btn-outline btn-sm" title="İndir">📤</button>
+        <button onclick="restoreBackup('${bk.id}')" class="btn btn-success btn-sm">↩️ Yükle</button>
+        <button onclick="deleteBackup('${bk.id}')" class="btn btn-danger btn-sm" title="Sil">🗑️</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function updateBackupStatusDot(ok){
-  const dot = byId('backup-status-dot');
-  if(!dot) return;
-  dot.style.background = ok ? 'var(--success)' : 'var(--warning)';
-  dot.style.boxShadow = ok ? '0 0 6px var(--success)' : '0 0 6px var(--warning)';
+  const dot=byId('backup-status-dot'); if(!dot) return;
+  dot.style.background=ok?'var(--success)':'var(--warning)';
+  dot.style.boxShadow=ok?'0 0 6px var(--success)':'0 0 6px var(--warning)';
 }
 
 function restartBackupTimer(){
   if(_backupTimer){ clearInterval(_backupTimer); _backupTimer=null; }
-  const settings = loadBackupSettings();
-  if(!settings.interval || settings.interval===0){ _backupNextAt=null; updateBackupStatusDot(false); return; }
-  const ms = settings.interval * 60 * 1000;
-  _backupNextAt = new Date(Date.now()+ms);
-  _backupTimer = setInterval(()=>{
-    backupNow(false);
-    _backupNextAt = new Date(Date.now()+ms);
-  }, ms);
+  const settings=loadBackupSettings();
+  if(!settings.interval||settings.interval===0){ _backupNextAt=null; updateBackupStatusDot(false); return; }
+  const ms=settings.interval*60*1000;
+  _backupNextAt=new Date(Date.now()+ms);
+  _backupTimer=setInterval(()=>{ backupNow(false); _backupNextAt=new Date(Date.now()+ms); }, ms);
   updateBackupStatusDot(true);
 }
 
 function initBackupSystem(){
   restartBackupTimer();
-  // Sayfa yüklenince otomatik ilk yedeği al (ilk açılışta)
-  const lastRaw = localStorage.getItem('mksigorta_last_backup');
-  if(!lastRaw){
-    setTimeout(()=>backupNow(false), 5000);
-  } else {
-    // Son yedekten bu yana ayarlanan süre geçtiyse hemen yedekle
-    const settings = loadBackupSettings();
-    if(settings.interval > 0){
-      const elapsed = (Date.now() - new Date(lastRaw).getTime()) / 60000;
-      if(elapsed >= settings.interval) setTimeout(()=>backupNow(false), 3000);
+  const lastRaw=localStorage.getItem('mksigorta_last_backup');
+  if(!lastRaw){ setTimeout(()=>backupNow(false), 6000); }
+  else{
+    const settings=loadBackupSettings();
+    if(settings.interval>0){
+      const elapsed=(Date.now()-new Date(lastRaw).getTime())/60000;
+      if(elapsed>=settings.interval) setTimeout(()=>backupNow(false),3000);
     }
   }
 }
