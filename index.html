@@ -1806,49 +1806,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           </div>
         </div>
 
-        <!-- DASK BELGELERİ -->
-        <div style="background:var(--bg);border:1px dashed var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
-          <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px;">📎 DASK Belgeleri <span style="font-weight:400;font-style:italic;text-transform:none;">(İsteğe Bağlı)</span></div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;">
 
-            <div class="doc-upload-box" id="dbox-dask-tapu" style="display:none;">
-              <div class="doc-upload-label">🏠 Tapu Resmi</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-tapu').click()" id="dzone-dask-tapu">
-                <span class="doc-upload-icon">📄</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-dask-tapu" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDaskDoc('tapu',this)">
-              <div class="doc-preview" id="dpreview-dask-tapu" style="display:none;"></div>
-            </div>
-
-            <div class="doc-upload-box" id="dbox-dask-tc" style="display:none;">
-              <div class="doc-upload-label">🪪 TC Kimlik Resmi</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-tc').click()" id="dzone-dask-tc">
-                <span class="doc-upload-icon">🪪</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-dask-tc" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDaskDoc('tc',this)">
-              <div class="doc-preview" id="dpreview-dask-tc" style="display:none;"></div>
-            </div>
-
-            <div class="doc-upload-box" id="dbox-dask-pdf" style="display:none;">
-              <div class="doc-upload-label">📑 Poliçe PDF</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-pdf').click()" id="dzone-dask-pdf">
-                <span class="doc-upload-icon">📑</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-dask-pdf" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDaskDoc('pdf',this)">
-              <div class="doc-preview" id="dpreview-dask-pdf" style="display:none;"></div>
-            </div>
-
-            <div class="doc-upload-box" id="dbox-dask-fatura" style="display:none;">
-              <div class="doc-upload-label">🧾 Fatura Resmi</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-fatura').click()" id="dzone-dask-fatura">
-                <span class="doc-upload-icon">🧾</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-dask-fatura" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDaskDoc('fatura',this)">
-              <div class="doc-preview" id="dpreview-dask-fatura" style="display:none;"></div>
-            </div>
-
-          </div>
-        </div>
       </div><!-- /pe-dask-block -->
 
       <!-- TSS / SAĞLIK / HAYAT BLOĞU -->
@@ -1858,29 +1816,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
             <span id="pe-saglik-icon" style="font-size:22px;">❤️</span>
             <div>
               <div id="pe-saglik-baslik-text" style="font-size:14px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:var(--text);">Sağlık Sigortası</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:2px;">TC Kimlik ve Poliçe PDF yükleyebilirsiniz</div>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
-            <div class="doc-upload-box" id="dbox-saglik-tc" style="display:none;">
-              <div class="doc-upload-label">🪪 TC Kimlik Resmi</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-saglik-tc').click()" id="dzone-saglik-tc">
-                <span class="doc-upload-icon">🪪</span>
-                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-saglik-tc" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleExtraDoc('saglik-tc',this)">
-              <div class="doc-preview" id="dpreview-saglik-tc" style="display:none;"></div>
-            </div>
-            <div class="doc-upload-box" id="dbox-saglik-pdf" style="display:none;">
-              <div class="doc-upload-label">📑 Poliçe PDF</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-saglik-pdf').click()" id="dzone-saglik-pdf">
-                <span class="doc-upload-icon">📑</span>
-                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-saglik-pdf" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleExtraDoc('saglik-pdf',this)">
-              <div class="doc-preview" id="dpreview-saglik-pdf" style="display:none;"></div>
             </div>
           </div>
         </div>
@@ -1915,94 +1850,9 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
               <div id="pe-ulke-gidis-secili" style="font-size:11px;color:var(--muted);margin-top:4px;"></div>
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
-            <div class="doc-upload-box" id="dbox-seyahat-tc" style="display:none;">
-              <div class="doc-upload-label">🪪 TC Kimlik Resmi</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-seyahat-tc').click()" id="dzone-seyahat-tc">
-                <span class="doc-upload-icon">🪪</span>
-                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-seyahat-tc" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleExtraDoc('seyahat-tc',this)">
-              <div class="doc-preview" id="dpreview-seyahat-tc" style="display:none;"></div>
-            </div>
-            <div class="doc-upload-box" id="dbox-seyahat-pdf" style="display:none;">
-              <div class="doc-upload-label">📑 Poliçe PDF</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-seyahat-pdf').click()" id="dzone-seyahat-pdf">
-                <span class="doc-upload-icon">📑</span>
-                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-seyahat-pdf" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleExtraDoc('seyahat-pdf',this)">
-              <div class="doc-preview" id="dpreview-seyahat-pdf" style="display:none;"></div>
-            </div>
-          </div>
         </div>
       </div>
 
-      <!-- 25. BELGELER -->
-      <div style="grid-column:1/-1;display:none;" id="pe-standart-belgeler">
-        <div style="background:var(--bg);border:1px dashed var(--border);border-radius:var(--radius);padding:16px;">
-          <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:12px;letter-spacing:.4px;text-transform:uppercase;">📎 Belgeler <span style="font-weight:400;font-style:italic;">(İsteğe Bağlı)</span></div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
-            <!-- Ruhsat – sadece Trafik/Kasko -->
-            <div class="doc-upload-box pe-arac-doc" id="dbox-ruhsat">
-              <div class="doc-upload-label">📋 Ruhsat / Belge Seri</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-ruhsat').click()" id="dzone-ruhsat">
-                <span class="doc-upload-icon">📄</span>
-                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-ruhsat" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload('ruhsat',this)">
-              <div class="doc-preview" id="dpreview-ruhsat" style="display:none;"></div>
-            </div>
-            <!-- TC – her zaman görünür -->
-            <div class="doc-upload-box" id="dbox-tc">
-              <div class="doc-upload-label">🪪 TC Kimlik Belgesi</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-tc').click()" id="dzone-tc">
-                <span class="doc-upload-icon">🪪</span>
-                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-tc" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload('tc',this)">
-              <div class="doc-preview" id="dpreview-tc" style="display:none;"></div>
-            </div>
-            <!-- PDF – her zaman görünür -->
-            <div class="doc-upload-box" id="dbox-pdf">
-              <div class="doc-upload-label">📑 Poliçe / Sözleşme PDF</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-pdf').click()" id="dzone-pdf">
-                <span class="doc-upload-icon">📑</span>
-                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-pdf" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload('pdf',this)">
-              <div class="doc-preview" id="dpreview-pdf" style="display:none;"></div>
-            </div>
-            <!-- TAPU – yalnız Konut/İşyeri/DASK -->
-            <div class="doc-upload-box pe-konut-doc" id="dbox-tapu" style="display:none;">
-              <div class="doc-upload-label">🏠 Tapu Belgesi</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-tapu').click()" id="dzone-tapu">
-                <span class="doc-upload-icon">🏠</span>
-                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-tapu" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload('tapu',this)">
-              <div class="doc-preview" id="dpreview-tapu" style="display:none;"></div>
-            </div>
-            <!-- FATURA – yalnız Konut/İşyeri/DASK -->
-            <div class="doc-upload-box pe-konut-doc" id="dbox-fatura" style="display:none;">
-              <div class="doc-upload-label">🧾 Fatura</div>
-              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-fatura').click()" id="dzone-fatura">
-                <span class="doc-upload-icon">🧾</span>
-                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-              </div>
-              <input type="file" id="pe-file-fatura" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload('fatura',this)">
-              <div class="doc-preview" id="dpreview-fatura" style="display:none;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
 
     </div>
     <div class="btn-group" style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
@@ -3544,8 +3394,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <div id="aksiyon-son-yedek" style="font-size:10px;color:var(--success);font-weight:600;"></div>
       </div>
 
-
-
       <!-- TÜM VERİLERİ SİL -->
       <div onclick="veriSilOnay()" style="cursor:pointer;background:var(--card);border:2px solid var(--danger);border-radius:14px;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all .2s;"
         onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)'"
@@ -3556,7 +3404,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <div style="font-size:11px;color:var(--muted);margin-top:3px;">Geri alınamaz — önce yedek al!</div>
         </div>
       </div>
-
 
 
 
@@ -5337,10 +5184,9 @@ function previewDaskDoc(type){
 }
 function removeDaskDoc(type){
   _daskDocsTemp[type]=null;
-  const zone=byId('dzone-dask-'+type);const preview=byId('dpreview-dask-'+type);const inp=byId('pe-file-dask-'+type);
+  const zone=byId('dzone-dask-'+type);const preview=byId('dpreview-dask-'+type);
   if(zone){zone.classList.remove('has-file');const t=zone.querySelector('.doc-upload-text');if(t)t.textContent='Dosya seçmek için tıklayın';}
   if(preview){preview.style.display='none';preview.innerHTML='';}
-  if(inp)inp.value='';
   toast('Belge kaldırıldı','');
 }
 function resetDaskForm(){
@@ -5355,7 +5201,6 @@ function resetDaskForm(){
   const ilInp=byId('dask-il-search');if(ilInp)ilInp.value='';
   const ilceInp=byId('dask-ilce-search');if(ilceInp){ilceInp.value='';ilceInp.disabled=true;ilceInp.placeholder='Önce il seçin...';}
   sv('dask-il','');sv('dask-ilce','');
-  ['tapu','tc','pdf','fatura'].forEach(function(t){removeDaskDoc(t);});
 }
 
 // ── Yeni arama motorlu DASK adres fonksiyonları ──
@@ -5521,18 +5366,6 @@ function peSetIslemTur(btn,val){
   ['araccins','aracmarka','modelyili','plaka','ruhsat'].forEach(function(key){
     const el = document.querySelector('[data-field-key="'+key+'"]');
     if(el) el.style.display = isArac ? '' : 'none';
-  });
-
-  // ── Belge görünürlüğü ──
-  // Standart belgeler bloğu: Konut/İşyeri/DASK'ta gizle (kendi belge bölümü var)
-  const standartBelgeler = byId('pe-standart-belgeler');
-  if(standartBelgeler) standartBelgeler.style.display = isKonut ? 'none' : '';
-  // Ruhsat: sadece Trafik/Kasko
-  const ruhsatBox = byId('dbox-ruhsat');
-  if(ruhsatBox) ruhsatBox.style.display = isArac ? '' : 'none';
-  // Tapu + Fatura: sadece Konut/İşyeri/DASK (standart belgeler içinde, kullanılmıyor artık)
-  document.querySelectorAll('.pe-konut-doc').forEach(function(el){
-    el.style.display = isKonut ? '' : 'none';
   });
 
   // ── Konut başlık ──
@@ -5951,7 +5784,6 @@ function resetPeForm(){
   byId('pe-form-title').textContent='➕ Poliçe Ekle';
   // DASK bloğunu gizle ve sıfırla
   const db=byId('pe-dask-block');if(db)db.style.display='none';
-  const sb=byId('pe-standart-belgeler');if(sb)sb.style.display='';
   resetDaskForm();
 }
 
@@ -9910,7 +9742,7 @@ function showAyarlarTab(tab){
   });
   localStorage.setItem('ayarlarTab', tab);
   if(tab==='police'){  renderPoliceFieldOrderUI(); renderAracCinsListesi(); renderModelYiliListesi(); renderIptalSebebiListesi(); }
-  if(tab==='kullanici'){ renderUsers(); }
+  if(tab==='kullanici'){ renderUsers(); renderUserList(); }
   if(tab==='tema'){    const tg=byId('theme-grid-ayarlar');if(tg){tg.innerHTML='';buildThemeGrid();} }
   if(tab==='modul'){   renderModulGrid(); }
   if(tab==='duyuru'){  uyariAyarlarYukle(); uyariOnizle(); }
@@ -10191,54 +10023,26 @@ function renderVeriAksiyonlar(){
   if(sonYedekEl) sonYedekEl.textContent = sonYedek
     ? '📅 ' + new Date(sonYedek).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
     : 'Henüz yedek yok';
+}
 
 
-}
-function otomatikYedekGeriYukle(id){
-  if(!confirm('Bu yedek geri yüklensin mi? Mevcut veriler değişecek!')) return;
-  const backups = loadBackups ? loadBackups() : [];
-  const bk = backups.find(b=>b.id===id);
-  if(!bk){ toast('Yedek bulunamadı','error'); return; }
-  try{
-    DB = Object.assign({musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]}, JSON.parse(bk.data));
-    saveDB(); updateStats(); populateSelects(); renderAyarlar();
-    hizliModalKapat();
-    toast('✅ Yedek geri yüklendi: ' + bk.tarih + ' ' + bk.saat, 'success');
-  } catch(err){
-    toast('Yedek geri yüklenemedi: ' + err.message, 'error');
-  }
-}
-function exportData(){
-  const a=document.createElement('a');
-  a.href='data:application/json,'+encodeURIComponent(JSON.stringify(DB,null,2));
-  a.download='mksigorta_'+new Date().toISOString().substr(0,10)+'.json';a.click();
-  toast('Veri indirildi','success');
-}
-function importData(e){
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=ev=>{try{DB=Object.assign({musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]},JSON.parse(ev.target.result));saveDB();renderAyarlar();updateStats();populateSelects();toast('Veri yüklendi!','success');}catch(err){toast('Geçersiz dosya!','error');}};
-  r.readAsText(f);
-}
+
+
+
+
 
 // ══════════════════════════════════════════
-// OTOMATİK YEDEKLEME SİSTEMİ
+// YEDEKLEME SİSTEMİ (Sadece Supabase Bulut)
 // ══════════════════════════════════════════
-const BACKUP_KEY = 'mksigorta_backups'; // localStorage fallback
+const BACKUP_KEY = 'mksigorta_backups';
 const BACKUP_SETTINGS_KEY = 'mksigorta_backup_settings';
 let _backupTimer = null;
 let _backupNextAt = null;
 
 function loadBackupSettings(){
-  try{ return JSON.parse(localStorage.getItem(BACKUP_SETTINGS_KEY))||{interval:60,count:10}; }catch(e){ return {interval:60,count:10}; }
+  try{ return JSON.parse(localStorage.getItem(BACKUP_SETTINGS_KEY))||{interval:0,count:10}; }catch(e){ return {interval:0,count:10}; }
 }
-function saveBackupSettings(){
-  const interval = parseInt(byId('backup-interval')?byId('backup-interval').value:60)||60;
-  const count = parseInt(byId('backup-count')?byId('backup-count').value:10)||10;
-  localStorage.setItem(BACKUP_SETTINGS_KEY, JSON.stringify({interval,count}));
-  renderBackupPanel();
-  toast('Yedekleme ayarları kaydedildi','success');
-}
+
 
 // ── Supabase'den yedekleri çek ───────────────────────────────
 async function loadBackups(){
@@ -10248,7 +10052,8 @@ async function loadBackups(){
       if(!error && data) return data;
     }catch(e){}
   }
-  return [];
+  // Fallback: localStorage
+  try{ return JSON.parse(localStorage.getItem(BACKUP_KEY))||[]; }catch(e){ return []; }
 }
 
 // ── Supabase'e yedek kaydet ──────────────────────────────────
@@ -10291,13 +10096,16 @@ async function backupNow(manual){
   const cloudOk = await saveBackupToCloud(snapshot);
 
   // localStorage fallback (ve eski temizlik)
-  // Sadece son yedek zamanını localStorage'a kaydet
+  const localList = JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]');
+  localList.unshift(snapshot);
+  const trimmed = localList.slice(0, settings.count);
+  try{ localStorage.setItem(BACKUP_KEY, JSON.stringify(trimmed)); }catch(e){}
   localStorage.setItem('mksigorta_last_backup', now.toISOString());
 
   if(manual){
     if(cloudOk) toast('✅ Yedek Supabase\'e kaydedildi: '+snapshot.tarih+' '+snapshot.saat,'success');
-    else        toast('⚠️ Supabase bağlantısı yok — Ayarlar\'dan bağlantıyı kontrol edin.','error');
-  } }
+    else        toast('✅ Yedek yerel olarak kaydedildi (bulut bağlantısı yok)','');
+  }
   renderBackupPanel();
   updateBackupStatusDot(true);
   // Eski bulut yedeklerini temizle (max count'u aşanlar)
@@ -10328,7 +10136,12 @@ async function restoreBackup(id){
       if(!error && data) bkData=data;
     }catch(e){}
   }
-  if(!bkData){ toast('Yedek Supabase'de bulunamadı. Bağlantıyı kontrol edin.','error'); return; }
+  // Fallback localStorage
+  if(!bkData){
+    const localList=JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]');
+    bkData=localList.find(b=>String(b.id)===String(id));
+  }
+  if(!bkData){ toast('Yedek bulunamadı','error'); return; }
   try{
     DB=Object.assign({musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]},JSON.parse(bkData.data));
     saveDB(); updateStats(); populateSelects(); renderAyarlar();
@@ -10345,7 +10158,11 @@ async function downloadBackup(id){
       if(!error&&data) bkData=data;
     }catch(e){}
   }
-  if(!bkData){ toast('Yedek Supabase'de bulunamadı.','error'); return; }
+  if(!bkData){
+    const localList=JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]');
+    bkData=localList.find(b=>String(b.id)===String(id));
+  }
+  if(!bkData){ toast('Yedek bulunamadı','error'); return; }
   const a=document.createElement('a');
   a.href='data:application/json,'+encodeURIComponent(bkData.data);
   a.download='mksigorta_yedek_'+(bkData.tarih||'').replace(/\./g,'-')+'_'+(bkData.saat||'').replace(':','')+'.json';
@@ -10359,25 +10176,16 @@ async function deleteBackup(id){
   if(_supabase){
     try{ await _supabase.from('mk_backups').delete().eq('id',String(id)); }catch(e){}
   }
+  const localList=JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]').filter(b=>String(b.id)!==String(id));
+  try{ localStorage.setItem(BACKUP_KEY,JSON.stringify(localList)); }catch(e){}
   renderBackupPanel();
   toast('Yedek silindi','');
 }
 
 // ── Panel render ─────────────────────────────────────────────
 async function renderBackupPanel(){
-  const settings = loadBackupSettings();
   const lastRaw  = localStorage.getItem('mksigorta_last_backup');
   const backups  = await loadBackups(); // async — Supabase'den çeker
-
-  const intEl=byId('backup-interval'); const cntEl=byId('backup-count');
-  if(intEl) intEl.value=settings.interval;
-  if(cntEl) cntEl.value=settings.count;
-
-  const statusLbl=byId('backup-status-label');
-  if(statusLbl){
-    if(!settings.interval||settings.interval===0){ statusLbl.textContent='Kapalı'; statusLbl.style.color='var(--muted)'; }
-    else{ statusLbl.textContent='Aktif — Her '+settings.interval+' dk'; statusLbl.style.color='var(--success)'; }
-  }
 
   const lastEl=byId('backup-last-time');
   if(lastEl){
@@ -10387,8 +10195,6 @@ async function renderBackupPanel(){
 
   const cntDisplay=byId('backup-saved-count');
   if(cntDisplay) cntDisplay.textContent=backups.length+' yedek';
-
-  // Sonraki otomatik kutusu kaldırıldı
 
   // Yedek listesi
   const listEl=byId('backup-list');
@@ -10434,10 +10240,14 @@ function updateBackupStatusDot(ok){
   dot.style.boxShadow=ok?'0 0 6px var(--success)':'0 0 6px var(--warning)';
 }
 
+function restartBackupTimer(){
+  if(_backupTimer){ clearInterval(_backupTimer); _backupTimer=null; }
+  _backupNextAt=null;
+  updateBackupStatusDot(false);
+}
+
 function initBackupSystem(){
-  // Otomatik yedekleme devre dışı — sadece bulut (Supabase) yedekleme aktif
-  // Manuel yedek için "Şimdi Yedek Al" butonunu kullanın
-  updateBackupStatusDot(!!_supabase);
+  // Otomatik yedekleme devre dışı — sadece manuel (Supabase) yedekleme aktif
 }
 function veriSilOnay(){
   const onay1 = confirm('⚠️ TÜM VERİLER SİLİNECEK!\n\nMüşteriler, poliçeler, tahsilatlar, cariler, iptaller, notlar ve tüm kayıtlar silinir.\n\nDevam etmek istiyor musunuz?');
@@ -10729,6 +10539,36 @@ function renderUsers(){
     <td><span class="badge ${u.role==='admin'?'badge-info':'badge-muted'}">${u.role==='admin'?'Admin':'Kullanıcı'}</span></td>
     <td><button class="btn-act btn-act-danger" onclick='delUser("${u.username}")'>🗑️ Sil</button></td>
   </tr>`).join('');
+}
+
+function renderUserList(){
+  const ul=byId('user-list');if(!ul)return;
+  const users=loadUsers();
+  ul.innerHTML=users.map(u=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);">
+      <span style="font-size:13px;"><b>${u.username}</b> <span style="font-size:11px;color:var(--muted);">(${u.role==='admin'?'Admin':'Kullanıcı'})</span></span>
+      ${u.username==='admin'?'<span style="font-size:11px;color:var(--muted);">🔒</span>':`<button class="btn-act btn-act-danger" style="font-size:11px;padding:2px 8px;" onclick='delUser("${u.username}")'>Sil</button>`}
+    </div>`).join('');
+}
+
+async function addNewUser(){
+  const name=gv('new-user-name').trim();
+  const pass=gv('new-user-pass').trim();
+  const role=gv('new-user-role')||'kullanici';
+  if(!name){toast('Kullanıcı adı zorunludur!','error');return;}
+  if(!pass){toast('Şifre zorunludur!','error');return;}
+  if(pass.length<2){toast('Şifre en az 2 karakter olmalı!','error');return;}
+  const username=name.toLowerCase().replace(/\s+/g,'_');
+  const users=loadUsers();
+  if(users.find(u=>u.username.toLowerCase()===username)){toast('Bu kullanıcı adı zaten mevcut!','error');return;}
+  const hashed=await sha256(pass);
+  users.push({username,password:hashed,role});
+  saveUsers(users);
+  const nameEl=byId('new-user-name');const passEl=byId('new-user-pass');
+  if(nameEl)nameEl.value='';if(passEl)passEl.value='';
+  renderUserList();
+  renderUsers();
+  toast('Kullanıcı eklendi ✅','success');
 }
 
 // ==============================
@@ -11796,20 +11636,18 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 });
 
-// ── DÜZELTME 2: saveDB — önce Supabase, localStorage ikincil ──
+// ── DÜZELTME 2: saveDB quota hatası kullanıcıya bildir ──
 const _origSaveDB = saveDB;
 function saveDB(){
-  // Supabase bağlıysa ana kayıt oraya gider
-  if(_supabaseEnabled){ saveDBToSupabase(); }
-  // localStorage'a küçük önbellek olarak yaz (hata olursa sessizce geç)
   try{
     localStorage.setItem(DBKEY, JSON.stringify(DB));
   }catch(e){
-    // localStorage doldu ama Supabase varsa sorun değil
-    if(!_supabaseEnabled){
-      console.warn('[saveDB] localStorage quota aşıldı. Supabase bağlayın.');
+    if(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||(e.code&&e.code===22)){
+      toast('⚠️ Depolama alanı doldu! Eski yedekleri silin veya Supabase kullanın.','error');
+      console.error('[saveDB] localStorage quota aşıldı:', e);
     }
   }
+  if(_supabaseEnabled){ saveDBToSupabase(); }
 }
 
 // ── DÜZELTME 3: crypto.subtle HTTP'de çalışmaz — fallback ekle ──
