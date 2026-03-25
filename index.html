@@ -1811,7 +1811,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px;">📎 DASK Belgeleri <span style="font-weight:400;font-style:italic;text-transform:none;">(İsteğe Bağlı)</span></div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;">
 
-            <div class="doc-upload-box" id="dbox-dask-tapu">
+            <div class="doc-upload-box" id="dbox-dask-tapu" style="display:none;">
               <div class="doc-upload-label">🏠 Tapu Resmi</div>
               <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-tapu').click()" id="dzone-dask-tapu">
                 <span class="doc-upload-icon">📄</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
@@ -1820,7 +1820,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
               <div class="doc-preview" id="dpreview-dask-tapu" style="display:none;"></div>
             </div>
 
-            <div class="doc-upload-box" id="dbox-dask-tc">
+            <div class="doc-upload-box" id="dbox-dask-tc" style="display:none;">
               <div class="doc-upload-label">🪪 TC Kimlik Resmi</div>
               <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-tc').click()" id="dzone-dask-tc">
                 <span class="doc-upload-icon">🪪</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
@@ -1829,7 +1829,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
               <div class="doc-preview" id="dpreview-dask-tc" style="display:none;"></div>
             </div>
 
-            <div class="doc-upload-box" id="dbox-dask-pdf">
+            <div class="doc-upload-box" id="dbox-dask-pdf" style="display:none;">
               <div class="doc-upload-label">📑 Poliçe PDF</div>
               <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-pdf').click()" id="dzone-dask-pdf">
                 <span class="doc-upload-icon">📑</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
@@ -1838,7 +1838,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
               <div class="doc-preview" id="dpreview-dask-pdf" style="display:none;"></div>
             </div>
 
-            <div class="doc-upload-box" id="dbox-dask-fatura">
+            <div class="doc-upload-box" id="dbox-dask-fatura" style="display:none;">
               <div class="doc-upload-label">🧾 Fatura Resmi</div>
               <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-fatura').click()" id="dzone-dask-fatura">
                 <span class="doc-upload-icon">🧾</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
@@ -1862,7 +1862,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
             </div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
-            <div class="doc-upload-box" id="dbox-saglik-tc">
+            <div class="doc-upload-box" id="dbox-saglik-tc" style="display:none;">
               <div class="doc-upload-label">🪪 TC Kimlik Resmi</div>
               <div class="doc-upload-zone" onclick="document.getElementById('pe-file-saglik-tc').click()" id="dzone-saglik-tc">
                 <span class="doc-upload-icon">🪪</span>
@@ -1872,7 +1872,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
               <input type="file" id="pe-file-saglik-tc" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleExtraDoc('saglik-tc',this)">
               <div class="doc-preview" id="dpreview-saglik-tc" style="display:none;"></div>
             </div>
-            <div class="doc-upload-box" id="dbox-saglik-pdf">
+            <div class="doc-upload-box" id="dbox-saglik-pdf" style="display:none;">
               <div class="doc-upload-label">📑 Poliçe PDF</div>
               <div class="doc-upload-zone" onclick="document.getElementById('pe-file-saglik-pdf').click()" id="dzone-saglik-pdf">
                 <span class="doc-upload-icon">📑</span>
@@ -1916,7 +1916,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
             </div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
-            <div class="doc-upload-box" id="dbox-seyahat-tc">
+            <div class="doc-upload-box" id="dbox-seyahat-tc" style="display:none;">
               <div class="doc-upload-label">🪪 TC Kimlik Resmi</div>
               <div class="doc-upload-zone" onclick="document.getElementById('pe-file-seyahat-tc').click()" id="dzone-seyahat-tc">
                 <span class="doc-upload-icon">🪪</span>
@@ -1926,7 +1926,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
               <input type="file" id="pe-file-seyahat-tc" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleExtraDoc('seyahat-tc',this)">
               <div class="doc-preview" id="dpreview-seyahat-tc" style="display:none;"></div>
             </div>
-            <div class="doc-upload-box" id="dbox-seyahat-pdf">
+            <div class="doc-upload-box" id="dbox-seyahat-pdf" style="display:none;">
               <div class="doc-upload-label">📑 Poliçe PDF</div>
               <div class="doc-upload-zone" onclick="document.getElementById('pe-file-seyahat-pdf').click()" id="dzone-seyahat-pdf">
                 <span class="doc-upload-icon">📑</span>
@@ -1941,7 +1941,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </div>
 
       <!-- 25. BELGELER -->
-      <div style="grid-column:1/-1;" id="pe-standart-belgeler">
+      <div style="grid-column:1/-1;display:none;" id="pe-standart-belgeler">
         <div style="background:var(--bg);border:1px dashed var(--border);border-radius:var(--radius);padding:16px;">
           <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:12px;letter-spacing:.4px;text-transform:uppercase;">📎 Belgeler <span style="font-weight:400;font-style:italic;">(İsteğe Bağlı)</span></div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
@@ -3567,18 +3567,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         </div>
       </div>
 
-      <!-- OTOMATİK YEDEKLEME -->
-      <div onclick="showAyarlarTab('veri');setTimeout(()=>{const el=document.getElementById('otoyedek-kart');if(el)el.scrollIntoView({behavior:'smooth'});},100)"
-        style="cursor:pointer;background:var(--card);border:2px solid var(--warning);border-radius:14px;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all .2s;"
-        onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)'"
-        onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="width:52px;height:52px;border-radius:14px;background:color-mix(in srgb,var(--warning) 15%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;">⏰</div>
-        <div>
-          <div style="font-size:14px;font-weight:800;color:var(--text);">Otomatik Yedekleme</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:3px;">Zamanlama ayarla</div>
-        </div>
-        <div id="aksiyon-oto-durum" style="font-size:10px;font-weight:700;"></div>
-      </div>
+
 
       <!-- OTOMATİK YEDEK GERİ YÜKLE -->
       <div onclick="otomatikYedekGeriYukleAc()" style="cursor:pointer;background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all .2s;"
@@ -3592,16 +3581,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <div id="aksiyon-yedek-sayisi" style="font-size:10px;color:var(--accent);font-weight:700;"></div>
       </div>
 
-      <!-- JSON İNDİR -->
-      <div onclick="exportData()" style="cursor:pointer;background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all .2s;"
-        onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)'"
-        onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="width:52px;height:52px;border-radius:14px;background:color-mix(in srgb,var(--primary) 12%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;">📤</div>
-        <div>
-          <div style="font-size:14px;font-weight:800;color:var(--text);">JSON İndir</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:3px;">Tüm veriyi dışa aktar</div>
-        </div>
-      </div>
+
 
     </div>
 
@@ -3611,7 +3591,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <div class="card-title">💾 Yedeklerim</div>
         <div style="display:flex;gap:7px;flex-wrap:wrap;">
           <button class="btn btn-success btn-sm" onclick="backupNow(true)">💾 Şimdi Yedek Al</button>
-          <button class="btn btn-primary btn-sm" onclick="exportData()">📤 JSON İndir</button>
+
         </div>
       </div>
       <!-- Özet satırı -->
@@ -3635,65 +3615,9 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </div>
     </div>
 
-    <!-- ── YEDEK YÜKLE ──────────────────────────────────── -->
-    <div class="card">
-      <div class="card-header"><div class="card-title">📂 Yedek Yükle / İçe Aktar</div></div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7;">
-        Daha önce indirdiğiniz <b>.json</b> yedek dosyasını seçin.<br>
-        <span style="color:var(--warning);">⚠️ Mevcut veriler bu dosyadakilerle değiştirilir!</span>
-      </p>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <label style="flex:1;min-width:200px;display:flex;align-items:center;gap:10px;padding:12px 16px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:var(--bg);transition:all .2s;"
-          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-          <span style="font-size:24px;">📂</span>
-          <div>
-            <div style="font-size:12px;font-weight:700;">JSON dosyası seç</div>
-            <div style="font-size:10px;color:var(--muted);">mksigorta_YYYY-MM-DD.json</div>
-          </div>
-          <input type="file" accept=".json" onchange="importData(event)" style="display:none;">
-        </label>
-        <div style="font-size:11px;color:var(--muted);max-width:260px;line-height:1.6;">
-          💡 Yedek dosyası yoksa önce <b>JSON İndir</b> butonunu kullanın.
-        </div>
-      </div>
-    </div>
 
-    <!-- ── OTOMATİK YEDEKLEME ──────────────────────────── -->
-    <div class="card" id="otoyedek-kart">
-      <div class="card-header">
-        <div class="card-title">⏰ Otomatik Yedekleme</div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div id="backup-status-dot" style="width:10px;height:10px;border-radius:50%;background:var(--muted);transition:all .3s;"></div>
-          <span id="backup-status-label" style="font-size:11px;color:var(--muted);font-weight:600;">Kapalı</span>
-        </div>
-      </div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Sistem belirtilen aralıkta otomatik yedek alır ve geçmişi tutar.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-        <div class="fg" style="margin:0;">
-          <label>Yedekleme Aralığı</label>
-          <select id="backup-interval" style="width:100%;">
-            <option value="0">⛔ Kapalı</option>
-            <option value="15">Her 15 dakika</option>
-            <option value="30">Her 30 dakika</option>
-            <option value="60" selected>Her 1 saat</option>
-            <option value="120">Her 2 saat</option>
-            <option value="360">Her 6 saat</option>
-            <option value="720">Her 12 saat</option>
-          </select>
-        </div>
-        <div class="fg" style="margin:0;">
-          <label>Maksimum Yedek Sayısı</label>
-          <select id="backup-count" style="width:100%;">
-            <option value="3">3 yedek</option>
-            <option value="5" selected>5 yedek</option>
-            <option value="10">10 yedek</option>
-            <option value="20">20 yedek</option>
-            <option value="50">50 yedek</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn btn-success" onclick="saveBackupSettings()">💾 Ayarları Kaydet &amp; Uygula</button>
-    </div>
+
+
 
     <!-- ── DEPOLAMA BİLGİSİ ──────────────────────────────── -->
     <div class="card">
@@ -3736,19 +3660,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <div class="card">
       <div class="card-header"><div class="card-title">📦 Veri Yönetimi</div></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
-        <div class="set-card">
-          <h4>📤 Veriyi Dışa Aktar</h4>
-          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Tüm veriyi JSON dosyası olarak bilgisayarınıza indirin.</p>
-          <button class="btn btn-primary btn-sm" onclick="exportData()">📤 JSON İndir</button>
-        </div>
-        <div class="set-card">
-          <h4>📥 Veriyi İçe Aktar</h4>
-          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">JSON yedek dosyasını yükleyin. Mevcut veri değişir.</p>
-          <label style="cursor:pointer;">
-            <span class="btn btn-outline btn-sm">📂 Dosya Seç</span>
-            <input type="file" accept=".json" onchange="importData(event)" style="display:none;">
-          </label>
-        </div>
+
         <div class="set-card" style="border-color:var(--danger);">
           <h4 style="color:var(--danger);">🗑️ Tüm Verileri Sil</h4>
           <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Bu işlem geri alınamaz! Önce yedek alın.</p>
