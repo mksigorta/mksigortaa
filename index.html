@@ -1806,7 +1806,49 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           </div>
         </div>
 
+        <!-- DASK BELGELERİ -->
+        <div style="background:var(--bg);border:1px dashed var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px;">📎 DASK Belgeleri <span style="font-weight:400;font-style:italic;text-transform:none;">(İsteğe Bağlı)</span></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;">
 
+            <div class="doc-upload-box" id="dbox-dask-tapu" style="display:none;">
+              <div class="doc-upload-label">🏠 Tapu Resmi</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-tapu').click()" id="dzone-dask-tapu">
+                <span class="doc-upload-icon">📄</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-dask-tapu" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDaskDoc('tapu',this)">
+              <div class="doc-preview" id="dpreview-dask-tapu" style="display:none;"></div>
+            </div>
+
+            <div class="doc-upload-box" id="dbox-dask-tc" style="display:none;">
+              <div class="doc-upload-label">🪪 TC Kimlik Resmi</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-tc').click()" id="dzone-dask-tc">
+                <span class="doc-upload-icon">🪪</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-dask-tc" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDaskDoc('tc',this)">
+              <div class="doc-preview" id="dpreview-dask-tc" style="display:none;"></div>
+            </div>
+
+            <div class="doc-upload-box" id="dbox-dask-pdf" style="display:none;">
+              <div class="doc-upload-label">📑 Poliçe PDF</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-pdf').click()" id="dzone-dask-pdf">
+                <span class="doc-upload-icon">📑</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-dask-pdf" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDaskDoc('pdf',this)">
+              <div class="doc-preview" id="dpreview-dask-pdf" style="display:none;"></div>
+            </div>
+
+            <div class="doc-upload-box" id="dbox-dask-fatura" style="display:none;">
+              <div class="doc-upload-label">🧾 Fatura Resmi</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-dask-fatura').click()" id="dzone-dask-fatura">
+                <span class="doc-upload-icon">🧾</span><span class="doc-upload-text">Dosya seçmek için tıklayın</span><span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-dask-fatura" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDaskDoc('fatura',this)">
+              <div class="doc-preview" id="dpreview-dask-fatura" style="display:none;"></div>
+            </div>
+
+          </div>
+        </div>
       </div><!-- /pe-dask-block -->
 
       <!-- TSS / SAĞLIK / HAYAT BLOĞU -->
@@ -1816,6 +1858,29 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
             <span id="pe-saglik-icon" style="font-size:22px;">❤️</span>
             <div>
               <div id="pe-saglik-baslik-text" style="font-size:14px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:var(--text);">Sağlık Sigortası</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;">TC Kimlik ve Poliçe PDF yükleyebilirsiniz</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+            <div class="doc-upload-box" id="dbox-saglik-tc" style="display:none;">
+              <div class="doc-upload-label">🪪 TC Kimlik Resmi</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-saglik-tc').click()" id="dzone-saglik-tc">
+                <span class="doc-upload-icon">🪪</span>
+                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
+                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-saglik-tc" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleExtraDoc('saglik-tc',this)">
+              <div class="doc-preview" id="dpreview-saglik-tc" style="display:none;"></div>
+            </div>
+            <div class="doc-upload-box" id="dbox-saglik-pdf" style="display:none;">
+              <div class="doc-upload-label">📑 Poliçe PDF</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-saglik-pdf').click()" id="dzone-saglik-pdf">
+                <span class="doc-upload-icon">📑</span>
+                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
+                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-saglik-pdf" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleExtraDoc('saglik-pdf',this)">
+              <div class="doc-preview" id="dpreview-saglik-pdf" style="display:none;"></div>
             </div>
           </div>
         </div>
@@ -1850,9 +1915,94 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
               <div id="pe-ulke-gidis-secili" style="font-size:11px;color:var(--muted);margin-top:4px;"></div>
             </div>
           </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+            <div class="doc-upload-box" id="dbox-seyahat-tc" style="display:none;">
+              <div class="doc-upload-label">🪪 TC Kimlik Resmi</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-seyahat-tc').click()" id="dzone-seyahat-tc">
+                <span class="doc-upload-icon">🪪</span>
+                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
+                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-seyahat-tc" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleExtraDoc('seyahat-tc',this)">
+              <div class="doc-preview" id="dpreview-seyahat-tc" style="display:none;"></div>
+            </div>
+            <div class="doc-upload-box" id="dbox-seyahat-pdf" style="display:none;">
+              <div class="doc-upload-label">📑 Poliçe PDF</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-seyahat-pdf').click()" id="dzone-seyahat-pdf">
+                <span class="doc-upload-icon">📑</span>
+                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
+                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-seyahat-pdf" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleExtraDoc('seyahat-pdf',this)">
+              <div class="doc-preview" id="dpreview-seyahat-pdf" style="display:none;"></div>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- 25. BELGELER -->
+      <div style="grid-column:1/-1;display:none;" id="pe-standart-belgeler">
+        <div style="background:var(--bg);border:1px dashed var(--border);border-radius:var(--radius);padding:16px;">
+          <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:12px;letter-spacing:.4px;text-transform:uppercase;">📎 Belgeler <span style="font-weight:400;font-style:italic;">(İsteğe Bağlı)</span></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+            <!-- Ruhsat – sadece Trafik/Kasko -->
+            <div class="doc-upload-box pe-arac-doc" id="dbox-ruhsat">
+              <div class="doc-upload-label">📋 Ruhsat / Belge Seri</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-ruhsat').click()" id="dzone-ruhsat">
+                <span class="doc-upload-icon">📄</span>
+                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
+                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-ruhsat" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload('ruhsat',this)">
+              <div class="doc-preview" id="dpreview-ruhsat" style="display:none;"></div>
+            </div>
+            <!-- TC – her zaman görünür -->
+            <div class="doc-upload-box" id="dbox-tc">
+              <div class="doc-upload-label">🪪 TC Kimlik Belgesi</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-tc').click()" id="dzone-tc">
+                <span class="doc-upload-icon">🪪</span>
+                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
+                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-tc" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload('tc',this)">
+              <div class="doc-preview" id="dpreview-tc" style="display:none;"></div>
+            </div>
+            <!-- PDF – her zaman görünür -->
+            <div class="doc-upload-box" id="dbox-pdf">
+              <div class="doc-upload-label">📑 Poliçe / Sözleşme PDF</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-pdf').click()" id="dzone-pdf">
+                <span class="doc-upload-icon">📑</span>
+                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
+                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-pdf" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload('pdf',this)">
+              <div class="doc-preview" id="dpreview-pdf" style="display:none;"></div>
+            </div>
+            <!-- TAPU – yalnız Konut/İşyeri/DASK -->
+            <div class="doc-upload-box pe-konut-doc" id="dbox-tapu" style="display:none;">
+              <div class="doc-upload-label">🏠 Tapu Belgesi</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-tapu').click()" id="dzone-tapu">
+                <span class="doc-upload-icon">🏠</span>
+                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
+                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-tapu" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload('tapu',this)">
+              <div class="doc-preview" id="dpreview-tapu" style="display:none;"></div>
+            </div>
+            <!-- FATURA – yalnız Konut/İşyeri/DASK -->
+            <div class="doc-upload-box pe-konut-doc" id="dbox-fatura" style="display:none;">
+              <div class="doc-upload-label">🧾 Fatura</div>
+              <div class="doc-upload-zone" onclick="document.getElementById('pe-file-fatura').click()" id="dzone-fatura">
+                <span class="doc-upload-icon">🧾</span>
+                <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
+                <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
+              </div>
+              <input type="file" id="pe-file-fatura" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload('fatura',this)">
+              <div class="doc-preview" id="dpreview-fatura" style="display:none;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
     <div class="btn-group" style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
@@ -2470,6 +2620,20 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="fg" style="grid-column:1/-1;"><label>Açıklama</label><textarea id="ii-aciklama" rows="2" placeholder="İptal açıklaması..." style="width:100%;resize:vertical;"></textarea></div>
       <div class="fg"><label>Kullanılan Gün</label><input type="text" id="ii-kullanilan" readonly></div>
       <div class="fg"><label>Kalan Gün</label><input type="text" id="ii-kalan" readonly></div>
+      <!-- NOTER BİLGİLERİ (TEMEL BİLGİLER içinde) -->
+      <div class="fg"><label>Noter İsmi</label><input type="text" id="ii-noter-ismi" placeholder="Örn: Ankara 5. Noteri"></div>
+      <div class="fg"><label>Noter Numarası / Yevmiye No</label><input type="text" id="ii-noter-no" placeholder="Örn: 12345"></div>
+      <!-- ELLE GİRİLEN TUTARLAR -->
+      <div class="fg">
+        <label>💵 Gerçek İade Tutarı <small style="color:var(--success);font-weight:400;">(Elle Girin)</small></label>
+        <input type="number" id="ii-gercekiade-manuel" placeholder="0.00" step="0.01" min="0" oninput="calcIptalManuel()" style="font-weight:700;font-size:14px;border:2px solid var(--success);">
+        <small style="color:var(--muted);font-size:10px;">Müşteriye iade edilecek gerçek tutar</small>
+      </div>
+      <div class="fg">
+        <label>🏢 Acente İade Tutarı <small style="color:var(--info);font-weight:400;">(Elle Girin)</small></label>
+        <input type="number" id="ii-acente-iade-manuel" placeholder="0.00" step="0.01" min="0" oninput="calcIptalManuel()" style="font-weight:700;font-size:14px;border:2px solid var(--info);">
+        <small style="color:var(--muted);font-size:10px;">Acenteye iade edilecek tutar</small>
+      </div>
     </div>
 
     <!-- POLİÇE TUTARLARI (OTOMATİK) -->
@@ -2570,15 +2734,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- FORMÜL ÖZETİ -->
       <div id="ii-formul-ozet" style="margin-top:12px;padding:12px;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;font-size:11px;line-height:2;color:var(--text);min-height:40px;">
         Poliçe seçin, tarih ve MK İade tutarı girin…
-      </div>
-    </div>
-
-    <!-- NOTER BİLGİLERİ -->
-    <div style="margin-top:14px;padding:12px 14px;border:2px solid var(--primary);border-radius:12px;background:color-mix(in srgb,var(--primary) 5%,transparent);">
-      <div style="font-size:11px;font-weight:800;color:var(--primary);margin-bottom:10px;">📜 NOTER BİLGİLERİ (Araç Satış için)</div>
-      <div class="form-grid">
-        <div class="fg"><label>Noter İsmi</label><input type="text" id="ii-noter-ismi" placeholder="Örn: Ankara 5. Noteri"></div>
-        <div class="fg"><label>Noter Numarası / Yevmiye No</label><input type="text" id="ii-noter-no" placeholder="Örn: 12345"></div>
       </div>
     </div>
 
@@ -3394,6 +3549,18 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <div id="aksiyon-son-yedek" style="font-size:10px;color:var(--success);font-weight:600;"></div>
       </div>
 
+      <!-- YEDEK YÜKLE -->
+      <label style="cursor:pointer;background:var(--card);border:2px solid var(--info);border-radius:14px;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all .2s;"
+        onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)'"
+        onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="width:52px;height:52px;border-radius:14px;background:color-mix(in srgb,var(--info) 15%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;">📂</div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:var(--text);">Yedek Yükle</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px;">JSON dosyasından geri yükle</div>
+        </div>
+        <input type="file" accept=".json" onchange="importData(event)" style="display:none;">
+      </label>
+
       <!-- TÜM VERİLERİ SİL -->
       <div onclick="veriSilOnay()" style="cursor:pointer;background:var(--card);border:2px solid var(--danger);border-radius:14px;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all .2s;"
         onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)'"
@@ -3407,6 +3574,17 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
 
 
 
+      <!-- OTOMATİK YEDEK GERİ YÜKLE -->
+      <div onclick="otomatikYedekGeriYukleAc()" style="cursor:pointer;background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all .2s;"
+        onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)'"
+        onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="width:52px;height:52px;border-radius:14px;background:color-mix(in srgb,var(--accent) 15%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;">🔄</div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:var(--text);">Otomatik Yedek Geri Yükle</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px;">Geçmiş yedeğe dön</div>
+        </div>
+        <div id="aksiyon-yedek-sayisi" style="font-size:10px;color:var(--accent);font-weight:700;"></div>
+      </div>
 
 
 
@@ -3431,7 +3609,10 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Kayıtlı Yedek</div>
           <div id="backup-saved-count" style="font-size:12px;font-weight:700;margin-top:3px;">0</div>
         </div>
-
+        <div style="flex:1;min-width:130px;background:var(--bg);border-radius:9px;padding:10px 14px;border:1px solid var(--border);">
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Sonraki Otomatik</div>
+          <div id="backup-next-time" style="font-size:12px;font-weight:700;margin-top:3px;">—</div>
+        </div>
       </div>
       <!-- Yedek listesi -->
       <div id="backup-list">
@@ -5184,9 +5365,10 @@ function previewDaskDoc(type){
 }
 function removeDaskDoc(type){
   _daskDocsTemp[type]=null;
-  const zone=byId('dzone-dask-'+type);const preview=byId('dpreview-dask-'+type);
+  const zone=byId('dzone-dask-'+type);const preview=byId('dpreview-dask-'+type);const inp=byId('pe-file-dask-'+type);
   if(zone){zone.classList.remove('has-file');const t=zone.querySelector('.doc-upload-text');if(t)t.textContent='Dosya seçmek için tıklayın';}
   if(preview){preview.style.display='none';preview.innerHTML='';}
+  if(inp)inp.value='';
   toast('Belge kaldırıldı','');
 }
 function resetDaskForm(){
@@ -5201,6 +5383,7 @@ function resetDaskForm(){
   const ilInp=byId('dask-il-search');if(ilInp)ilInp.value='';
   const ilceInp=byId('dask-ilce-search');if(ilceInp){ilceInp.value='';ilceInp.disabled=true;ilceInp.placeholder='Önce il seçin...';}
   sv('dask-il','');sv('dask-ilce','');
+  ['tapu','tc','pdf','fatura'].forEach(function(t){removeDaskDoc(t);});
 }
 
 // ── Yeni arama motorlu DASK adres fonksiyonları ──
@@ -5366,6 +5549,18 @@ function peSetIslemTur(btn,val){
   ['araccins','aracmarka','modelyili','plaka','ruhsat'].forEach(function(key){
     const el = document.querySelector('[data-field-key="'+key+'"]');
     if(el) el.style.display = isArac ? '' : 'none';
+  });
+
+  // ── Belge görünürlüğü ──
+  // Standart belgeler bloğu: Konut/İşyeri/DASK'ta gizle (kendi belge bölümü var)
+  const standartBelgeler = byId('pe-standart-belgeler');
+  if(standartBelgeler) standartBelgeler.style.display = isKonut ? 'none' : '';
+  // Ruhsat: sadece Trafik/Kasko
+  const ruhsatBox = byId('dbox-ruhsat');
+  if(ruhsatBox) ruhsatBox.style.display = isArac ? '' : 'none';
+  // Tapu + Fatura: sadece Konut/İşyeri/DASK (standart belgeler içinde, kullanılmıyor artık)
+  document.querySelectorAll('.pe-konut-doc').forEach(function(el){
+    el.style.display = isKonut ? '' : 'none';
   });
 
   // ── Konut başlık ──
@@ -5784,6 +5979,7 @@ function resetPeForm(){
   byId('pe-form-title').textContent='➕ Poliçe Ekle';
   // DASK bloğunu gizle ve sıfırla
   const db=byId('pe-dask-block');if(db)db.style.display='none';
+  const sb=byId('pe-standart-belgeler');if(sb)sb.style.display='';
   resetDaskForm();
 }
 
@@ -7495,6 +7691,25 @@ function loadIptalPolice(){
   calcIptal();
 }
 let _iptalCalc={};
+function calcIptalManuel(){
+  // Elle girilen gerçek iade tutarını ve acente iade tutarını da hesaba kat
+  const gercekIadeManuel = parseFloat(byId('ii-gercekiade-manuel')&&byId('ii-gercekiade-manuel').value)||0;
+  const acIadeManuel     = parseFloat(byId('ii-acente-iade-manuel')&&byId('ii-acente-iade-manuel').value)||0;
+  // Otomatik hesaplananları güncelle (eğer elle girilmişse otomatiği geçersiz say)
+  if(gercekIadeManuel>0){
+    sv('ii-gercekiade','₺'+gercekIadeManuel.toFixed(2));
+    const brut=_iptalCalc.brut||0;
+    sv('ii-gercek-calisan','₺'+(brut-gercekIadeManuel).toFixed(2));
+    _iptalCalc.gercekIade=gercekIadeManuel;
+    _iptalCalc.gercekCalisan=brut-gercekIadeManuel;
+  }
+  if(acIadeManuel>0){
+    sv('ii-ackomiade','₺'+acIadeManuel.toFixed(2));
+    _iptalCalc.acIade=acIadeManuel;
+  }
+  calcIptal2();
+}
+
 function calcIptal(){
   const pid=gv('ii-police');const itStr=gv('ii-iptaltarihi');
   if(!pid||!itStr)return;
@@ -7567,9 +7782,16 @@ function saveIptal(){
     if(!confirm('İptal tarihi gelecek bir tarih. Devam edilsin mi?'))return;
   }
   const mkIade=parseFloat(gv('ii-mkiade'))||0;
+  // Elle girilen değerleri _iptalCalc'a aktar
+  const gercekIadeManuel=parseFloat(gv('ii-gercekiade-manuel'))||0;
+  const acIadeManuel=parseFloat(gv('ii-acente-iade-manuel'))||0;
+  if(gercekIadeManuel>0){_iptalCalc.gercekIade=gercekIadeManuel;_iptalCalc.gercekCalisan=(_iptalCalc.brut||0)-gercekIadeManuel;}
+  if(acIadeManuel>0){_iptalCalc.acIade=acIadeManuel;}
   const obj={id:uid(),musteriId:mid,policeId:pid,tanzim:p.tanzim,baslama:p.baslama,bitis:p.bitis,
     iptaltarihi:gv('ii-iptaltarihi'),polNo:p.polNo,sirket:p.sirket,acenteId:p.acenteId,
     sebep:gv('ii-sebep'),..._iptalCalc,mkIade,
+    _gercekIadeManuel: gercekIadeManuel||0,
+    _acIadeManuel: acIadeManuel||0,
     mkIadeDurum:'bekliyor',
     noterIsmi:gv('ii-noter-ismi')||'',noterNo:gv('ii-noter-no')||'',aciklama:gv('ii-aciklama')||'',
     iadAcenteId:gv('ii-acente-sec')||'',
@@ -7609,6 +7831,7 @@ function resetIptalForm(){
    'ii-mkiade','ii-mk-calisan','ii-kazanc','ii-ackomiade','ii-ac-bakalan','ii-mkkazanc',
    'ii-sirket','ii-acente','ii-acente-sec','ii-noter-ismi','ii-noter-no','ii-aciklama'].forEach(id=>sv(id,''));
   mkSearchClear('ii-musteri');
+  sv('ii-gercekiade-manuel','');sv('ii-acente-iade-manuel','');
   const oz=byId('ii-formul-ozet');if(oz)oz.textContent='Poli\xe7e se\xe7in, tarih ve MK \u0130ade tutar\u0131 girin\u2026';
   _iptalCalc={};
   clearIptalDocs();
@@ -7820,6 +8043,9 @@ function editIptal(id){
       sv('ii-noter-ismi',ii.noterIsmi||'');
       sv('ii-noter-no',ii.noterNo||'');
       sv('ii-aciklama',ii.aciklama||'');
+      // Elle girilen değerleri geri yükle
+      sv('ii-gercekiade-manuel',ii._gercekIadeManuel||'');
+      sv('ii-acente-iade-manuel',ii._acIadeManuel||'');
       if(ii.iadAcenteId) sv('ii-acente-sec',ii.iadAcenteId);
       calcIptal();
       // Belgeleri yükle
@@ -10023,26 +10249,96 @@ function renderVeriAksiyonlar(){
   if(sonYedekEl) sonYedekEl.textContent = sonYedek
     ? '📅 ' + new Date(sonYedek).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
     : 'Henüz yedek yok';
+
+  // Yedek sayısı
+  const backups = loadBackups ? loadBackups() : [];
+  const yedekSayisiEl = byId('aksiyon-yedek-sayisi');
+  if(yedekSayisiEl) yedekSayisiEl.textContent = backups.length
+    ? backups.length + ' yedek mevcut'
+    : 'Yedek bulunamadı';
+
+  // Oto yedekleme durumu
+  const settings = loadBackupSettings ? loadBackupSettings() : {interval:0};
+  const otoDurumEl = byId('aksiyon-oto-durum');
+  if(otoDurumEl){
+    if(settings.interval > 0){
+      otoDurumEl.textContent = '🟢 Her ' + (settings.interval >= 60 ? settings.interval/60 + ' saat' : settings.interval + ' dk');
+      otoDurumEl.style.color = 'var(--success)';
+    } else {
+      otoDurumEl.textContent = '⛔ Kapalı';
+      otoDurumEl.style.color = 'var(--muted)';
+    }
+  }
 }
 
+function otomatikYedekGeriYukleAc(){
+  const backups = loadBackups ? loadBackups() : [];
+  if(!backups.length){
+    toast('Henüz otomatik yedek yok. Önce yedek alın.','');
+    return;
+  }
+  // Mini modal ile yedek listesi göster
+  const listHTML = backups.map((bk,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid var(--border);border-radius:9px;margin-bottom:7px;background:var(--bg);">
+      <div>
+        <div style="font-size:13px;font-weight:700;">${bk.label||'Yedek'} — ${bk.tarih||''} ${bk.saat||''}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${bk.kayitSayisi||0} kayıt · ${bk.boyut||0} KB</div>
+      </div>
+      <button onclick="otomatikYedekGeriYukle(${bk.id})" class="btn btn-success btn-sm">🔄 Geri Yükle</button>
+    </div>`).join('');
 
+  hizliModalAc('🔄 Otomatik Yedek Geri Yükle',
+    `<p style="font-size:12px;color:var(--warning);margin-bottom:12px;">⚠️ Seçilen yedek mevcut verilerinizin üzerine yazacak!</p>${listHTML}`,
+    `<button class="btn btn-outline" onclick="hizliModalKapat()">İptal</button>`
+  );
+}
 
-
-
-
+function otomatikYedekGeriYukle(id){
+  if(!confirm('Bu yedek geri yüklensin mi? Mevcut veriler değişecek!')) return;
+  const backups = loadBackups ? loadBackups() : [];
+  const bk = backups.find(b=>b.id===id);
+  if(!bk){ toast('Yedek bulunamadı','error'); return; }
+  try{
+    DB = Object.assign({musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]}, JSON.parse(bk.data));
+    saveDB(); updateStats(); populateSelects(); renderAyarlar();
+    hizliModalKapat();
+    toast('✅ Yedek geri yüklendi: ' + bk.tarih + ' ' + bk.saat, 'success');
+  } catch(err){
+    toast('Yedek geri yüklenemedi: ' + err.message, 'error');
+  }
+}
+function exportData(){
+  const a=document.createElement('a');
+  a.href='data:application/json,'+encodeURIComponent(JSON.stringify(DB,null,2));
+  a.download='mksigorta_'+new Date().toISOString().substr(0,10)+'.json';a.click();
+  toast('Veri indirildi','success');
+}
+function importData(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{try{DB=Object.assign({musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]},JSON.parse(ev.target.result));saveDB();renderAyarlar();updateStats();populateSelects();toast('Veri yüklendi!','success');}catch(err){toast('Geçersiz dosya!','error');}};
+  r.readAsText(f);
+}
 
 // ══════════════════════════════════════════
-// YEDEKLEME SİSTEMİ (Sadece Supabase Bulut)
+// OTOMATİK YEDEKLEME SİSTEMİ
 // ══════════════════════════════════════════
-const BACKUP_KEY = 'mksigorta_backups';
+const BACKUP_KEY = 'mksigorta_backups'; // localStorage fallback
 const BACKUP_SETTINGS_KEY = 'mksigorta_backup_settings';
 let _backupTimer = null;
 let _backupNextAt = null;
 
 function loadBackupSettings(){
-  try{ return JSON.parse(localStorage.getItem(BACKUP_SETTINGS_KEY))||{interval:0,count:10}; }catch(e){ return {interval:0,count:10}; }
+  try{ return JSON.parse(localStorage.getItem(BACKUP_SETTINGS_KEY))||{interval:60,count:10}; }catch(e){ return {interval:60,count:10}; }
 }
-
+function saveBackupSettings(){
+  const interval = parseInt(byId('backup-interval')?byId('backup-interval').value:60)||60;
+  const count = parseInt(byId('backup-count')?byId('backup-count').value:10)||10;
+  localStorage.setItem(BACKUP_SETTINGS_KEY, JSON.stringify({interval,count}));
+  restartBackupTimer();
+  renderBackupPanel();
+  toast('Yedekleme ayarları kaydedildi','success');
+}
 
 // ── Supabase'den yedekleri çek ───────────────────────────────
 async function loadBackups(){
@@ -10184,8 +10480,19 @@ async function deleteBackup(id){
 
 // ── Panel render ─────────────────────────────────────────────
 async function renderBackupPanel(){
+  const settings = loadBackupSettings();
   const lastRaw  = localStorage.getItem('mksigorta_last_backup');
   const backups  = await loadBackups(); // async — Supabase'den çeker
+
+  const intEl=byId('backup-interval'); const cntEl=byId('backup-count');
+  if(intEl) intEl.value=settings.interval;
+  if(cntEl) cntEl.value=settings.count;
+
+  const statusLbl=byId('backup-status-label');
+  if(statusLbl){
+    if(!settings.interval||settings.interval===0){ statusLbl.textContent='Kapalı'; statusLbl.style.color='var(--muted)'; }
+    else{ statusLbl.textContent='Aktif — Her '+settings.interval+' dk'; statusLbl.style.color='var(--success)'; }
+  }
 
   const lastEl=byId('backup-last-time');
   if(lastEl){
@@ -10195,6 +10502,13 @@ async function renderBackupPanel(){
 
   const cntDisplay=byId('backup-saved-count');
   if(cntDisplay) cntDisplay.textContent=backups.length+' yedek';
+
+  const nextEl=byId('backup-next-time');
+  if(nextEl){
+    if(settings.interval===0) nextEl.textContent='Kapalı';
+    else if(_backupNextAt) nextEl.textContent=_backupNextAt.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+    else nextEl.textContent='—';
+  }
 
   // Yedek listesi
   const listEl=byId('backup-list');
@@ -10242,12 +10556,25 @@ function updateBackupStatusDot(ok){
 
 function restartBackupTimer(){
   if(_backupTimer){ clearInterval(_backupTimer); _backupTimer=null; }
-  _backupNextAt=null;
-  updateBackupStatusDot(false);
+  const settings=loadBackupSettings();
+  if(!settings.interval||settings.interval===0){ _backupNextAt=null; updateBackupStatusDot(false); return; }
+  const ms=settings.interval*60*1000;
+  _backupNextAt=new Date(Date.now()+ms);
+  _backupTimer=setInterval(()=>{ backupNow(false); _backupNextAt=new Date(Date.now()+ms); }, ms);
+  updateBackupStatusDot(true);
 }
 
 function initBackupSystem(){
-  // Otomatik yedekleme devre dışı — sadece manuel (Supabase) yedekleme aktif
+  restartBackupTimer();
+  const lastRaw=localStorage.getItem('mksigorta_last_backup');
+  if(!lastRaw){ setTimeout(()=>backupNow(false), 6000); }
+  else{
+    const settings=loadBackupSettings();
+    if(settings.interval>0){
+      const elapsed=(Date.now()-new Date(lastRaw).getTime())/60000;
+      if(elapsed>=settings.interval) setTimeout(()=>backupNow(false),3000);
+    }
+  }
 }
 function veriSilOnay(){
   const onay1 = confirm('⚠️ TÜM VERİLER SİLİNECEK!\n\nMüşteriler, poliçeler, tahsilatlar, cariler, iptaller, notlar ve tüm kayıtlar silinir.\n\nDevam etmek istiyor musunuz?');
