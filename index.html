@@ -2620,20 +2620,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="fg" style="grid-column:1/-1;"><label>Açıklama</label><textarea id="ii-aciklama" rows="2" placeholder="İptal açıklaması..." style="width:100%;resize:vertical;"></textarea></div>
       <div class="fg"><label>Kullanılan Gün</label><input type="text" id="ii-kullanilan" readonly></div>
       <div class="fg"><label>Kalan Gün</label><input type="text" id="ii-kalan" readonly></div>
-      <!-- NOTER BİLGİLERİ (TEMEL BİLGİLER içinde) -->
-      <div class="fg"><label>Noter İsmi</label><input type="text" id="ii-noter-ismi" placeholder="Örn: Ankara 5. Noteri"></div>
-      <div class="fg"><label>Noter Numarası / Yevmiye No</label><input type="text" id="ii-noter-no" placeholder="Örn: 12345"></div>
-      <!-- ELLE GİRİLEN TUTARLAR -->
-      <div class="fg">
-        <label>💵 Gerçek İade Tutarı <small style="color:var(--success);font-weight:400;">(Elle Girin)</small></label>
-        <input type="number" id="ii-gercekiade-manuel" placeholder="0.00" step="0.01" min="0" oninput="calcIptalManuel()" style="font-weight:700;font-size:14px;border:2px solid var(--success);">
-        <small style="color:var(--muted);font-size:10px;">Müşteriye iade edilecek gerçek tutar</small>
-      </div>
-      <div class="fg">
-        <label>🏢 Acente İade Tutarı <small style="color:var(--info);font-weight:400;">(Elle Girin)</small></label>
-        <input type="number" id="ii-acente-iade-manuel" placeholder="0.00" step="0.01" min="0" oninput="calcIptalManuel()" style="font-weight:700;font-size:14px;border:2px solid var(--info);">
-        <small style="color:var(--muted);font-size:10px;">Acenteye iade edilecek tutar</small>
-      </div>
     </div>
 
     <!-- POLİÇE TUTARLARI (OTOMATİK) -->
@@ -2734,6 +2720,15 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- FORMÜL ÖZETİ -->
       <div id="ii-formul-ozet" style="margin-top:12px;padding:12px;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;font-size:11px;line-height:2;color:var(--text);min-height:40px;">
         Poliçe seçin, tarih ve MK İade tutarı girin…
+      </div>
+    </div>
+
+    <!-- NOTER BİLGİLERİ -->
+    <div style="margin-top:14px;padding:12px 14px;border:2px solid var(--primary);border-radius:12px;background:color-mix(in srgb,var(--primary) 5%,transparent);">
+      <div style="font-size:11px;font-weight:800;color:var(--primary);margin-bottom:10px;">📜 NOTER BİLGİLERİ (Araç Satış için)</div>
+      <div class="form-grid">
+        <div class="fg"><label>Noter İsmi</label><input type="text" id="ii-noter-ismi" placeholder="Örn: Ankara 5. Noteri"></div>
+        <div class="fg"><label>Noter Numarası / Yevmiye No</label><input type="text" id="ii-noter-no" placeholder="Örn: 12345"></div>
       </div>
     </div>
 
@@ -7691,25 +7686,6 @@ function loadIptalPolice(){
   calcIptal();
 }
 let _iptalCalc={};
-function calcIptalManuel(){
-  // Elle girilen gerçek iade tutarını ve acente iade tutarını da hesaba kat
-  const gercekIadeManuel = parseFloat(byId('ii-gercekiade-manuel')&&byId('ii-gercekiade-manuel').value)||0;
-  const acIadeManuel     = parseFloat(byId('ii-acente-iade-manuel')&&byId('ii-acente-iade-manuel').value)||0;
-  // Otomatik hesaplananları güncelle (eğer elle girilmişse otomatiği geçersiz say)
-  if(gercekIadeManuel>0){
-    sv('ii-gercekiade','₺'+gercekIadeManuel.toFixed(2));
-    const brut=_iptalCalc.brut||0;
-    sv('ii-gercek-calisan','₺'+(brut-gercekIadeManuel).toFixed(2));
-    _iptalCalc.gercekIade=gercekIadeManuel;
-    _iptalCalc.gercekCalisan=brut-gercekIadeManuel;
-  }
-  if(acIadeManuel>0){
-    sv('ii-ackomiade','₺'+acIadeManuel.toFixed(2));
-    _iptalCalc.acIade=acIadeManuel;
-  }
-  calcIptal2();
-}
-
 function calcIptal(){
   const pid=gv('ii-police');const itStr=gv('ii-iptaltarihi');
   if(!pid||!itStr)return;
@@ -7782,16 +7758,9 @@ function saveIptal(){
     if(!confirm('İptal tarihi gelecek bir tarih. Devam edilsin mi?'))return;
   }
   const mkIade=parseFloat(gv('ii-mkiade'))||0;
-  // Elle girilen değerleri _iptalCalc'a aktar
-  const gercekIadeManuel=parseFloat(gv('ii-gercekiade-manuel'))||0;
-  const acIadeManuel=parseFloat(gv('ii-acente-iade-manuel'))||0;
-  if(gercekIadeManuel>0){_iptalCalc.gercekIade=gercekIadeManuel;_iptalCalc.gercekCalisan=(_iptalCalc.brut||0)-gercekIadeManuel;}
-  if(acIadeManuel>0){_iptalCalc.acIade=acIadeManuel;}
   const obj={id:uid(),musteriId:mid,policeId:pid,tanzim:p.tanzim,baslama:p.baslama,bitis:p.bitis,
     iptaltarihi:gv('ii-iptaltarihi'),polNo:p.polNo,sirket:p.sirket,acenteId:p.acenteId,
     sebep:gv('ii-sebep'),..._iptalCalc,mkIade,
-    _gercekIadeManuel: gercekIadeManuel||0,
-    _acIadeManuel: acIadeManuel||0,
     mkIadeDurum:'bekliyor',
     noterIsmi:gv('ii-noter-ismi')||'',noterNo:gv('ii-noter-no')||'',aciklama:gv('ii-aciklama')||'',
     iadAcenteId:gv('ii-acente-sec')||'',
@@ -7831,7 +7800,6 @@ function resetIptalForm(){
    'ii-mkiade','ii-mk-calisan','ii-kazanc','ii-ackomiade','ii-ac-bakalan','ii-mkkazanc',
    'ii-sirket','ii-acente','ii-acente-sec','ii-noter-ismi','ii-noter-no','ii-aciklama'].forEach(id=>sv(id,''));
   mkSearchClear('ii-musteri');
-  sv('ii-gercekiade-manuel','');sv('ii-acente-iade-manuel','');
   const oz=byId('ii-formul-ozet');if(oz)oz.textContent='Poli\xe7e se\xe7in, tarih ve MK \u0130ade tutar\u0131 girin\u2026';
   _iptalCalc={};
   clearIptalDocs();
@@ -8043,9 +8011,6 @@ function editIptal(id){
       sv('ii-noter-ismi',ii.noterIsmi||'');
       sv('ii-noter-no',ii.noterNo||'');
       sv('ii-aciklama',ii.aciklama||'');
-      // Elle girilen değerleri geri yükle
-      sv('ii-gercekiade-manuel',ii._gercekIadeManuel||'');
-      sv('ii-acente-iade-manuel',ii._acIadeManuel||'');
       if(ii.iadAcenteId) sv('ii-acente-sec',ii.iadAcenteId);
       calcIptal();
       // Belgeleri yükle
@@ -8131,7 +8096,29 @@ function _showPoliceBilgi(btn, pid){
   },10);
 }
 
-function delIptal(id){if(!confirm('Silinsin mi?'))return;DB.iptaller=DB.iptaller.filter(i=>i.id!==id);saveDB();renderIptal();updateStats();}
+function delIptal(id){
+  if(!confirm('Silinsin mi?\n\nBu iptal kaydına ait cari ve acente iade kayıtları da silinecek.'))return;
+  // Silinecek iptal kaydını bul
+  const iptal=DB.iptaller.find(i=>i.id===id);
+  if(iptal){
+    // İlgili poliçe ve müşteriye ait iptal cari kaydını sil
+    // (MK İptal İadesi alacak kaydı — policeId + musteriId eşleşen)
+    DB.cariler=DB.cariler.filter(c=>{
+      if(c.policeId===iptal.policeId && c.musteriId===iptal.musteriId &&
+         c.aciklama && c.aciklama.indexOf('MK \u0130ptal \u0130adesi')===0) return false;
+      return true;
+    });
+    // İlgili acente iade atList kaydını sil
+    DB.atList=DB.atList.filter(a=>{
+      if(a.policeId===iptal.policeId && a.tip==='iade' &&
+         a.aciklama && a.aciklama.indexOf('\u0130ptal Acente \u0130ade Alaca\u011f\u0131')===0) return false;
+      return true;
+    });
+  }
+  DB.iptaller=DB.iptaller.filter(i=>i.id!==id);
+  saveDB();renderIptal();updateStats();
+  toast('İptal kaydı ve ilgili cari/acente kayıtları silindi','success');
+}
 
 function _iptalCSS(){
   return `*{margin:0;padding:0;box-sizing:border-box;}
