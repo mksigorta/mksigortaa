@@ -813,6 +813,15 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
 .doc-upload-zone:hover{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 5%,transparent);}
 .doc-upload-zone.has-file{border-color:var(--success);border-style:solid;background:color-mix(in srgb,var(--success) 8%,transparent);}
 .doc-upload-icon{font-size:22px;}
+/* Menu order drag-drop */
+.menu-order-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:9px;cursor:grab;user-select:none;transition:all .15s;}
+.menu-order-item:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,transparent);}
+.menu-order-item.dragging{opacity:.4;cursor:grabbing;}
+.menu-order-item.drag-over{border-color:var(--accent);border-style:dashed;background:color-mix(in srgb,var(--accent) 12%,transparent);}
+.menu-order-handle{font-size:16px;color:var(--muted);flex-shrink:0;}
+.menu-order-ico{font-size:16px;width:22px;text-align:center;flex-shrink:0;}
+.menu-order-label{flex:1;font-size:13px;font-weight:500;color:var(--text);}
+.menu-order-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent);}
 .doc-upload-text{font-size:11px;font-weight:600;color:var(--text);text-align:center;}
 .doc-upload-hint{font-size:10px;color:var(--muted);}
 .doc-preview{margin-top:6px;background:color-mix(in srgb,var(--primary) 6%,transparent);border-radius:8px;padding:8px 10px;font-size:11px;}
@@ -1524,8 +1533,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <select id="pe-arac-cinsi">
           <option value="">-- Seçin --</option>
           <option>OTOMOBİL</option><option>MOTORSİKLET</option><option>KAMYONET</option>
-          <option>MİNİBÜS</option><option>OTOBÜS</option><option>KAMYON</option>
-          <option>TIR</option><option>ÇEKİCİ</option><option>DİĞER</option>
+          <option>TRAKTÖR</option><option>MİNİBÜS</option><option>OTOBÜS</option>
+          <option>KAMYON</option><option>ÇEKİCİ</option><option>TIR</option><option>DİĞER</option>
         </select>
       </div>
 
@@ -1538,10 +1547,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- 16. MODEL YILI -->
       <div class="fg" data-field-key="modelyili">
         <label>Model Yılı</label>
-        <select id="pe-model-yili">
-          <option value="">-- Seçin --</option>
-          <option>2030</option><option>2029</option><option>2028</option><option>2027</option><option>2026</option><option>2025</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option><option>2020</option><option>2019</option><option>2018</option><option>2017</option><option>2016</option><option>2015</option><option>2014</option><option>2013</option><option>2012</option><option>2011</option><option>2010</option><option>2009</option><option>2008</option><option>2007</option><option>2006</option><option>2005</option><option>2004</option><option>2003</option><option>2002</option><option>2001</option><option>2000</option><option>1999</option><option>1998</option><option>1997</option><option>1996</option><option>1995</option><option>1994</option><option>1993</option><option>1992</option><option>1991</option><option>1990</option><option>1989</option><option>1988</option><option>1987</option><option>1986</option><option>1985</option><option>1984</option><option>1983</option><option>1982</option><option>1981</option><option>1980</option>
-        </select>
+        <input type="text" id="pe-model-yili" placeholder="Örn: 2022" maxlength="4" oninput="this.value=this.value.replace(/\D/g,'')">
       </div>
 
       <!-- 17. NET TUTAR -->
@@ -2660,9 +2666,9 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div style="padding:12px 14px;border:2px solid var(--success);border-radius:12px;background:color-mix(in srgb,var(--success) 5%,transparent);">
         <div style="font-size:11px;font-weight:800;color:var(--success);margin-bottom:10px;">📐 FORMÜL 1 — GERÇEK İADE</div>
         <div class="fg" style="margin-bottom:8px;">
-          <label>Gerçek İade Tutarı <small style="color:var(--success);">OTOMATİK</small></label>
-          <input type="text" id="ii-gercekiade" readonly style="font-weight:800;font-size:14px;color:var(--success);background:color-mix(in srgb,var(--success) 10%,transparent);">
-          <small style="color:var(--muted);font-size:10px;">Brüt ÷ 365 × Kalan Gün</small>
+          <label>💵 Gerçek İade Tutarı <small style="color:var(--warning);">ELLE GİRİN</small></label>
+          <input type="number" id="ii-gercekiade" placeholder="0.00" step="0.01" min="0" oninput="calcIptalManuel()" style="font-weight:800;font-size:14px;color:var(--success);border:2px solid var(--success);">
+          <small style="color:var(--muted);font-size:10px;">Müşteriye iade edilen gerçek tutar</small>
         </div>
         <div class="fg" style="margin:0;">
           <label>Gerçek Çalışan Tutarı <small style="color:var(--success);">OTOMATİK</small></label>
@@ -2699,9 +2705,9 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         </div>
 
         <div class="fg" style="margin:0;">
-          <label>Acente İade Tutarı <small style="color:var(--muted);">OTOMATİK</small></label>
-          <input type="text" id="ii-ackomiade" readonly style="font-weight:700;background:color-mix(in srgb,var(--info) 8%,transparent);">
-          <small style="color:var(--muted);font-size:10px;">F4: AcKom ÷ 365 × Kalan Gün</small>
+          <label>🏢 Acente İade Tutarı <small style="color:var(--warning);">ELLE GİRİN</small></label>
+          <input type="number" id="ii-ackomiade" placeholder="0.00" step="0.01" min="0" oninput="calcIptalAcManuel()" style="font-weight:700;border:2px solid var(--info);">
+          <small style="color:var(--muted);font-size:10px;">Acenteye iade edilen tutar</small>
         </div>
 
         <div class="fg" style="margin:0;">
@@ -2732,32 +2738,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </div>
     </div>
 
-    <!-- BELGE YÜKLEME -->
-    <div style="margin-top:14px;padding:12px 14px;border:2px solid var(--success);border-radius:12px;background:color-mix(in srgb,var(--success) 5%,transparent);">
-      <div style="font-size:11px;font-weight:800;color:var(--success);margin-bottom:12px;">📎 BELGE YÜKLEME (Opsiyonel)</div>
-      <div class="doc-upload-section">
-        <div class="doc-upload-box">
-          <div class="doc-upload-label">📄 Satış Senedi</div>
-          <div class="doc-upload-zone" onclick="document.getElementById('ii-file-senet').click()" id="ii-dzone-senet">
-            <span class="doc-upload-icon">📄</span>
-            <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-            <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-          </div>
-          <input type="file" id="ii-file-senet" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleIptalDocUpload('senet',this)">
-          <div class="doc-preview" id="ii-dpreview-senet" style="display:none;"></div>
-        </div>
-        <div class="doc-upload-box">
-          <div class="doc-upload-label">📑 İptal & İade Poliçesi PDF</div>
-          <div class="doc-upload-zone" onclick="document.getElementById('ii-file-pdf').click()" id="ii-dzone-pdf">
-            <span class="doc-upload-icon">📑</span>
-            <span class="doc-upload-text">Dosya seçmek için tıklayın</span>
-            <span class="doc-upload-hint">PDF, JPG, PNG · Maks 5 MB</span>
-          </div>
-          <input type="file" id="ii-file-pdf" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleIptalDocUpload('pdf',this)">
-          <div class="doc-preview" id="ii-dpreview-pdf" style="display:none;"></div>
-        </div>
-      </div>
-    </div>
 
     <div class="btn-group" style="margin-top:14px;">
       <button class="btn btn-danger" onclick="saveIptal()">🔄 Poliçeyi İptal Et &amp; Kaydet</button>
@@ -3420,6 +3400,19 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Kapatılan modüller sol menüden gizlenir. Ana Sayfa ve Ayarlar her zaman görünür.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;" id="modul-grid"></div>
     </div>
+
+    <!-- SOL MENÜ SIRALAMA -->
+    <div class="card" style="margin-top:14px;">
+      <div class="card-header">
+        <div class="card-title">↕️ Sol Menü Sıralama &amp; Hizalama</div>
+        <button class="btn btn-success btn-sm" onclick="saveMenuOrder()">💾 Sıralamayı Kaydet</button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Menü öğelerini sürükleyerek yeniden sıralayın. Değişiklikleri kaydetmek için <b>Sıralamayı Kaydet</b> butonuna tıklayın.</p>
+      <div id="menu-order-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="resetMenuOrder()">🔄 Varsayılana Sıfırla</button>
+      </div>
+    </div>
   </div><!-- /modul tab -->
 
   <!-- DUYURU SEKMESİ -->
@@ -3682,13 +3675,24 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </p>
       <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px;">
         <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📋 Supabase SQL Editor'de Çalıştırın:</div>
-        <pre style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);margin:0;white-space:pre-wrap;line-height:1.6;">create table if not exists mk_database (
+        <pre style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);margin:0;white-space:pre-wrap;line-height:1.6;">-- Ana veri tablosu
+create table if not exists mk_database (
   id integer primary key default 1,
   data jsonb not null default '{}',
   updated_at timestamptz default now()
 );
 create unique index if not exists mk_database_single on mk_database (id);
-alter table mk_database disable row level security;</pre>
+alter table mk_database disable row level security;
+
+-- Yedek tablosu
+create table if not exists mk_backups (
+  id text primary key,
+  tarih text,
+  saat text,
+  data jsonb not null default '{}',
+  created_at timestamptz default now()
+);
+alter table mk_backups disable row level security;</pre>
         <button class="btn btn-outline btn-xs" style="margin-top:8px;" onclick="copySQL()">📋 SQL Kopyala</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
@@ -4147,7 +4151,12 @@ alter table mk_database disable row level security;</pre>
         <!-- ORTAK ALANLAR -->
         <div class="fg" id="m-fg-ad"><label id="m-ad-label">Ad Soyad *</label><input type="text" id="m-ad" placeholder="Ad Soyad"></div>
         <div class="fg"><label>Telefon</label><input type="text" id="m-tel" placeholder="0555 000 00 00"></div>
-        <div class="fg"><label>Şehir</label><input type="text" id="m-sehir" placeholder="İstanbul"></div>
+        <div class="fg"><label>Şehir</label>
+          <select id="m-sehir">
+            <option value="">-- Şehir Seçin --</option>
+            <option>Adana</option><option>Adıyaman</option><option>Afyonkarahisar</option><option>Ağrı</option><option>Aksaray</option><option>Amasya</option><option>Ankara</option><option>Antalya</option><option>Ardahan</option><option>Artvin</option><option>Aydın</option><option>Balıkesir</option><option>Bartın</option><option>Batman</option><option>Bayburt</option><option>Bilecik</option><option>Bingöl</option><option>Bitlis</option><option>Bolu</option><option>Burdur</option><option>Bursa</option><option>Çanakkale</option><option>Çankırı</option><option>Çorum</option><option>Denizli</option><option>Diyarbakır</option><option>Düzce</option><option>Edirne</option><option>Elazığ</option><option>Erzincan</option><option>Erzurum</option><option>Eskişehir</option><option>Gaziantep</option><option>Giresun</option><option>Gümüşhane</option><option>Hakkari</option><option>Hatay</option><option>Iğdır</option><option>Isparta</option><option>İstanbul</option><option>İzmir</option><option>Kahramanmaraş</option><option>Karabük</option><option>Karaman</option><option>Kars</option><option>Kastamonu</option><option>Kayseri</option><option>Kilis</option><option>Kırıkkale</option><option>Kırklareli</option><option>Kırşehir</option><option>Kocaeli</option><option>Konya</option><option>Kütahya</option><option>Malatya</option><option>Manisa</option><option>Mardin</option><option>Mersin</option><option>Muğla</option><option>Muş</option><option>Nevşehir</option><option>Niğde</option><option>Ordu</option><option>Osmaniye</option><option>Rize</option><option>Sakarya</option><option>Samsun</option><option>Şanlıurfa</option><option>Siirt</option><option>Sinop</option><option>Şırnak</option><option>Sivas</option><option>Tekirdağ</option><option>Tokat</option><option>Trabzon</option><option>Tunceli</option><option>Uşak</option><option>Van</option><option>Yalova</option><option>Yozgat</option><option>Zonguldak</option>
+          </select>
+        </div>
 
         <!-- BİREYSEL ALANLARI -->
         <div class="fg" id="m-fg-tc"><label>TC Kimlik No</label><input type="text" id="m-tc" placeholder="12345678901" maxlength="11"></div>
@@ -6341,10 +6350,27 @@ function editPolice(id){
   showPage('police-ekle');
 }
 function delPolice(id){
-  if(!confirm('Poliçe silinsin mi?'))return;
+  const p=getPolice(id);if(!p)return;
+  const tahsilatCount=DB.tahsilatlar.filter(t=>t.policeId===id).length;
+  const iptalCount=DB.iptaller.filter(i=>i.policeId===id).length;
+  const taksitCount=(DB.taksitler||[]).filter(t=>t.policeId===id).length;
+  const total=tahsilatCount+iptalCount+taksitCount;
+  let msg='Poliçe silinsin mi?';
+  if(total>0){
+    const etki=[];
+    if(tahsilatCount) etki.push('💳 '+tahsilatCount+' tahsilat');
+    if(iptalCount) etki.push('❌ '+iptalCount+' iptal kaydı');
+    if(taksitCount) etki.push('💰 '+taksitCount+' taksit');
+    msg='⚠️ "'+(p.polNo||'Poliçe')+'" silinecek.\n\nBağlı kayıtlar da silinecek:\n'+etki.join('\n')+'\n\nDevam edilsin mi?';
+  }
+  if(!confirm(msg))return;
   DB.policeler=DB.policeler.filter(p=>p.id!==id);
   DB.cariler=DB.cariler.filter(c=>c.policeId!==id);
-  saveDB();renderPoliceListesi();updateStats();toast('Poliçe silindi','error');
+  DB.tahsilatlar=DB.tahsilatlar.filter(t=>t.policeId!==id);
+  DB.iptaller=DB.iptaller.filter(i=>i.policeId!==id);
+  if(DB.taksitler) DB.taksitler=DB.taksitler.filter(t=>t.policeId!==id);
+  if(DB.atList) DB.atList=DB.atList.filter(a=>a.policeId!==id);
+  saveDB();renderPoliceListesi();updateStats();toast('Poliçe ve bağlı kayıtlar silindi','error');
 }
 function detayPolice(id){
   const p=getPolice(id);if(!p)return;
@@ -6811,7 +6837,11 @@ function editTahsilat(id){
   byId('page-tahsilat').querySelector('.card').scrollIntoView({behavior:'smooth'});
   toast('Düzenleme modunda. Değiştirip kaydedin.','');
 }
-function delTahsilat(id){if(!confirm('Silinsin mi?'))return;DB.tahsilatlar=DB.tahsilatlar.filter(t=>t.id!==id);saveDB();renderTahsilat();toast('Silindi','error');}
+function delTahsilat(id){
+  if(!confirm('Tahsilat kaydı silinsin mi?'))return;
+  DB.tahsilatlar=DB.tahsilatlar.filter(t=>t.id!==id);
+  saveDB();renderTahsilat();updateStats();toast('Tahsilat silindi','error');
+}
 
 function exportTahsilatExcel(){
   const DURUM={'bekliyor':'Bekliyor','tahsil-edildi':'Tahsil Edildi','kismi':'Kısmi','gecikti':'Gecikti','iptal':'İptal'};
@@ -7115,7 +7145,8 @@ function renderAcente(){
     if(tf) tf.innerHTML='';
   } else {
     let totNet=0,totBrut=0,totK=0,totA=0,totMus=0;
-    tb.innerHTML=list.map(a=>{
+    let rows='';
+    list.forEach(function(a){
       const ps=DB.policeler.filter(p=>p.acenteId===a.id);
       const topNet=ps.reduce((s,p)=>s+(parseFloat(p.net)||0),0);
       const topBrut=ps.reduce((s,p)=>s+(parseFloat(p.brut)||0),0);
@@ -7123,8 +7154,28 @@ function renderAcente(){
       const topA=DB.atList.filter(t=>t.acenteId===a.id).reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
       const musteriSayisi=new Set(ps.map(p=>p.musteriId).filter(Boolean)).size;
       totNet+=topNet; totBrut+=topBrut; totK+=topK; totA+=topA; totMus+=musteriSayisi;
-      return `<tr>
-        <td><b style="cursor:pointer;color:var(--info);" onclick='openAcenteDetay("${a.id}")'>${a.ad}</b></td>
+      const rowId='acente-detail-'+a.id;
+      // Poliçe listesi (accordion içeriği)
+      let policeRows='';
+      if(ps.length){
+        policeRows=ps.slice(0,20).map(p=>{
+          const m=getMusteri(p.musteriId);
+          return '<tr style="background:color-mix(in srgb,var(--info) 4%,transparent);font-size:11px;">'
+            +'<td colspan="2" style="padding-left:28px;">📋 '+( p.polNo||'-')+'</td>'
+            +'<td>'+(m?m.ad:'-')+'</td>'
+            +'<td>'+( p.sirket||'-')+'</td>'
+            +'<td style="color:var(--text);">₺'+fmt(p.net)+'</td>'
+            +'<td style="color:var(--accent);">₺'+fmt(p.brut)+'</td>'
+            +'<td style="color:var(--warning);">₺'+fmt(p.ackomisyon)+'</td>'
+            +'<td colspan="3" style="color:var(--muted);">'+fmtD(p.baslama)+' – '+fmtD(p.bitis)+'</td>'
+            +'</tr>';
+        }).join('');
+        if(ps.length>20) policeRows+='<tr><td colspan="10" style="text-align:center;font-size:11px;color:var(--muted);padding:6px;">...ve '+(ps.length-20)+' poliçe daha</td></tr>';
+      } else {
+        policeRows='<tr><td colspan="10" style="text-align:center;font-size:11px;color:var(--muted);padding:8px;">Bu acenteye ait poliçe bulunamadı</td></tr>';
+      }
+      rows+=`<tr style="cursor:pointer;" onclick="toggleAcenteRow('${a.id}')" title="Detayları göster/gizle">
+        <td><b style="color:var(--info);">${a.ad}</b> <span style="font-size:10px;color:var(--muted);" id="acente-arrow-${a.id}">▼</span></td>
         <td>${a.tel||'-'}</td><td>${a.aciklama||'-'}</td>
         <td><span style="font-weight:700;color:var(--info);">${musteriSayisi}</span><span style="font-size:10px;color:var(--muted);margin-left:3px;">kişi</span></td>
         <td style="color:var(--text);font-weight:600;">₺${fmt(topNet)}</td>
@@ -7132,12 +7183,29 @@ function renderAcente(){
         <td style="color:var(--warning);font-weight:600;">₺${fmt(topK)}</td>
         <td style="color:var(--success);font-weight:600;">₺${fmt(topA)}</td>
         <td style="font-weight:800;color:${(topK-topA)>0?'var(--danger)':'var(--success)'};">₺${fmt(topK-topA)}</td>
-        <td style="display:flex;gap:4px;flex-wrap:wrap;">
+        <td style="display:flex;gap:4px;flex-wrap:wrap;" onclick="event.stopPropagation()">
           <button style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:var(--info);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick='openAcenteDetay("${a.id}")'>👁️ Detay</button>
           <button style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:transparent;color:var(--danger);border:1.5px solid var(--danger);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick='delAcente("${a.id}")'>🗑️ Sil</button>
         </td>
+      </tr>
+      <tr id="${rowId}" style="display:none;">
+        <td colspan="10" style="padding:0;">
+          <div style="padding:8px 12px;background:color-mix(in srgb,var(--info) 3%,transparent);border-top:1px solid var(--border);border-bottom:2px solid var(--info);">
+            <div style="font-size:10px;font-weight:700;color:var(--info);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">📋 POLİÇELER (${ps.length})</div>
+            <table style="width:100%;border-collapse:collapse;">
+              <thead><tr style="font-size:10px;color:var(--muted);">
+                <th style="padding:4px 8px;text-align:left;">Poliçe No</th><th style="padding:4px;text-align:left;">–</th>
+                <th style="padding:4px;text-align:left;">Müşteri</th><th style="padding:4px;text-align:left;">Şirket</th>
+                <th style="padding:4px;text-align:left;">Net</th><th style="padding:4px;text-align:left;">Brüt</th>
+                <th style="padding:4px;text-align:left;">Kom.</th><th colspan="3" style="padding:4px;text-align:left;">Dönem</th>
+              </tr></thead>
+              <tbody>${policeRows}</tbody>
+            </table>
+          </div>
+        </td>
       </tr>`;
-    }).join('');
+    });
+    tb.innerHTML=rows;
     // TFOOT — toplamlar
     if(tf) tf.innerHTML=`<tr style="background:var(--grad-1);">
       <td colspan="3" style="text-align:right;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);padding:9px 12px;">TOPLAM (${list.length} acente)</td>
@@ -7154,6 +7222,16 @@ function renderAcente(){
   const atSel=byId('at-acente');
   if(atSel){atSel.innerHTML='<option value="">-- Seçin --</option>';DB.acenteler.forEach(a=>{const o=document.createElement('option');o.value=a.id;o.textContent=a.ad;atSel.appendChild(o);});}
   renderAtList();
+}
+function toggleAcenteRow(id){
+  const row=byId('acente-detail-'+id);
+  const arrow=byId('acente-arrow-'+id);
+  if(!row)return;
+  const isOpen=row.style.display!=='none';
+  // Diğerlerini kapat
+  document.querySelectorAll('[id^="acente-detail-"]').forEach(function(r){r.style.display='none';});
+  document.querySelectorAll('[id^="acente-arrow-"]').forEach(function(a){a.textContent='▼';});
+  if(!isOpen){row.style.display='';if(arrow)arrow.textContent='▲';}
 }
 function delAcente(id){
   if(!confirm('Acente silinsin mi?'))return;
@@ -7701,9 +7779,33 @@ function calcIptal(){
   const acBaKalan=kulGun*acGunluk;
   sv('ii-kullanilan',kulGun+' gün');sv('ii-kalan',kalGun+' gün');
   sv('ii-gunluk','\u20ba'+gunluk.toFixed(2));sv('ii-acgunluk','\u20ba'+acGunluk.toFixed(4));
-  sv('ii-gercekiade','\u20ba'+gercekIade.toFixed(2));sv('ii-gercek-calisan','\u20ba'+gercekCalisan.toFixed(2));
-  sv('ii-ackomiade','\u20ba'+acIade.toFixed(2));sv('ii-ac-bakalan','\u20ba'+acBaKalan.toFixed(2));
+  // Gerçek İade — elle giriş alanı, otomatik değer öner ama kullanıcı değiştirebilir
+  const gercekIadeEl=byId('ii-gercekiade');
+  if(gercekIadeEl&&!gercekIadeEl.dataset.useredited){ gercekIadeEl.value=gercekIade.toFixed(2); }
+  sv('ii-gercek-calisan','\u20ba'+(brut-(parseFloat(byId('ii-gercekiade')?.value)||gercekIade)).toFixed(2));
+  // Acente İade — elle giriş alanı, otomatik değer öner
+  const acIadeEl=byId('ii-ackomiade');
+  if(acIadeEl&&!acIadeEl.dataset.useredited){ acIadeEl.value=acIade.toFixed(2); }
+  sv('ii-ac-bakalan','\u20ba'+acBaKalan.toFixed(2));
   _iptalCalc={kulGun,kalGun,gunluk,acGunluk,gercekIade,gercekCalisan,acIade,acBaKalan,brut,net:p.net||0,acKom};
+  calcIptal2();
+}
+function calcIptalManuel(){
+  // Kullanıcı Gerçek İade alanını elle düzenledi
+  const el=byId('ii-gercekiade'); if(el) el.dataset.useredited='1';
+  const brut=_iptalCalc.brut||0;
+  const gercekIade=parseFloat(byId('ii-gercekiade')?.value)||0;
+  const gercekCalisan=brut-gercekIade;
+  sv('ii-gercek-calisan','\u20ba'+gercekCalisan.toFixed(2));
+  _iptalCalc.gercekIade=gercekIade;
+  _iptalCalc.gercekCalisan=gercekCalisan;
+  calcIptal2();
+}
+function calcIptalAcManuel(){
+  // Kullanıcı Acente İade alanını elle düzenledi
+  const el=byId('ii-ackomiade'); if(el) el.dataset.useredited='1';
+  const acIade=parseFloat(byId('ii-ackomiade')?.value)||0;
+  _iptalCalc.acIade=acIade;
   calcIptal2();
 }
 function calcIptal2(){
@@ -7758,6 +7860,12 @@ function saveIptal(){
     if(!confirm('İptal tarihi gelecek bir tarih. Devam edilsin mi?'))return;
   }
   const mkIade=parseFloat(gv('ii-mkiade'))||0;
+  const gercekIadeManuel=parseFloat(byId('ii-gercekiade')?.value)||(_iptalCalc.gercekIade||0);
+  const acIadeManuel=parseFloat(byId('ii-ackomiade')?.value)||(_iptalCalc.acIade||0);
+  // Merge manuel values into _iptalCalc
+  _iptalCalc.gercekIade=gercekIadeManuel;
+  _iptalCalc.gercekCalisan=(_iptalCalc.brut||0)-gercekIadeManuel;
+  _iptalCalc.acIade=acIadeManuel;
   const obj={id:uid(),musteriId:mid,policeId:pid,tanzim:p.tanzim,baslama:p.baslama,bitis:p.bitis,
     iptaltarihi:gv('ii-iptaltarihi'),polNo:p.polNo,sirket:p.sirket,acenteId:p.acenteId,
     sebep:gv('ii-sebep'),..._iptalCalc,mkIade,
@@ -7770,9 +7878,14 @@ function saveIptal(){
     DB.iptaller=DB.iptaller.filter(x=>x.id!==window._editIptalId);
     window._editIptalId=null;
   }
-  DB.iptaller.push(obj);
+  // Bağlı kayıt ID'lerini iptal objesinde sakla (silme işleminde kesin eşleşme için)
+  obj._cariId = null;
+  obj._atId   = null;
+
   if(mkIade>0){
-    DB.cariler.push({id:uid(),musteriId:mid,policeId:pid,
+    const _cId=uid();
+    obj._cariId=_cId;
+    DB.cariler.push({id:_cId,musteriId:mid,policeId:pid,
       tarih:obj.iptaltarihi||new Date().toISOString().substr(0,10),
       polNo:p.polNo,sirket:p.sirket,plaka:p.plaka||'',acenteId:p.acenteId,
       borc:0,alacak:mkIade,
@@ -7780,8 +7893,10 @@ function saveIptal(){
   }
   const iadAcenteId=gv('ii-acente-sec')||p.acenteId;
   if(iadAcenteId&&(_iptalCalc.acIade||0)>0){
+    const _aId=uid();
+    obj._atId=_aId;
     const iadA=getAcente(iadAcenteId);
-    DB.atList.push({id:uid(),acenteId:iadAcenteId,
+    DB.atList.push({id:_aId,acenteId:iadAcenteId,
       policeId:pid,
       polNo:p.polNo||'',
       musteriId:mid,
@@ -7791,6 +7906,8 @@ function saveIptal(){
       tutar:_iptalCalc.acIade,
       aciklama:'İptal Acente İade Alacağı – '+p.polNo+(iadA?' ('+iadA.ad+')':''),tip:'iade'});
   }
+
+  DB.iptaller.push(obj);
   saveDB();renderIptal();toast('Poli\xe7e iptal edildi, cari ve iade kay\u0131tlar\u0131 olu\u015fturuldu','success');resetIptalForm();updateStats();showPage('iptal-liste');
 }
 function resetIptalForm(){
@@ -7798,7 +7915,7 @@ function resetIptalForm(){
    'ii-brut','ii-net','ii-ackomisyon','ii-acoran','ii-gunluk','ii-acgunluk',
    'ii-kullanilan','ii-kalan','ii-gercekiade','ii-gercek-calisan',
    'ii-mkiade','ii-mk-calisan','ii-kazanc','ii-ackomiade','ii-ac-bakalan','ii-mkkazanc',
-   'ii-sirket','ii-acente','ii-acente-sec','ii-noter-ismi','ii-noter-no','ii-aciklama'].forEach(id=>sv(id,''));
+   'ii-sirket','ii-acente','ii-acente-sec','ii-noter-ismi','ii-noter-no','ii-aciklama'].forEach(id=>{sv(id,'');const el=byId(id);if(el)delete el.dataset.useredited;});
   mkSearchClear('ii-musteri');
   const oz=byId('ii-formul-ozet');if(oz)oz.textContent='Poli\xe7e se\xe7in, tarih ve MK \u0130ade tutar\u0131 girin\u2026';
   _iptalCalc={};
@@ -8013,6 +8130,11 @@ function editIptal(id){
       sv('ii-aciklama',ii.aciklama||'');
       if(ii.iadAcenteId) sv('ii-acente-sec',ii.iadAcenteId);
       calcIptal();
+      // Manuel girilen tutarları geri yükle (useredited işaretle)
+      setTimeout(()=>{
+        if(ii.gercekIade!=null){ const el=byId('ii-gercekiade');if(el){el.value=parseFloat(ii.gercekIade).toFixed(2);el.dataset.useredited='1';} calcIptalManuel(); }
+        if(ii.acIade!=null){ const el=byId('ii-ackomiade');if(el){el.value=parseFloat(ii.acIade).toFixed(2);el.dataset.useredited='1';} calcIptalAcManuel(); }
+      },100);
       // Belgeleri yükle
       clearIptalDocs();
       if(ii.docs){
@@ -8097,27 +8219,34 @@ function _showPoliceBilgi(btn, pid){
 }
 
 function delIptal(id){
-  if(!confirm('Silinsin mi?\n\nBu iptal kaydına ait cari ve acente iade kayıtları da silinecek.'))return;
-  // Silinecek iptal kaydını bul
+  if(!confirm('Bu iptal kaydı silinsin mi?\nBağlı müşteri cari ve acente iade kayıtları da silinecek.'))return;
   const iptal=DB.iptaller.find(i=>i.id===id);
   if(iptal){
-    // İlgili poliçe ve müşteriye ait iptal cari kaydını sil
-    // (MK İptal İadesi alacak kaydı — policeId + musteriId eşleşen)
-    DB.cariler=DB.cariler.filter(c=>{
-      if(c.policeId===iptal.policeId && c.musteriId===iptal.musteriId &&
-         c.aciklama && c.aciklama.indexOf('MK \u0130ptal \u0130adesi')===0) return false;
-      return true;
-    });
-    // İlgili acente iade atList kaydını sil
-    DB.atList=DB.atList.filter(a=>{
-      if(a.policeId===iptal.policeId && a.tip==='iade' &&
-         a.aciklama && a.aciklama.indexOf('\u0130ptal Acente \u0130ade Alaca\u011f\u0131')===0) return false;
-      return true;
-    });
+    // Müşteri cari kaydını sil
+    if(iptal._cariId){
+      DB.cariler=DB.cariler.filter(c=>c.id!==iptal._cariId);
+    } else {
+      DB.cariler=DB.cariler.filter(c=>!(
+        c.policeId===iptal.policeId&&
+        c.musteriId===iptal.musteriId&&
+        c.alacak===(iptal.mkIade||0)&&
+        (c.aciklama||'').indexOf('MK \u0130ptal \u0130adesi')===0
+      ));
+    }
+    // Acente atList kaydını sil
+    if(iptal._atId){
+      DB.atList=DB.atList.filter(a=>a.id!==iptal._atId);
+    } else {
+      DB.atList=DB.atList.filter(a=>!(
+        a.policeId===iptal.policeId&&
+        a.tip==='iade'&&
+        (a.aciklama||'').indexOf('\u0130ptal Acente \u0130ade Alaca\u011f\u0131')===0
+      ));
+    }
   }
   DB.iptaller=DB.iptaller.filter(i=>i.id!==id);
   saveDB();renderIptal();updateStats();
-  toast('İptal kaydı ve ilgili cari/acente kayıtları silindi','success');
+  toast('\u0130ptal kayd\u0131 ve ba\u011fl\u0131 cari/acente kay\u0131tlar\u0131 silindi','success');
 }
 
 function _iptalCSS(){
@@ -9957,7 +10086,7 @@ function showAyarlarTab(tab){
   if(tab==='police'){  renderPoliceFieldOrderUI(); renderAracCinsListesi(); renderModelYiliListesi(); renderIptalSebebiListesi(); }
   if(tab==='kullanici'){ renderUsers(); renderUserList(); }
   if(tab==='tema'){    const tg=byId('theme-grid-ayarlar');if(tg){tg.innerHTML='';buildThemeGrid();} }
-  if(tab==='modul'){   renderModulGrid(); }
+  if(tab==='modul'){   renderModulGrid(); renderMenuOrderList(); }
   if(tab==='duyuru'){  uyariAyarlarYukle(); uyariOnizle(); }
   if(tab==='veri'){
     updateSBStatusUI();
@@ -11198,6 +11327,98 @@ function toggleOzelModulAcikGrid(id){
   if(!list[idx].acik){const p=document.querySelector('.page.active');if(p&&p.id==='page-'+id)showPage('dashboard');}
 }
 
+/* ══ MENÜ SIRALAMA FONKSİYONLARI ══ */
+function loadMenuOrder(){ try{return JSON.parse(localStorage.getItem('menuOrder')||'null');}catch(e){return null;} }
+function saveMenuOrderData(arr){ localStorage.setItem('menuOrder',JSON.stringify(arr)); }
+function resetMenuOrder(){ localStorage.removeItem('menuOrder'); renderMenuOrderList(); buildNav(); toast('Menü varsayılana sıfırlandı','success'); }
+
+function getDefaultMenuItems(){
+  // MODULLER dizisini + özel modüller birleştir
+  const state=loadModulState();
+  const ozel=loadOzelModuller().filter(m=>m.acik!==false);
+  const sistemItems=MODULLER.filter(m=>state[m.id]!==false).map(m=>({id:m.id,ico:m.ico,label:m.label,tip:'sistem'}));
+  const ozelItems=ozel.map(m=>({id:m.id,ico:m.ico||'📌',label:m.ad,tip:'ozel'}));
+  return [...sistemItems,...ozelItems];
+}
+
+function renderMenuOrderList(){
+  const el=byId('menu-order-list'); if(!el)return;
+  const savedOrder=loadMenuOrder();
+  let items=getDefaultMenuItems();
+  // Kayıtlı sıralamayı uygula
+  if(savedOrder&&savedOrder.length){
+    const orderedIds=savedOrder.map(x=>typeof x==='string'?x:x.id);
+    const ordered=[];
+    orderedIds.forEach(id=>{ const found=items.find(i=>i.id===id); if(found) ordered.push(found); });
+    items.forEach(i=>{ if(!orderedIds.includes(i.id)) ordered.push(i); });
+    items=ordered;
+  }
+  el.innerHTML='';
+  items.forEach(function(item,idx){
+    const div=document.createElement('div');
+    div.className='menu-order-item';
+    div.draggable=true;
+    div.dataset.id=item.id;
+    div.innerHTML=`<span class="menu-order-handle">⠿</span>`
+      +`<span class="menu-order-ico">${item.ico}</span>`
+      +`<span class="menu-order-label">${item.label}</span>`
+      +`<span class="menu-order-badge">${item.tip==='ozel'?'Özel':'Sistem'}</span>`
+      +`<span style="color:var(--muted);font-size:11px;">#${idx+1}</span>`;
+    // Drag events
+    div.addEventListener('dragstart',function(e){
+      div.classList.add('dragging');
+      e.dataTransfer.setData('text/plain',item.id);
+    });
+    div.addEventListener('dragend',function(){
+      div.classList.remove('dragging');
+      el.querySelectorAll('.menu-order-item').forEach(function(d){d.classList.remove('drag-over');});
+      // Numaraları güncelle
+      el.querySelectorAll('.menu-order-item').forEach(function(d,i){
+        const badge=d.querySelector('span:last-child'); if(badge) badge.textContent='#'+(i+1);
+      });
+    });
+    div.addEventListener('dragover',function(e){
+      e.preventDefault();
+      div.classList.add('drag-over');
+    });
+    div.addEventListener('dragleave',function(){div.classList.remove('drag-over');});
+    div.addEventListener('drop',function(e){
+      e.preventDefault();
+      div.classList.remove('drag-over');
+      const dragId=e.dataTransfer.getData('text/plain');
+      const dragEl=el.querySelector('[data-id="'+dragId+'"]');
+      if(dragEl&&dragEl!==div){ el.insertBefore(dragEl,div); }
+    });
+    el.appendChild(div);
+  });
+}
+
+function saveMenuOrder(){
+  const el=byId('menu-order-list'); if(!el)return;
+  const order=Array.from(el.querySelectorAll('.menu-order-item')).map(function(d){return d.dataset.id;});
+  saveMenuOrderData(order);
+  buildNav();
+  toast('Menü sıralaması kaydedildi ✓','success');
+}
+
+// buildNav override — sıralamayı uygular
+const _origBuildNav=typeof buildNav==='function'?buildNav:null;
+function buildNav(){
+  const savedOrder=loadMenuOrder();
+  if(!savedOrder||!savedOrder.length){ if(typeof _origBuildNav==='function') _origBuildNav(); return; }
+  // Mevcut nav elemanlarını sırala
+  setTimeout(function(){
+    const nav=document.querySelector('#sidebar nav');
+    if(!nav)return;
+    const links=Array.from(nav.querySelectorAll('a[id^="nav-"]'));
+    if(!links.length)return;
+    savedOrder.forEach(function(id,idx){
+      const el=nav.querySelector('#nav-'+id);
+      if(el){ nav.appendChild(el); }
+    });
+  },150);
+}
+
 /* ---------- MODAL AÇMA / FORM ---------- */
 function ozelModulTipDegis(){
   const tip=document.querySelector('input[name="modul-tip"]:checked')?.value||'not';
@@ -11922,13 +12143,24 @@ function clearSBConfig(){
 }
 
 function copySQL(){
-  const sql = `create table if not exists mk_database (
+  const sql = `-- Ana veri tablosu
+create table if not exists mk_database (
   id integer primary key default 1,
   data jsonb not null default '{}',
   updated_at timestamptz default now()
 );
 create unique index if not exists mk_database_single on mk_database (id);
-alter table mk_database disable row level security;`;
+alter table mk_database disable row level security;
+
+-- Yedek tablosu
+create table if not exists mk_backups (
+  id text primary key,
+  tarih text,
+  saat text,
+  data jsonb not null default '{}',
+  created_at timestamptz default now()
+);
+alter table mk_backups disable row level security;`;
   navigator.clipboard.writeText(sql).then(()=>toast('SQL kopyalandı!','success')).catch(()=>toast('Kopyalanamadı','error'));
 }
 
