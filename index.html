@@ -3369,10 +3369,10 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <!-- TEK KULLANICI ŞİFRE DEĞİŞTİRME -->
     <div class="card" style="margin-bottom:14px;">
       <div class="card-header"><div class="card-title">🔑 Tek Kullanıcı Şifre Değiştir</div></div>
-      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Tek kullanıcı modunda giriş şifreni bu bölümden değiştirebilirsin.</p>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Tek kullanıcı modunda giriş şifreni bu bölümden değiştirebilirsin. <span style="color:var(--warning);font-weight:700;">Varsayılan şifre: <code style="background:color-mix(in srgb,var(--warning) 12%,transparent);padding:1px 6px;border-radius:4px;">mmm</code></span></p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;">
         <div class="fg">
-          <label>Mevcut Şifre</label>
+          <label>Mevcut Şifre <span style="font-size:10px;color:var(--muted);font-weight:400;">(değiştirilmediyse: mmm)</span></label>
           <input type="password" id="single-cur-pw" placeholder="Mevcut şifreniz" autocomplete="current-password">
         </div>
         <div class="fg">
@@ -3387,6 +3387,10 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <button class="btn btn-primary btn-sm" onclick="changeSinglePassword()">🔑 Şifreyi Değiştir</button>
         <span id="single-pw-msg" style="font-size:12px;font-weight:600;min-height:16px;"></span>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:color-mix(in srgb,var(--info) 8%,transparent);border:1px solid color-mix(in srgb,var(--info) 25%,transparent);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.7;">
+        ℹ️ Şifre tarayıcı belleğinde (localStorage) saklanır. Supabase bağlantısı aktifse <b style="color:var(--info);">mk_settings</b> tablosuna da yedeklenir — böylece farklı cihazlarda aynı şifreyi kullanabilirsiniz.<br>
+        <b style="color:var(--warning);">Çok Kullanıcı Modu aktifse</b> aşağıdaki Kullanıcı Yönetimi bölümünü kullanın.
       </div>
     </div>
     <!-- ÇOK KULLANICI YÖNETİMİ -->
@@ -3750,7 +3754,15 @@ create table if not exists mk_backups (
   data jsonb not null default '{}',
   created_at timestamptz default now()
 );
-alter table mk_backups disable row level security;</pre>
+alter table mk_backups disable row level security;
+
+-- Ayarlar tablosu (şifre, kullanıcılar vb. cihazlar arası senkronizasyon)
+create table if not exists mk_settings (
+  key text primary key,
+  value text not null default '',
+  updated_at timestamptz default now()
+);
+alter table mk_settings disable row level security;</pre>
         <button class="btn btn-outline btn-xs" style="margin-top:8px;" onclick="copySQL()">📋 SQL Kopyala</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
@@ -4436,6 +4448,11 @@ function initSupabase(){
 async function loadDBFromSupabase(){
   if(!_supabaseEnabled || !_supabase) return false;
   try{
+    // mk_settings'ten tek kullanıcı şifresini yükle
+    try{
+      const {data:setData}=await _supabase.from('mk_settings').select('value').eq('key','singlePw').single();
+      if(setData&&setData.value) localStorage.setItem('mkSinglePw',setData.value);
+    }catch(e){}
     const {data, error} = await _supabase.from('mk_database').select('data').eq('id',1).single();
     if(error){ console.warn('[Supabase] Yükleme hatası:', error.message); return false; }
     if(data && data.data){
@@ -7221,16 +7238,17 @@ function renderAcente(){
     tb.innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';
     if(tf) tf.innerHTML='';
   } else {
-    let totNet=0,totBrut=0,totK=0,totA=0,totMus=0;
+    let totNet=0,totBrut=0,totK=0,totA=0,totAcIade=0,totMus=0;
     let rows='';
     list.forEach(function(a){
       const ps=DB.policeler.filter(p=>p.acenteId===a.id);
       const topNet=ps.reduce((s,p)=>s+(parseFloat(p.net)||0),0);
       const topBrut=ps.reduce((s,p)=>s+(parseFloat(p.brut)||0),0);
       const topK=ps.reduce((s,p)=>s+(parseFloat(p.ackomisyon)||0),0);
-      const topA=DB.atList.filter(t=>t.acenteId===a.id).reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+      const topA=DB.atList.filter(t=>t.acenteId===a.id&&t.tip!=='iade').reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+      const topAcIade=DB.iptaller.filter(ii=>ii.acenteId===a.id).reduce((s,ii)=>s+(parseFloat(ii.acIade)||0),0);
       const musteriSayisi=new Set(ps.map(p=>p.musteriId).filter(Boolean)).size;
-      totNet+=topNet; totBrut+=topBrut; totK+=topK; totA+=topA; totMus+=musteriSayisi;
+      totNet+=topNet; totBrut+=topBrut; totK+=topK; totA+=topA; totAcIade+=topAcIade; totMus+=musteriSayisi;
       const rowId='acente-detail-'+a.id;
       // Poliçe listesi (accordion içeriği)
       let policeRows='';
@@ -7259,7 +7277,7 @@ function renderAcente(){
         <td style="color:var(--accent);font-weight:700;">₺${fmt(topBrut)}</td>
         <td style="color:var(--warning);font-weight:600;">₺${fmt(topK)}</td>
         <td style="color:var(--success);font-weight:600;">₺${fmt(topA)}</td>
-        <td style="font-weight:800;color:${(topK-topA)>0?'var(--danger)':'var(--success)'};">₺${fmt(topK-topA)}</td>
+        <td style="font-weight:800;color:${(topK-topAcIade-topA)>0?'var(--danger)':'var(--success)'};">₺${fmt(topK-topAcIade-topA)}</td>
         <td style="display:flex;gap:4px;flex-wrap:wrap;" onclick="event.stopPropagation()">
           <button style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:var(--info);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick='openAcenteDetay("${a.id}")'>👁️ Detay</button>
           <button style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:var(--warning);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick='editAcente("${a.id}")'>✏️ Düzenle</button>
@@ -7292,7 +7310,7 @@ function renderAcente(){
       <td style="font-weight:800;color:#fbbf24;padding:9px 12px;">₺${fmt(totBrut)}</td>
       <td style="font-weight:800;color:#fde68a;padding:9px 12px;">₺${fmt(totK)}</td>
       <td style="font-weight:800;color:#6ee7b7;padding:9px 12px;">₺${fmt(totA)}</td>
-      <td style="font-weight:800;color:#f9a8d4;padding:9px 12px;">₺${fmt(totK-totA)}</td>
+      <td style="font-weight:800;color:#f9a8d4;padding:9px 12px;">₺${fmt(totK-totAcIade-totA)}</td>
       <td style="padding:9px 12px;"></td>
     </tr>`;
   }
@@ -7362,12 +7380,26 @@ function openAcenteDetay(id){
   const a=getAcente(id);if(!a)return;
   const ps=DB.policeler.filter(p=>p.acenteId===id);
   const atListAll=DB.atList.filter(t=>t.acenteId===id);
-  const atList=atListAll.filter(t=>t.tip!=='iade');
+  const atList=atListAll.filter(t=>t.tip!=='iade');   // sadece tahsilatlar
   const atIadeList=atListAll.filter(t=>t.tip==='iade');
   const topNet =ps.reduce((s,p)=>s+(parseFloat(p.net)||0),0);
   const topBrut=ps.reduce((s,p)=>s+(parseFloat(p.brut)||0),0);
   const topK   =ps.reduce((s,p)=>s+(parseFloat(p.ackomisyon)||0),0);
-  const topA   =atList.reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+  // Tahsilat: sadece tip!=='iade' olanların tutarı
+  const topTahsilat=atList.reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+  // İptalden gelen acente komisyon iadesi
+  // Her poliçe için o poliçeye bağlı tüm iptallerin acIade'si (satır bazlı ile tutarlı)
+  const acenteIptaller=DB.iptaller.filter(ii=>{
+    if(ii.acenteId===id) return true;
+    // acenteId yoksa policeId üzerinden acenteyi tespit et
+    if(ii.policeId){const p=getPolice(ii.policeId);if(p&&p.acenteId===id)return true;}
+    return false;
+  });
+  const topAcIade=acenteIptaller.reduce((s,ii)=>s+(parseFloat(ii.acIade)||0),0);
+  // Ödenen = Tahsilat tutarı + İptal komisyon iadesi
+  const topOdenen=topTahsilat+topAcIade;
+  // Kalan = Komisyon − Komisyon İadesi − Tahsilat
+  const topKalan=topK-topAcIade-topTahsilat;
   const policeRows=ps.map(p=>{
     const m=getMusteri(p.musteriId);
     return `<tr>
@@ -7409,14 +7441,18 @@ function openAcenteDetay(id){
       <div style="background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--warning);border-radius:10px;padding:12px 14px;">
         <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Komisyon</div>
         <div style="font-size:16px;font-weight:800;color:var(--warning);margin-top:3px;">₺${fmt(topK)}</div>
+        ${topAcIade>0?`<div style="font-size:10px;color:var(--danger);margin-top:2px;">İade: −₺${fmt(topAcIade)}</div>`:''}
+        ${topAcIade>0?`<div style="font-size:11px;font-weight:700;color:var(--warning);margin-top:1px;">Net: ₺${fmt(topK-topAcIade)}</div>`:''}
       </div>
       <div style="background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--success);border-radius:10px;padding:12px 14px;">
         <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Ödenen</div>
-        <div style="font-size:16px;font-weight:800;color:var(--success);margin-top:3px;">₺${fmt(topA)}</div>
+        <div style="font-size:16px;font-weight:800;color:var(--success);margin-top:3px;">₺${fmt(topOdenen)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Tahsilat: ₺${fmt(topTahsilat)}${topAcIade>0?' + İade: ₺'+fmt(topAcIade):''}</div>
       </div>
-      <div style="background:var(--bg);border:1px solid var(--border);border-left:3px solid ${(topK-topA)>0?'var(--danger)':'var(--success)'};border-radius:10px;padding:12px 14px;">
-        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Kalan</div>
-        <div style="font-size:16px;font-weight:800;color:${(topK-topA)>0?'var(--danger)':'var(--success)'};margin-top:3px;">₺${fmt(topK-topA)}</div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-left:3px solid ${topKalan>0?'var(--danger)':'var(--success)'};border-radius:10px;padding:12px 14px;">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Kalan Bakiye</div>
+        <div style="font-size:16px;font-weight:800;color:${topKalan>0?'var(--danger)':'var(--success)'};margin-top:3px;">₺${fmt(topKalan)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Kom.(${fmt(topK)}) − İade(${fmt(topAcIade)}) − Tah.(${fmt(topTahsilat)})</div>
       </div>
     </div>
     <div style="margin-bottom:8px;font-weight:700;color:var(--primary);">📋 Bağlı Poliçeler (${ps.length})</div>
@@ -7426,7 +7462,7 @@ function openAcenteDetay(id){
       <th>Tanzim</th><th>Başlama</th><th>Bitiş</th>
       <th>Net Tutar</th><th>Brüt Tutar</th><th>Ac.Komisyon</th>
     </tr></thead><tbody>${policeRows}</tbody>${policeTfoot}</table></div>`:'<p style="color:var(--muted);font-size:12px;">Kayıt yok</p>'}
-    <div style="margin:12px 0 8px;font-weight:700;color:var(--primary);">💵 Tahsilat Kayıtları (${atList.length})${atIadeList.length>0?' <span style="font-size:10px;color:var(--warning);font-weight:600;">+ '+atIadeList.length+' İade</span>':''}</div>
+    <div style="margin:12px 0 8px;font-weight:700;color:var(--primary);">💵 Tahsilat & İptal Kayıtları (${atList.length} tahsilat${atIadeList.length>0?', '+atIadeList.length+' iade':''})</div>
     ${atListAll.length?`<div class="table-wrap"><table><thead><tr>
       <th>Şirket</th><th>Poliçe Türü</th><th>İşlem Türü</th><th>TC</th><th>Vergi No</th>
       <th>Müşteri</th><th>Pol.No</th><th>Plaka</th><th>Belge Seri</th>
@@ -7434,48 +7470,65 @@ function openAcenteDetay(id){
       <th>Net Tutar</th><th>Brüt Tutar</th><th>Ac.Komisyon</th>
       <th>Komisyon İadesi</th>
       <th>Tahsilat Tarihi</th><th>Tahsilat Tutarı</th><th>Açıklama</th>
-    </tr></thead><tbody>${atListAll.map(t=>{
-      // 1) policeId ile direkt bul  2) polNo ile acentede  3) polNo genel
-      const p=t.policeId?getPolice(t.policeId)
-        :t.polNo?(DB.policeler.find(x=>x.acenteId===id&&x.polNo===t.polNo)||DB.policeler.find(x=>x.polNo===t.polNo))
-        :null;
-      // Müşteriyi bul
-      const m=p?getMusteri(p.musteriId):t.musteriId?getMusteri(t.musteriId):null;
-      // Komisyon iadesi: poliçeye bağlı tüm iptallerin acIade toplamı
-      const refPid=p?p.id:t.policeId||null;
-      const acIadeToplam=refPid?DB.iptaller.filter(ii=>ii.policeId===refPid).reduce((s,ii)=>s+(ii.acIade||0),0):0;
-      const tipLabel=t.tip==='iade'
-        ?'<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:color-mix(in srgb,var(--warning) 15%,transparent);color:var(--warning);">İade</span>'
-        :'<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:color-mix(in srgb,var(--success) 15%,transparent);color:var(--success);">Tahsilat</span>';
-      return '<tr>'
-        +'<td>'+(p?p.sirket||t.sirket||'-':t.sirket||'-')+'</td>'
-        +'<td>'+(p?p.polTur||'-':'-')+'</td>'
-        +'<td>'+(p?p.islemTur||'-':'-')+'</td>'
-        +'<td>'+(p?(p.tc||(m?m.tc:'')||'-'):(m?m.tc||'-':'-'))+'</td>'
-        +'<td>'+(p?p.vergino||'-':(m?m.vergino||'-':'-'))+'</td>'
-        +'<td><b>'+(m?m.ad:'-')+'</b></td>'
-        +'<td>'+(p?p.mPolNo||p.polNo||'-':t.polNo||'-')+'</td>'
-        +'<td>'+(p?p.plaka||t.plaka||'-':t.plaka||'-')+'</td>'
-        +'<td>'+(p?p.ruhsat||'-':'-')+'</td>'
-        +'<td>'+(p?fmtD(p.tanzim):'-')+'</td>'
-        +'<td>'+(p?fmtD(p.baslama):'-')+'</td>'
-        +'<td>'+(p?fmtD(p.bitis):'-')+'</td>'
-        +'<td>'+(p?'₺'+fmt(p.net):'-')+'</td>'
-        +'<td>'+(p?'₺'+fmt(p.brut):'-')+'</td>'
-        +'<td style="color:var(--accent);font-weight:700;">'+(p?'₺'+fmt(p.ackomisyon):'-')+'</td>'
-        +'<td style="color:var(--warning);font-weight:700;">'+(acIadeToplam>0?'₺'+fmt(acIadeToplam):'-')+'</td>'
-        +'<td>'+fmtD(t.tarih)+'</td>'
-        +'<td style="font-weight:700;color:'+(t.tip==='iade'?'var(--warning)':'var(--success)')+';">₺'+fmt(t.tutar)+'</td>'
-        +'<td style="max-width:160px;">'+tipLabel+'<div style="font-size:10px;margin-top:2px;color:var(--muted);">'+(t.aciklama||'-')+'</div></td>'
-        +'</tr>';
-    }).join('')}</tbody>
+    </tr></thead><tbody>${(()=>{
+      // FIX v18: Komisyon İadesi her policeId için sadece 1 kez gösterilsin
+      const _gosterilenPidler=new Set();
+      let _satirAcIade=0;
+      const _satirlar=atListAll.map(t=>{
+        // 1) policeId ile direkt bul  2) polNo ile acentede  3) polNo genel
+        const p=t.policeId?getPolice(t.policeId)
+          :t.polNo?(DB.policeler.find(x=>x.acenteId===id&&x.polNo===t.polNo)||DB.policeler.find(x=>x.polNo===t.polNo))
+          :null;
+        // Müşteriyi bul
+        const m=p?getMusteri(p.musteriId):t.musteriId?getMusteri(t.musteriId):null;
+        // Komisyon iadesi: aynı policeId için sadece ilk satırda hesapla ve göster
+        const refPid=p?p.id:t.policeId||null;
+        let acIadeToplam=0;
+        let gosterIade=false;
+        if(refPid&&!_gosterilenPidler.has(refPid)){
+          const hesap=DB.iptaller.filter(ii=>ii.policeId===refPid).reduce((s,ii)=>s+(ii.acIade||0),0);
+          if(hesap>0){acIadeToplam=hesap;_gosterilenPidler.add(refPid);_satirAcIade+=hesap;gosterIade=true;}
+        }
+        const tipLabel=t.tip==='iade'
+          ?'<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:color-mix(in srgb,var(--warning) 15%,transparent);color:var(--warning);">İade</span>'
+          :'<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:color-mix(in srgb,var(--success) 15%,transparent);color:var(--success);">Tahsilat</span>';
+        return '<tr>'
+          +'<td>'+(p?p.sirket||t.sirket||'-':t.sirket||'-')+'</td>'
+          +'<td>'+(p?p.polTur||'-':'-')+'</td>'
+          +'<td>'+(p?p.islemTur||'-':'-')+'</td>'
+          +'<td>'+(p?(p.tc||(m?m.tc:'')||'-'):(m?m.tc||'-':'-'))+'</td>'
+          +'<td>'+(p?p.vergino||'-':(m?m.vergino||'-':'-'))+'</td>'
+          +'<td><b>'+(m?m.ad:'-')+'</b></td>'
+          +'<td>'+(p?p.mPolNo||p.polNo||'-':t.polNo||'-')+'</td>'
+          +'<td>'+(p?p.plaka||t.plaka||'-':t.plaka||'-')+'</td>'
+          +'<td>'+(p?p.ruhsat||'-':'-')+'</td>'
+          +'<td>'+(p?fmtD(p.tanzim):'-')+'</td>'
+          +'<td>'+(p?fmtD(p.baslama):'-')+'</td>'
+          +'<td>'+(p?fmtD(p.bitis):'-')+'</td>'
+          +'<td>'+(p?'₺'+fmt(p.net):'-')+'</td>'
+          +'<td>'+(p?'₺'+fmt(p.brut):'-')+'</td>'
+          +'<td style="color:var(--accent);font-weight:700;">'+(p?'₺'+fmt(p.ackomisyon):'-')+'</td>'
+          +'<td style="color:var(--warning);font-weight:700;">'+(gosterIade?'₺'+fmt(acIadeToplam):'-')+'</td>'
+          +'<td>'+fmtD(t.tarih)+'</td>'
+          +'<td style="font-weight:700;color:'+(t.tip==='iade'?'var(--warning)':'var(--success)')+';">₺'+fmt(t.tutar)+'</td>'
+          +'<td style="max-width:160px;">'+tipLabel+'<div style="font-size:10px;margin-top:2px;color:var(--muted);">'+(t.aciklama||'-')+'</div></td>'
+          +'</tr>';
+
+      });
+      window._detayAcIade=_satirAcIade;
+      return _satirlar.join('');
+    })()}</tbody>
     <tfoot><tr style="font-weight:700;background:color-mix(in srgb,var(--primary) 8%,transparent);">
-      <td colspan="14" style="text-align:right;">TOPLAM:</td>
-      <td style="color:var(--accent);">₺${fmt(ps.reduce((s,p)=>s+(p.ackomisyon||0),0))}</td>
-      <td style="color:var(--warning);">₺${fmt(DB.iptaller.filter(ii=>ii.acenteId===id).reduce((s,ii)=>s+(ii.acIade||0),0))}</td>
+      <td colspan="14" style="text-align:right;font-size:11px;">TOPLAM:</td>
+      <td style="color:var(--accent);font-weight:800;">₺${fmt(topK)}</td>
+      <td style="color:var(--warning);font-weight:800;">₺${fmt(window._detayAcIade||topAcIade)}</td>
       <td></td>
-      <td style="color:var(--success);">₺${fmt(atList.filter(t=>t.tip!=='iade').reduce((s,t)=>s+(t.tutar||0),0))}</td>
+      <td style="color:var(--success);font-weight:800;">₺${fmt(topTahsilat)}</td>
       <td></td>
+    </tr>
+    <tr style="font-weight:800;background:color-mix(in srgb,${topKalan>0?'var(--danger)':'var(--success)'} 10%,transparent);border-top:2px solid color-mix(in srgb,${topKalan>0?'var(--danger)':'var(--success)'} 40%,transparent);">
+      <td colspan="14" style="text-align:right;font-size:12px;color:${topKalan>0?'var(--danger)':'var(--success)'};">⚖️ KALAN BAKİYE:</td>
+      <td colspan="5" style="color:${topKalan>0?'var(--danger)':'var(--success)'};font-size:15px;font-weight:900;">₺${fmt(topKalan)}</td>
     </tr></tfoot>
     </table></div>`:'<p style="color:var(--muted);font-size:12px;">Tahsilat yok</p>'}
   `;
@@ -10222,8 +10275,8 @@ function showAyarlarTab(tab){
   if(tab==='police'){  renderPoliceFieldOrderUI(); renderAracCinsListesi(); renderModelYiliListesi(); renderIptalSebebiListesi(); }
   if(tab==='kullanici'){ renderUsers(); renderUserList(); }
   if(tab==='tema'){    const tg=byId('theme-grid-ayarlar');if(tg){tg.innerHTML='';buildThemeGrid();} }
-  if(tab==='modul'){   renderModulGrid(); renderMenuOrderList(); }
-  if(tab==='menu-sirala'){ renderMenuOrderList2(); }
+  if(tab==='modul'){   renderModulGrid(); renderMenuOrderList(); renderMenuOrderList2(); }
+  if(tab==='menu-sirala'){ renderMenuOrderList(); renderMenuOrderList2(); }
   if(tab==='duyuru'){  uyariAyarlarYukle(); uyariOnizle(); }
   if(tab==='veri'){
     updateSBStatusUI();
@@ -11065,7 +11118,7 @@ async function changeSinglePassword(){
   const msg=byId('single-pw-msg');
   const curOk=await pwMatch(cur, stored);
   if(!curOk){
-    if(msg){msg.style.color='var(--danger)';msg.textContent='❌ Mevcut şifre hatalı!';}
+    if(msg){msg.style.color='var(--danger)';msg.textContent='❌ Mevcut şifre hatalı! (Varsayılan: mmm)';}
     sv('single-cur-pw','');byId('single-cur-pw').focus();
     return;
   }
@@ -11078,11 +11131,18 @@ async function changeSinglePassword(){
     return;
   }
   const hashed=await sha256(nw);
+  // 1) LocalStorage'a kaydet
   localStorage.setItem('mkSinglePw',hashed);
+  // 2) Supabase bağlıysa mk_settings tablosuna da kaydet
+  if(typeof _supabaseEnabled!=='undefined'&&_supabaseEnabled&&typeof _supabase!=='undefined'&&_supabase){
+    try{
+      await _supabase.from('mk_settings').upsert({key:'singlePw',value:hashed,updated_at:new Date().toISOString()},{onConflict:'key'});
+    }catch(e){console.warn('[Supabase] mk_settings yazılamadı:',e);}
+  }
   sv('single-cur-pw','');sv('single-new-pw','');sv('single-new-pw2','');
-  if(msg){msg.style.color='var(--success)';msg.textContent='✅ Şifre başarıyla değiştirildi ve güvenli şekilde saklandı.';}
+  if(msg){msg.style.color='var(--success)';msg.textContent='✅ Şifre başarıyla değiştirildi ve kaydedildi.';}
   setTimeout(()=>{if(msg)msg.textContent='';},4000);
-  toast('Tek kullanıcı şifresi değiştirildi','success');
+  toast('Tek kullanıcı şifresi değiştirildi ✅','success');
 }
 
 async function changePassword(){
@@ -11209,6 +11269,8 @@ function renderOzelNavItems(){
     if(m.renk)a.style.cssText+=`;border-left:3px solid ${m.renk};`;
     nav.insertBefore(a,anchor);
   });
+  // Kayıtlı sıralamayı yeniden uygula
+  if(typeof applyMenuOrder==='function') setTimeout(applyMenuOrder, 50);
 }
 
 /* ---------- ÖZEL MODÜL SAYFASI ---------- */
@@ -11398,7 +11460,10 @@ function toggleModul(id){
   state[id]=!state[id];
   saveModulState(state);
   applyModulVisibility();
+  if(typeof applyMenuOrder==='function') applyMenuOrder();
   renderModulGrid();
+  renderMenuOrderList();
+  renderMenuOrderList2();
   const activePage=document.querySelector('.page.active');
   if(activePage&&activePage.id==='page-'+id&&!state[id])showPage('dashboard');
 }
@@ -11467,7 +11532,7 @@ function toggleOzelModulAcikGrid(id){
 /* ══ MENÜ SIRALAMA FONKSİYONLARI ══ */
 function loadMenuOrder(){ try{return JSON.parse(localStorage.getItem('menuOrder')||'null');}catch(e){return null;} }
 function saveMenuOrderData(arr){ localStorage.setItem('menuOrder',JSON.stringify(arr)); }
-function resetMenuOrder(){ localStorage.removeItem('menuOrder'); renderMenuOrderList(); buildNav(); toast('Menü varsayılana sıfırlandı','success'); }
+function resetMenuOrder(){ localStorage.removeItem('menuOrder'); renderMenuOrderList(); renderMenuOrderList2(); if(typeof applyMenuOrder==='function') applyMenuOrder(); else if(typeof buildNav==='function') buildNav(); toast('Menü varsayılana sıfırlandı','success'); }
 
 function getDefaultMenuItems(){
   // MODULLER dizisini + özel modüller birleştir
@@ -11534,22 +11599,20 @@ function saveMenuOrder(){
   const el=byId('menu-order-list'); if(!el)return;
   const order=Array.from(el.querySelectorAll('.menu-order-item')).map(function(d){return d.dataset.id;});
   saveMenuOrderData(order);
-  buildNav();
+  if(typeof applyMenuOrder==='function') applyMenuOrder(); else if(typeof buildNav==='function') buildNav();
   toast('Menü sıralaması kaydedildi ✓','success');
 }
 
 // buildNav override — sıralamayı uygular
-const _origBuildNav=typeof buildNav==='function'?buildNav:null;
-function buildNav(){
+// Not: _origBuildNav kaldırıldı; orijinal buildNav zaten menüyü kurar.
+// Bu override sadece kayıtlı sıralamayı uygulamak için nav elemanlarını taşır.
+function applyMenuOrder(){
   const savedOrder=loadMenuOrder();
-  if(!savedOrder||!savedOrder.length){ if(typeof _origBuildNav==='function') _origBuildNav(); return; }
-  // Mevcut nav elemanlarını sırala
+  if(!savedOrder||!savedOrder.length) return;
   setTimeout(function(){
-    const nav=document.querySelector('#sidebar nav');
+    const nav=document.querySelector('#sidebar nav')||document.querySelector('nav');
     if(!nav)return;
-    const links=Array.from(nav.querySelectorAll('a[id^="nav-"]'));
-    if(!links.length)return;
-    savedOrder.forEach(function(id,idx){
+    savedOrder.forEach(function(id){
       const el=nav.querySelector('#nav-'+id);
       if(el){ nav.appendChild(el); }
     });
@@ -11609,7 +11672,7 @@ function saveMenuOrder2(){
   const el=byId('menu-order-list-2'); if(!el)return;
   const order=Array.from(el.querySelectorAll('.menu-order-item')).map(function(d){return d.dataset.id;});
   saveMenuOrderData(order);
-  buildNav();
+  if(typeof applyMenuOrder==='function') applyMenuOrder(); else if(typeof buildNav==='function') buildNav();
   toast('Menü sıralaması kaydedildi ✓','success');
 }
 
@@ -12354,7 +12417,15 @@ create table if not exists mk_backups (
   data jsonb not null default '{}',
   created_at timestamptz default now()
 );
-alter table mk_backups disable row level security;`;
+alter table mk_backups disable row level security;
+
+-- Ayarlar tablosu (şifre, kullanıcılar vb. cihazlar arası senkronizasyon)
+create table if not exists mk_settings (
+  key text primary key,
+  value text not null default '',
+  updated_at timestamptz default now()
+);
+alter table mk_settings disable row level security;`;
   navigator.clipboard.writeText(sql).then(()=>toast('SQL kopyalandı!','success')).catch(()=>toast('Kopyalanamadı','error'));
 }
 
@@ -12363,6 +12434,8 @@ const _origShowAyarlarTab = typeof showAyarlarTab === 'function' ? showAyarlarTa
 document.addEventListener('DOMContentLoaded', function(){
   // Supabase UI'ı ilk açılışta güncelle
   setTimeout(updateSBStatusUI, 500);
+  // Kayıtlı menü sıralamasını uygula
+  setTimeout(function(){ if(typeof applyMenuOrder==='function') applyMenuOrder(); }, 300);
 
   // ── DÜZELTME 1: mkSearch dropdown dışına tıklayınca kapat ──
   document.addEventListener('mousedown', function(e){
