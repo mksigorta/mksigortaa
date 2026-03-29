@@ -1103,6 +1103,21 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="stat-value" id="st-cari-kalan">₺0</div>
       <div class="stat-sub" id="st-cari-kalan-sub">Cari Borç − Alacak</div>
     </div>
+    <div class="stat-card orange" data-icon="🏢" onclick="showPage('acente');setTimeout(()=>showAcenteTab('liste'),100)" title="Acente Toplam Borç (Komisyon)">
+      <div class="stat-label">Acente Toplam Borç</div>
+      <div class="stat-value" id="st-ac-borc">₺0</div>
+      <div class="stat-sub">Toplam acente komisyonu</div>
+    </div>
+    <div class="stat-card green" data-icon="💚" onclick="showPage('acente');setTimeout(()=>showAcenteTab('tahsilat-liste'),100)" title="Acente Toplam Alacak (Tahsilat)">
+      <div class="stat-label">Acente Toplam Alacak</div>
+      <div class="stat-value" id="st-ac-alacak">₺0</div>
+      <div class="stat-sub">Tahsilat + İptal iadesi</div>
+    </div>
+    <div class="stat-card purple" data-icon="⚖️" onclick="showPage('acente');setTimeout(()=>showAcenteTab('liste'),100)" title="Acente Kalan Bakiye">
+      <div class="stat-label">Acente Kalan Bakiye</div>
+      <div class="stat-value" id="st-ac-kalan">₺0</div>
+      <div class="stat-sub" id="st-ac-kalan-sub">Komisyon − Tahsilat</div>
+    </div>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
@@ -1179,6 +1194,49 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     </div>
     <div id="dash-pt-ekstra-liste">
       <div style="color:var(--muted);font-size:12px;padding:8px;">Ekstra kayıt bulunamadı</div>
+    </div>
+  </div>
+
+  <!-- ACENTE LİSTESİ ÖZET -->
+  <div style="margin-top:14px;">
+    <!-- Üst başlık satırı -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:17px;">🏢</span>
+        <span style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--text);">Acente Bakiye Özeti</span>
+        <span id="dash-acente-sayi-badge" style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);"></span>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-outline btn-sm" onclick="showPage('acente');setTimeout(()=>showAcenteTab('liste'),100)">📋 Tüm Liste ↗</button>
+        <button class="btn btn-success btn-sm" onclick="showPage('acente');setTimeout(()=>showAcenteTab('ekle'),100)">➕ Acente Ekle</button>
+      </div>
+    </div>
+
+    <!-- Özet Kartları: Borç / Alacak / Kalan -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;border-left:4px solid var(--warning);box-shadow:var(--shadow);">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">📤 Toplam Borç (Komisyon)</div>
+        <div id="dash-ac-sum-borc" style="font-size:20px;font-weight:900;color:var(--warning);font-family:'Space Grotesk',sans-serif;">₺0</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;">Toplam acente komisyonu</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;border-left:4px solid var(--success);box-shadow:var(--shadow);">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">📥 Toplam Alacak (Tahsilat)</div>
+        <div id="dash-ac-sum-alacak" style="font-size:20px;font-weight:900;color:var(--success);font-family:'Space Grotesk',sans-serif;">₺0</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;">Tahsilat + İptal iadesi</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;border-left:4px solid var(--accent);box-shadow:var(--shadow);">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">⚖️ Kalan Bakiye</div>
+        <div id="dash-ac-sum-kalan" style="font-size:20px;font-weight:900;font-family:'Space Grotesk',sans-serif;">₺0</div>
+        <div id="dash-ac-sum-kalan-sub" style="font-size:10px;color:var(--muted);margin-top:4px;">Borç − Alacak</div>
+      </div>
+    </div>
+
+    <!-- Acente Tablosu -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div id="dash-acente-ozet" style="display:none;"></div><!-- uyumluluk için gizli -->
+      <div id="dash-acente-list">
+        <div style="color:var(--muted);font-size:12px;padding:16px;">Acente kaydı bulunamadı</div>
+      </div>
     </div>
   </div>
 
@@ -9771,6 +9829,109 @@ function renderDashboard(){
   // Takvim
   _calYear=new Date().getFullYear();_calMonth=new Date().getMonth();
   renderDashCal();
+
+  // Acente Listesi Özeti
+  const dashAcenteEl   = byId('dash-acente-list');
+  const dashAcenteOzet = byId('dash-acente-ozet');
+  const acenteler = DB.acenteler || [];
+
+  // Toplamları hesapla
+  const gTopKomDash  = acenteler.reduce((s,a)=>s+DB.policeler.filter(p=>p.acenteId===a.id).reduce((ss,p)=>ss+(parseFloat(p.ackomisyon)||0),0),0);
+  const gTopTahDash  = acenteler.reduce((s,a)=>s+(DB.atList||[]).filter(t=>t.acenteId===a.id&&t.tip!=='iade').reduce((ss,t)=>ss+(parseFloat(t.tutar)||0),0),0);
+  const gTopIadeDash = acenteler.reduce((s,a)=>s+(DB.iptaller||[]).filter(ii=>ii.acenteId===a.id).reduce((ss,ii)=>ss+(parseFloat(ii.acIade)||0),0),0);
+  const gAlacakDash  = gTopTahDash + gTopIadeDash;
+  const gKalanDash   = gTopKomDash - gAlacakDash;
+
+  // Özet kartlarını doldur
+  const elSumBorc   = byId('dash-ac-sum-borc');
+  const elSumAlacak = byId('dash-ac-sum-alacak');
+  const elSumKalan  = byId('dash-ac-sum-kalan');
+  const elSumKalanSub = byId('dash-ac-sum-kalan-sub');
+  const elSayiBadge = byId('dash-acente-sayi-badge');
+  if(elSumBorc)   elSumBorc.textContent   = '₺'+fmt(gTopKomDash);
+  if(elSumAlacak) elSumAlacak.textContent = '₺'+fmt(gAlacakDash);
+  if(elSumKalan){
+    elSumKalan.textContent = '₺'+fmt(Math.abs(gKalanDash));
+    elSumKalan.style.color = gKalanDash>0?'var(--danger)':gKalanDash<0?'var(--success)':'var(--muted)';
+  }
+  if(elSumKalanSub) elSumKalanSub.textContent = gKalanDash>0?'⬆ Kalan borç var':gKalanDash<0?'⬇ Fazla ödeme':'✓ Denge sıfır';
+  if(elSayiBadge) elSayiBadge.textContent = acenteler.length ? acenteler.length+' acente' : '';
+
+  if(dashAcenteOzet) dashAcenteOzet.innerHTML='';/* eski alan temizle */
+  if(dashAcenteEl){
+    if(acenteler.length){
+      const rows = acenteler.map((a,idx)=>{
+        const ps = DB.policeler.filter(p=>p.acenteId===a.id);
+        const topKom   = ps.reduce((s,p)=>s+(parseFloat(p.ackomisyon)||0),0);
+        const topTah   = (DB.atList||[]).filter(t=>t.acenteId===a.id&&t.tip!=='iade').reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+        const topAcIade= (DB.iptaller||[]).filter(ii=>ii.acenteId===a.id).reduce((s,ii)=>s+(parseFloat(ii.acIade)||0),0);
+        const alacak   = topTah + topAcIade;
+        const kalan    = topKom - alacak;
+        const kalanRenk= kalan>0?'var(--danger)':kalan<0?'var(--success)':'var(--muted)';
+        const kalanIkon= kalan>0?'⬆ ':kalan<0?'⬇ ':'';
+        const bg = idx%2===0?'var(--card)':'var(--bg)';
+        return `<tr style="background:${bg};cursor:pointer;transition:background .15s;"
+            onclick="showPage('acente');setTimeout(()=>{showAcenteTab('liste');},100)"
+            onmouseover="this.style.background='color-mix(in srgb,var(--accent) 6%,transparent)'"
+            onmouseout="this.style.background='${bg}'">
+          <td style="padding:9px 12px;font-weight:700;color:var(--info);">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="width:7px;height:7px;border-radius:50%;background:var(--info);flex-shrink:0;display:inline-block;"></span>
+              ${a.ad}
+            </div>
+          </td>
+          <td style="padding:9px 12px;color:var(--muted);font-size:11px;">${a.tel||'—'}</td>
+          <td style="padding:9px 12px;text-align:center;">
+            <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:color-mix(in srgb,var(--info) 10%,transparent);color:var(--info);">${ps.length} poliçe</span>
+          </td>
+          <td style="padding:9px 12px;text-align:right;font-weight:700;color:var(--warning);">₺${fmt(topKom)}</td>
+          <td style="padding:9px 12px;text-align:right;font-weight:700;color:var(--success);">₺${fmt(alacak)}</td>
+          <td style="padding:9px 12px;text-align:right;font-weight:800;color:${kalanRenk};">
+            <span style="font-size:12px;">${kalanIkon}</span>₺${fmt(Math.abs(kalan))}
+          </td>
+          <td style="padding:9px 12px;text-align:center;" onclick="event.stopPropagation()">
+            <button onclick="showPage('acente');setTimeout(()=>{showAcenteTab('tahsilat-ekle');const sel=byId('at-acente');if(sel){sel.value='${a.id}';atLoadMusteriler();}},200)"
+              style="border:none;background:color-mix(in srgb,var(--success) 15%,transparent);color:var(--success);border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;white-space:nowrap;">
+              💵 Tahsilat
+            </button>
+          </td>
+        </tr>`;
+      }).join('');
+
+      dashAcenteEl.innerHTML = `
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border);">
+                <th style="padding:10px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;background:var(--bg);">Acente</th>
+                <th style="padding:10px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;background:var(--bg);">Telefon</th>
+                <th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;background:var(--bg);">Poliçe</th>
+                <th style="padding:10px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--warning);text-transform:uppercase;letter-spacing:.5px;background:var(--bg);">📤 Toplam Borç</th>
+                <th style="padding:10px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:.5px;background:var(--bg);">📥 Toplam Alacak</th>
+                <th style="padding:10px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;background:var(--bg);">⚖️ Kalan Bakiye</th>
+                <th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;background:var(--bg);">İşlem</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+            <tfoot>
+              <tr style="border-top:2px solid var(--border);background:var(--grad-1);">
+                <td colspan="3" style="padding:10px 12px;font-weight:700;font-size:12px;color:rgba(255,255,255,.8);">
+                  GENEL TOPLAM — ${acenteler.length} Acente
+                </td>
+                <td style="padding:10px 12px;text-align:right;font-weight:900;font-size:14px;color:#fde68a;">₺${fmt(gTopKomDash)}</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:900;font-size:14px;color:#6ee7b7;">₺${fmt(gAlacakDash)}</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:900;font-size:14px;color:${gKalanDash>0?'#fca5a5':'#6ee7b7'};">
+                  ${gKalanDash>0?'⬆ ':gKalanDash<0?'⬇ ':''}₺${fmt(Math.abs(gKalanDash))}
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>`;
+    } else {
+      dashAcenteEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:16px;text-align:center;">Henüz acente kaydı yok. <span style="color:var(--accent);cursor:pointer;font-weight:700;" onclick="showPage(\'acente\')">➕ İlk acenteyi ekleyin →</span></div>';
+    }
+  }
 }
 function updateStats(){
   byId('st-musteri').textContent=DB.musteriler.length;
@@ -9812,6 +9973,28 @@ function updateStats(){
     elCK.style.color = kalan>0?'var(--danger)':kalan<0?'var(--success)':'var(--text)';
   }
   if(elSub) elSub.textContent = kalan>0?'⬆ Alınacak var':kalan<0?'⬇ Fazla ödeme':'✓ Denge sıfır';
+
+  // Acente borç / alacak / kalan istatistikleri
+  const acElBorc   = byId('st-ac-borc');
+  const acElAlacak = byId('st-ac-alacak');
+  const acElKalan  = byId('st-ac-kalan');
+  const acElSub    = byId('st-ac-kalan-sub');
+  if(acElBorc||acElAlacak||acElKalan){
+    const totKom   = (DB.acenteler||[]).reduce((s,a)=>{
+      return s + DB.policeler.filter(p=>p.acenteId===a.id).reduce((ss,p)=>ss+(parseFloat(p.ackomisyon)||0),0);
+    },0);
+    const totTah   = (DB.atList||[]).filter(t=>t.tip!=='iade').reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+    const totIade  = (DB.iptaller||[]).reduce((s,ii)=>s+(parseFloat(ii.acIade)||0),0);
+    const totAlacak= totTah + totIade;
+    const totKalan = totKom - totAlacak;
+    if(acElBorc)   acElBorc.textContent   = '₺'+fmt(totKom);
+    if(acElAlacak) acElAlacak.textContent = '₺'+fmt(totAlacak);
+    if(acElKalan){
+      acElKalan.textContent = '₺'+fmt(Math.abs(totKalan));
+      acElKalan.style.color = totKalan>0?'var(--danger)':totKalan<0?'var(--success)':'var(--text)';
+    }
+    if(acElSub) acElSub.textContent = totKalan>0?'⬆ Ödenmemiş var':totKalan<0?'⬇ Fazla tahsilat':'✓ Denge sıfır';
+  }
 }
 
 // ══════════════════════════════════════════
