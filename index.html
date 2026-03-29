@@ -2461,6 +2461,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <div class="form-grid">
       <div class="fg"><label>Acente Adı Soyadı *</label><input type="text" id="ac-ad" placeholder="Acente adı"></div>
       <div class="fg"><label>Telefon</label><input type="text" id="ac-tel" placeholder="0555 000 00 00"></div>
+      <div class="fg"><label>Başlangıç Tarihi</label><input type="date" id="ac-tarih"></div>
       <div class="fg" style="grid-column:1/-1"><label>Açıklama</label><textarea id="ac-aciklama"></textarea></div>
     </div>
     <div class="btn-group">
@@ -2481,7 +2482,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     </div>
     <div class="table-wrap">
       <table id="tbl-acente">
-        <thead><tr><th>Acente</th><th>Telefon</th><th>Açıklama</th><th>Müşteri</th><th>Net Tutar</th><th>Brüt Tutar</th><th>Borç</th><th>Alacak</th><th>Kalan</th><th>İşlem</th></tr></thead>
+        <thead><tr><th>Acente</th><th>Telefon</th><th>Tarih</th><th>Açıklama</th><th>Müşteri</th><th>Net Tutar</th><th>Brüt Tutar</th><th>Borç</th><th>Alacak</th><th>Kalan</th><th>İşlem</th></tr></thead>
         <tbody id="tbody-acente"></tbody>
         <tfoot id="tfoot-acente"></tfoot>
       </table>
@@ -7195,11 +7196,11 @@ function downloadDocFromPolice(policeId, type){
 
 function saveAcente(){
   const ad=gv('ac-ad').trim();if(!ad){toast('Acente adı zorunludur!','error');return;}
-  DB.acenteler.push({id:uid(),ad,tel:gv('ac-tel'),aciklama:gv('ac-aciklama')});
+  DB.acenteler.push({id:uid(),ad,tel:gv('ac-tel'),tarih:gv('ac-tarih'),aciklama:gv('ac-aciklama')});
   saveDB();renderAcente();populateSelects();toast('Acente eklendi','success');
-  ['ac-ad','ac-tel','ac-aciklama'].forEach(id=>sv(id,''));updateStats();
+  ['ac-ad','ac-tel','ac-tarih','ac-aciklama'].forEach(id=>sv(id,''));updateStats();
 }
-function resetAcenteForm(){['ac-ad','ac-tel','ac-aciklama'].forEach(id=>sv(id,''));}
+function resetAcenteForm(){['ac-ad','ac-tel','ac-tarih','ac-aciklama'].forEach(id=>sv(id,''));}
 function renderAcente(){
   // Sekmeyi başlat — sadece hiçbir sekme açık değilse
   const aktifTab=['ekle','liste','tahsilat-ekle','tahsilat-liste'].find(t=>{
@@ -7217,7 +7218,7 @@ function renderAcente(){
   let list=DB.acenteler;
   if(query) list=list.filter(function(a){ return a.ad.toLowerCase().includes(query)||(a.tel&&a.tel.includes(query)); });
   if(!list.length){
-    tb.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';
+    tb.innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';
     if(tf) tf.innerHTML='';
   } else {
     let totNet=0,totBrut=0,totK=0,totA=0,totMus=0;
@@ -7252,7 +7253,7 @@ function renderAcente(){
       }
       rows+=`<tr style="cursor:pointer;" onclick="toggleAcenteRow('${a.id}')" title="Detayları göster/gizle">
         <td><b style="color:var(--info);">${a.ad}</b> <span style="font-size:10px;color:var(--muted);" id="acente-arrow-${a.id}">▼</span></td>
-        <td>${a.tel||'-'}</td><td>${a.aciklama||'-'}</td>
+        <td>${a.tel||'-'}</td><td style="font-size:11px;color:var(--muted);">${a.tarih?fmtD(a.tarih):'-'}</td><td>${a.aciklama||'-'}</td>
         <td><span style="font-weight:700;color:var(--info);">${musteriSayisi}</span><span style="font-size:10px;color:var(--muted);margin-left:3px;">kişi</span></td>
         <td style="color:var(--text);font-weight:600;">₺${fmt(topNet)}</td>
         <td style="color:var(--accent);font-weight:700;">₺${fmt(topBrut)}</td>
@@ -7261,11 +7262,12 @@ function renderAcente(){
         <td style="font-weight:800;color:${(topK-topA)>0?'var(--danger)':'var(--success)'};">₺${fmt(topK-topA)}</td>
         <td style="display:flex;gap:4px;flex-wrap:wrap;" onclick="event.stopPropagation()">
           <button style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:var(--info);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick='openAcenteDetay("${a.id}")'>👁️ Detay</button>
+          <button style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:var(--warning);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick='editAcente("${a.id}")'>✏️ Düzenle</button>
           <button style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:transparent;color:var(--danger);border:1.5px solid var(--danger);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick='delAcente("${a.id}")'>🗑️ Sil</button>
         </td>
       </tr>
       <tr id="${rowId}" style="display:none;">
-        <td colspan="10" style="padding:0;">
+        <td colspan="11" style="padding:0;">
           <div style="padding:8px 12px;background:color-mix(in srgb,var(--info) 3%,transparent);border-top:1px solid var(--border);border-bottom:2px solid var(--info);">
             <div style="font-size:10px;font-weight:700;color:var(--info);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">📋 POLİÇELER (${ps.length})</div>
             <table style="width:100%;border-collapse:collapse;">
@@ -7284,7 +7286,7 @@ function renderAcente(){
     tb.innerHTML=rows;
     // TFOOT — toplamlar
     if(tf) tf.innerHTML=`<tr style="background:var(--grad-1);">
-      <td colspan="3" style="text-align:right;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);padding:9px 12px;">TOPLAM (${list.length} acente)</td>
+      <td colspan="4" style="text-align:right;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);padding:9px 12px;">TOPLAM (${list.length} acente)</td>
       <td style="font-weight:800;color:#fff;padding:9px 12px;">${totMus} kişi</td>
       <td style="font-weight:800;color:#fff;padding:9px 12px;">₺${fmt(totNet)}</td>
       <td style="font-weight:800;color:#fbbf24;padding:9px 12px;">₺${fmt(totBrut)}</td>
@@ -7313,6 +7315,48 @@ function delAcente(id){
   if(!confirm('Acente silinsin mi?'))return;
   DB.acenteler=DB.acenteler.filter(a=>a.id!==id);
   saveDB();renderAcente();populateSelects();toast('Silindi','error');updateStats();
+}
+function editAcente(id){
+  const a=getAcente(id);if(!a)return;
+  hizliModalAc('✏️ Acente Düzenle',
+    `<div class="form-grid">
+      <div class="fg" style="grid-column:1/-1;margin-bottom:10px;">
+        <label>Acente Adı *</label>
+        <input type="text" id="ea-ad" value="${(a.ad||'').replace(/"/g,'&quot;')}" placeholder="Acente adı" style="font-size:14px;font-weight:600;">
+      </div>
+      <div class="fg" style="margin-bottom:10px;">
+        <label>Komisyon Oranı (%)</label>
+        <input type="number" id="ea-oran" value="${a.oran||''}" placeholder="15" min="0" max="100" step="0.1">
+      </div>
+      <div class="fg" style="margin-bottom:10px;">
+        <label>Telefon</label>
+        <input type="text" id="ea-tel" value="${(a.tel||'').replace(/"/g,'&quot;')}" placeholder="05XX XXX XX XX">
+      </div>
+      <div class="fg" style="margin-bottom:10px;">
+        <label>Başlangıç Tarihi</label>
+        <input type="date" id="ea-tarih" value="${a.tarih||''}">
+      </div>
+      <div class="fg" style="grid-column:1/-1;margin-bottom:10px;">
+        <label>Açıklama</label>
+        <input type="text" id="ea-aciklama" value="${(a.aciklama||'').replace(/"/g,'&quot;')}" placeholder="Notlar...">
+      </div>
+    </div>`,
+    `<button class="btn btn-outline" onclick="hizliModalKapat()" style="min-width:80px;">İptal</button>
+     <button class="btn btn-warning" onclick="updateAcente('${id}')" style="min-width:120px;">✅ Güncelle</button>`
+  );
+}
+function updateAcente(id){
+  const a=getAcente(id);if(!a)return;
+  const ad=(byId('ea-ad')||{}).value||'';
+  if(!ad.trim()){toast('Acente adı zorunludur','error');if(byId('ea-ad'))byId('ea-ad').focus();return;}
+  a.ad=ad.trim();
+  a.oran=parseFloat((byId('ea-oran')||{}).value)||a.oran||0;
+  a.tel=(byId('ea-tel')||{}).value||'';
+  a.tarih=(byId('ea-tarih')||{}).value||'';
+  a.aciklama=(byId('ea-aciklama')||{}).value||'';
+  saveDB();renderAcente();populateSelects();
+  toast('✅ '+a.ad+' güncellendi','success');
+  hizliModalKapat();
 }
 function openAcenteDetay(id){
   const a=getAcente(id);if(!a)return;
