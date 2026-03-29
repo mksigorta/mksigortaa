@@ -3298,6 +3298,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('kullanici')" id="aytab-kullanici" style="border-radius:8px;">👤 Kullanıcılar</button>
     <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('tema')"      id="aytab-tema"      style="border-radius:8px;">🎨 Temalar</button>
     <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('modul')"     id="aytab-modul"     style="border-radius:8px;">🧩 Modüller</button>
+    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('menu-sirala')" id="aytab-menu-sirala" style="border-radius:8px;">↕️ Menü Sırala</button>
     <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('duyuru')"    id="aytab-duyuru"    style="border-radius:8px;">📢 Duyurular</button>
     <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('sayfalar')"  id="aytab-sayfalar"  style="border-radius:8px;">📑 Sayfalar</button>
   </div>
@@ -3347,6 +3348,16 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <div class="ayar-hub-lbl">Sayfalar</div>
           <div class="ayar-hub-desc">Sayfa kısayolları</div>
         </div>
+        <div onclick="showAyarlarTab('kullanici')" class="ayar-hub-kart" style="border-color:var(--primary);">
+          <div class="ayar-hub-ico">🔑</div>
+          <div class="ayar-hub-lbl">Şifre Değiştir</div>
+          <div class="ayar-hub-desc">Tek kullanıcı şifresi</div>
+        </div>
+        <div onclick="showAyarlarTab('modul')" class="ayar-hub-kart" style="border-color:var(--accent);">
+          <div class="ayar-hub-ico">↕️</div>
+          <div class="ayar-hub-lbl">Menü Sıralama</div>
+          <div class="ayar-hub-desc">Sol menü sırala &amp; hizala</div>
+        </div>
 
       </div>
     </div>
@@ -3354,6 +3365,30 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
 
   <!-- KULLANICI SEKMESİ -->
   <div id="ayarlar-tab-kullanici" style="display:none;">
+    <!-- TEK KULLANICI ŞİFRE DEĞİŞTİRME -->
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-header"><div class="card-title">🔑 Tek Kullanıcı Şifre Değiştir</div></div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Tek kullanıcı modunda giriş şifreni bu bölümden değiştirebilirsin.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;">
+        <div class="fg">
+          <label>Mevcut Şifre</label>
+          <input type="password" id="single-cur-pw" placeholder="Mevcut şifreniz" autocomplete="current-password">
+        </div>
+        <div class="fg">
+          <label>Yeni Şifre</label>
+          <input type="password" id="single-new-pw" placeholder="Yeni şifre" autocomplete="new-password">
+        </div>
+        <div class="fg">
+          <label>Yeni Şifre (Tekrar)</label>
+          <input type="password" id="single-new-pw2" placeholder="Yeni şifre tekrar" autocomplete="new-password">
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="changeSinglePassword()">🔑 Şifreyi Değiştir</button>
+        <span id="single-pw-msg" style="font-size:12px;font-weight:600;min-height:16px;"></span>
+      </div>
+    </div>
+    <!-- ÇOK KULLANICI YÖNETİMİ -->
     <div class="card">
       <div class="card-header"><div class="card-title">👤 Kullanıcı Yönetimi</div></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;flex-wrap:wrap;">
@@ -3414,6 +3449,28 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </div>
     </div>
   </div><!-- /modul tab -->
+
+  <!-- MENÜ SIRALAMA SEKMESİ -->
+  <div id="ayarlar-tab-menu-sirala" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">↕️ Sol Menü Sıralama &amp; Hizalama</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-success btn-sm" onclick="saveMenuOrder()">💾 Sıralamayı Kaydet</button>
+          <button class="btn btn-outline btn-sm" onclick="resetMenuOrder()">🔄 Varsayılana Sıfırla</button>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">
+        Menü öğelerini <b>sürükleyerek</b> istediğiniz sıraya dizin. Kaydet butonuna basarak değişikliği uygulayın.<br>
+        <span style="color:var(--warning);">⚠️ Ana Sayfa ve Ayarlar her zaman görünür kalır.</span>
+      </p>
+      <div id="menu-order-list-2" style="display:flex;flex-direction:column;gap:6px;"></div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-success btn-sm" onclick="saveMenuOrder2()">💾 Sıralamayı Kaydet</button>
+        <button class="btn btn-outline btn-sm" onclick="resetMenuOrder()">🔄 Varsayılana Sıfırla</button>
+      </div>
+    </div>
+  </div><!-- /menu-sirala tab -->
 
   <!-- DUYURU SEKMESİ -->
   <div id="ayarlar-tab-duyuru" style="display:none;">
@@ -4768,7 +4825,11 @@ function delMusteri(id){
   const tahsilatCount=DB.tahsilatlar.filter(t=>t.musteriId===id).length;
   const iptalCount=DB.iptaller.filter(i=>i.musteriId===id).length;
   const taksitCount=(DB.taksitler||[]).filter(t=>t.musteriId===id).length;
-  const total=policeCount+cariCount+tahsilatCount+iptalCount+taksitCount;
+  const atCount=(DB.atList||[]).filter(a=>a.musteriId===id).length;
+  const ptCount=(DB.ptExtras||[]).filter(p=>p.musteriId===id).length;
+  const teklCount=(DB.teklifler||[]).filter(t=>t.musteriId===id).length;
+  const iltCount=(DB.iletisimler||[]).filter(i=>i.musteriId===id).length;
+  const total=policeCount+cariCount+tahsilatCount+iptalCount+taksitCount+atCount+ptCount+teklCount+iltCount;
 
   if(total>0){
     const etki=[];
@@ -4777,16 +4838,24 @@ function delMusteri(id){
     if(tahsilatCount)etki.push('💳 '+tahsilatCount+' tahsilat');
     if(iptalCount)etki.push('❌ '+iptalCount+' iptal kaydı');
     if(taksitCount)etki.push('💰 '+taksitCount+' taksit');
+    if(atCount)etki.push('🏢 '+atCount+' acente tahsilat kaydı');
+    if(ptCount)etki.push('📌 '+ptCount+' ekstra takip kaydı');
+    if(teklCount)etki.push('📄 '+teklCount+' teklif');
+    if(iltCount)etki.push('📞 '+iltCount+' iletişim kaydı');
     const msg='⚠️ "'+m.ad+'" silinecek.\n\nBu müşteriye ait şunlar da silinecek:\n'+etki.join('\n')+'\n\nToplam '+total+' kayıt kalıcı olarak silinecek!\nDevam edilsin mi?';
     if(!confirm(msg))return;
     if(!confirm('Son onay: Tüm kayıtlar kalıcı silinsin mi?'))return;
-    // Zincirleme sil
+    // Zincirleme sil — TÜM tablolar
     DB.policeler=DB.policeler.filter(p=>p.musteriId!==id);
     DB.cariler=DB.cariler.filter(c=>c.musteriId!==id);
     DB.tahsilatlar=DB.tahsilatlar.filter(t=>t.musteriId!==id);
     DB.iptaller=DB.iptaller.filter(i=>i.musteriId!==id);
     if(DB.taksitler)DB.taksitler=DB.taksitler.filter(t=>t.musteriId!==id);
     DB.notlar=DB.notlar.filter(n=>n.musteriId!==id);
+    if(DB.atList)DB.atList=DB.atList.filter(a=>a.musteriId!==id);
+    if(DB.ptExtras)DB.ptExtras=DB.ptExtras.filter(p=>p.musteriId!==id);
+    if(DB.teklifler)DB.teklifler=DB.teklifler.filter(t=>t.musteriId!==id);
+    if(DB.iletisimler)DB.iletisimler=DB.iletisimler.filter(i=>i.musteriId!==id);
   } else {
     if(!confirm('"'+m.ad+'" silinsin mi?'))return;
   }
@@ -6354,14 +6423,20 @@ function delPolice(id){
   const tahsilatCount=DB.tahsilatlar.filter(t=>t.policeId===id).length;
   const iptalCount=DB.iptaller.filter(i=>i.policeId===id).length;
   const taksitCount=(DB.taksitler||[]).filter(t=>t.policeId===id).length;
-  const total=tahsilatCount+iptalCount+taksitCount;
+  const cariCount=DB.cariler.filter(c=>c.policeId===id).length;
+  const atCount=(DB.atList||[]).filter(a=>a.policeId===id).length;
+  const teklCount=(DB.teklifler||[]).filter(t=>t.policeId===id).length;
+  const total=tahsilatCount+iptalCount+taksitCount+cariCount+atCount+teklCount;
   let msg='Poliçe silinsin mi?';
   if(total>0){
     const etki=[];
     if(tahsilatCount) etki.push('💳 '+tahsilatCount+' tahsilat');
     if(iptalCount) etki.push('❌ '+iptalCount+' iptal kaydı');
     if(taksitCount) etki.push('💰 '+taksitCount+' taksit');
-    msg='⚠️ "'+(p.polNo||'Poliçe')+'" silinecek.\n\nBağlı kayıtlar da silinecek:\n'+etki.join('\n')+'\n\nDevam edilsin mi?';
+    if(cariCount) etki.push('📊 '+cariCount+' cari hareket');
+    if(atCount) etki.push('🏢 '+atCount+' acente tahsilat');
+    if(teklCount) etki.push('📄 '+teklCount+' teklif');
+    msg='⚠️ "'+(p.polNo||'Poliçe')+'" silinecek.\n\nBağlı TÜM kayıtlar da silinecek:\n'+etki.join('\n')+'\n\nDevam edilsin mi?';
   }
   if(!confirm(msg))return;
   DB.policeler=DB.policeler.filter(p=>p.id!==id);
@@ -6370,7 +6445,8 @@ function delPolice(id){
   DB.iptaller=DB.iptaller.filter(i=>i.policeId!==id);
   if(DB.taksitler) DB.taksitler=DB.taksitler.filter(t=>t.policeId!==id);
   if(DB.atList) DB.atList=DB.atList.filter(a=>a.policeId!==id);
-  saveDB();renderPoliceListesi();updateStats();toast('Poliçe ve bağlı kayıtlar silindi','error');
+  if(DB.teklifler) DB.teklifler=DB.teklifler.filter(t=>t.policeId!==id);
+  saveDB();renderPoliceListesi();updateStats();toast('Poliçe ve bağlı tüm kayıtlar silindi','error');
 }
 function detayPolice(id){
   const p=getPolice(id);if(!p)return;
@@ -7241,7 +7317,9 @@ function delAcente(id){
 function openAcenteDetay(id){
   const a=getAcente(id);if(!a)return;
   const ps=DB.policeler.filter(p=>p.acenteId===id);
-  const atList=DB.atList.filter(t=>t.acenteId===id);
+  const atListAll=DB.atList.filter(t=>t.acenteId===id);
+  const atList=atListAll.filter(t=>t.tip!=='iade');
+  const atIadeList=atListAll.filter(t=>t.tip==='iade');
   const topNet =ps.reduce((s,p)=>s+(parseFloat(p.net)||0),0);
   const topBrut=ps.reduce((s,p)=>s+(parseFloat(p.brut)||0),0);
   const topK   =ps.reduce((s,p)=>s+(parseFloat(p.ackomisyon)||0),0);
@@ -7304,15 +7382,15 @@ function openAcenteDetay(id){
       <th>Tanzim</th><th>Başlama</th><th>Bitiş</th>
       <th>Net Tutar</th><th>Brüt Tutar</th><th>Ac.Komisyon</th>
     </tr></thead><tbody>${policeRows}</tbody>${policeTfoot}</table></div>`:'<p style="color:var(--muted);font-size:12px;">Kayıt yok</p>'}
-    <div style="margin:12px 0 8px;font-weight:700;color:var(--primary);">💵 Tahsilat Kayıtları (${atList.length})</div>
-    ${atList.length?`<div class="table-wrap"><table><thead><tr>
+    <div style="margin:12px 0 8px;font-weight:700;color:var(--primary);">💵 Tahsilat Kayıtları (${atList.length})${atIadeList.length>0?' <span style="font-size:10px;color:var(--warning);font-weight:600;">+ '+atIadeList.length+' İade</span>':''}</div>
+    ${atListAll.length?`<div class="table-wrap"><table><thead><tr>
       <th>Şirket</th><th>Poliçe Türü</th><th>İşlem Türü</th><th>TC</th><th>Vergi No</th>
       <th>Müşteri</th><th>Pol.No</th><th>Plaka</th><th>Belge Seri</th>
       <th>Tanzim</th><th>Başlama</th><th>Bitiş</th>
       <th>Net Tutar</th><th>Brüt Tutar</th><th>Ac.Komisyon</th>
       <th>Komisyon İadesi</th>
       <th>Tahsilat Tarihi</th><th>Tahsilat Tutarı</th><th>Açıklama</th>
-    </tr></thead><tbody>${atList.map(t=>{
+    </tr></thead><tbody>${atListAll.map(t=>{
       // 1) policeId ile direkt bul  2) polNo ile acentede  3) polNo genel
       const p=t.policeId?getPolice(t.policeId)
         :t.polNo?(DB.policeler.find(x=>x.acenteId===id&&x.polNo===t.polNo)||DB.policeler.find(x=>x.polNo===t.polNo))
@@ -8222,7 +8300,7 @@ function delIptal(id){
   if(!confirm('Bu iptal kaydı silinsin mi?\nBağlı müşteri cari ve acente iade kayıtları da silinecek.'))return;
   const iptal=DB.iptaller.find(i=>i.id===id);
   if(iptal){
-    // Müşteri cari kaydını sil
+    // Müşteri cari kaydını sil (_cariId ile önce, yoksa eşleşme ile)
     if(iptal._cariId){
       DB.cariler=DB.cariler.filter(c=>c.id!==iptal._cariId);
     } else {
@@ -8230,23 +8308,35 @@ function delIptal(id){
         c.policeId===iptal.policeId&&
         c.musteriId===iptal.musteriId&&
         c.alacak===(iptal.mkIade||0)&&
-        (c.aciklama||'').indexOf('MK \u0130ptal \u0130adesi')===0
+        (c.aciklama||'').indexOf('MK İptal İadesi')===0
       ));
     }
-    // Acente atList kaydını sil
+    // Acente atList kaydını sil (_atId ile önce, yoksa eşleşme ile)
     if(iptal._atId){
       DB.atList=DB.atList.filter(a=>a.id!==iptal._atId);
     } else {
       DB.atList=DB.atList.filter(a=>!(
         a.policeId===iptal.policeId&&
         a.tip==='iade'&&
-        (a.aciklama||'').indexOf('\u0130ptal Acente \u0130ade Alaca\u011f\u0131')===0
+        (a.aciklama||'').indexOf('İptal Acente İade Alacağı')===0
       ));
     }
+    // İptal ile bağlantılı tahsilat kayıtlarını da temizle (policeId eşleşmeli ve durum='iptal')
+    DB.tahsilatlar=DB.tahsilatlar.filter(t=>!(
+      t.policeId===iptal.policeId&&
+      t.musteriId===iptal.musteriId&&
+      t.durum==='iptal'
+    ));
   }
   DB.iptaller=DB.iptaller.filter(i=>i.id!==id);
-  saveDB();renderIptal();updateStats();
-  toast('\u0130ptal kayd\u0131 ve ba\u011fl\u0131 cari/acente kay\u0131tlar\u0131 silindi','success');
+  saveDB();
+  renderIptal();
+  // Cari listelerini de güncelle
+  if(typeof renderCari==='function') renderCari();
+  if(typeof renderCariListe==='function') renderCariListe();
+  if(typeof renderAtList==='function') renderAtList();
+  updateStats();
+  toast('İptal kaydı ve bağlı tüm kayıtlar silindi','success');
 }
 
 function _iptalCSS(){
@@ -8840,6 +8930,8 @@ function cariDetaySil(id, musteriId){
   saveDB();
   toast('Cari kayıt silindi','error');
   updateStats();
+  if(typeof renderCari==='function') renderCari();
+  if(typeof renderCariListe==='function') renderCariListe();
   // Detay sayfasını yenile
   openMusteriDetay(musteriId);
 }
@@ -10072,7 +10164,7 @@ function aracCinsSil(idx){
 // AYARLAR SEKMELERİ
 // ══════════════════════════════════════════════════
 function showAyarlarTab(tab){
-  const ALL_TABS=['genel','veri','police','kullanici','tema','modul','duyuru','sayfalar'];
+  const ALL_TABS=['genel','veri','police','kullanici','tema','modul','menu-sirala','duyuru','sayfalar'];
   ALL_TABS.forEach(function(t){
     const el=byId('ayarlar-tab-'+t);
     const btn=byId('aytab-'+t);
@@ -10087,6 +10179,7 @@ function showAyarlarTab(tab){
   if(tab==='kullanici'){ renderUsers(); renderUserList(); }
   if(tab==='tema'){    const tg=byId('theme-grid-ayarlar');if(tg){tg.innerHTML='';buildThemeGrid();} }
   if(tab==='modul'){   renderModulGrid(); renderMenuOrderList(); }
+  if(tab==='menu-sirala'){ renderMenuOrderList2(); }
   if(tab==='duyuru'){  uyariAyarlarYukle(); uyariOnizle(); }
   if(tab==='veri'){
     updateSBStatusUI();
@@ -11417,6 +11510,63 @@ function buildNav(){
       if(el){ nav.appendChild(el); }
     });
   },150);
+}
+
+/* ══ MENÜ SIRALAMA TAB 2 (ayrı liste için) ══ */
+function renderMenuOrderList2(){
+  const el=byId('menu-order-list-2'); if(!el)return;
+  const savedOrder=loadMenuOrder();
+  let items=getDefaultMenuItems();
+  if(savedOrder&&savedOrder.length){
+    const orderedIds=savedOrder.map(x=>typeof x==='string'?x:x.id);
+    const ordered=[];
+    orderedIds.forEach(id=>{ const found=items.find(i=>i.id===id); if(found) ordered.push(found); });
+    items.forEach(i=>{ if(!orderedIds.includes(i.id)) ordered.push(i); });
+    items=ordered;
+  }
+  el.innerHTML='';
+  items.forEach(function(item,idx){
+    const div=document.createElement('div');
+    div.className='menu-order-item';
+    div.draggable=true;
+    div.dataset.id=item.id;
+    div.innerHTML=`<span class="menu-order-handle">⠿</span>`
+      +`<span class="menu-order-ico">${item.ico}</span>`
+      +`<span class="menu-order-label">${item.label}</span>`
+      +`<span class="menu-order-badge">${item.tip==='ozel'?'Özel':'Sistem'}</span>`
+      +`<span style="color:var(--muted);font-size:11px;">#${idx+1}</span>`;
+    div.addEventListener('dragstart',function(e){
+      div.classList.add('dragging');
+      e.dataTransfer.setData('text/plain',item.id);
+    });
+    div.addEventListener('dragend',function(){
+      div.classList.remove('dragging');
+      el.querySelectorAll('.menu-order-item').forEach(function(d){d.classList.remove('drag-over');});
+      el.querySelectorAll('.menu-order-item').forEach(function(d,i){
+        const badge=d.querySelector('span:last-child'); if(badge) badge.textContent='#'+(i+1);
+      });
+    });
+    div.addEventListener('dragover',function(e){
+      e.preventDefault();
+      div.classList.add('drag-over');
+    });
+    div.addEventListener('dragleave',function(){div.classList.remove('drag-over');});
+    div.addEventListener('drop',function(e){
+      e.preventDefault();
+      div.classList.remove('drag-over');
+      const dragId=e.dataTransfer.getData('text/plain');
+      const dragEl=el.querySelector('[data-id="'+dragId+'"]');
+      if(dragEl&&dragEl!==div){ el.insertBefore(dragEl,div); }
+    });
+    el.appendChild(div);
+  });
+}
+function saveMenuOrder2(){
+  const el=byId('menu-order-list-2'); if(!el)return;
+  const order=Array.from(el.querySelectorAll('.menu-order-item')).map(function(d){return d.dataset.id;});
+  saveMenuOrderData(order);
+  buildNav();
+  toast('Menü sıralaması kaydedildi ✓','success');
 }
 
 /* ---------- MODAL AÇMA / FORM ---------- */
