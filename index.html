@@ -7385,8 +7385,10 @@ function openAcenteDetay(id){
   const topNet =ps.reduce((s,p)=>s+(parseFloat(p.net)||0),0);
   const topBrut=ps.reduce((s,p)=>s+(parseFloat(p.brut)||0),0);
   const topK   =ps.reduce((s,p)=>s+(parseFloat(p.ackomisyon)||0),0);
-  // Tahsilat: sadece tip!=='iade' olanların tutarı
+  // Tahsilat: sadece tip!=='iade' olanların tutarı (Ödenen kartı ve Kalan hesabı için)
   const topTahsilat=atList.reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+  // Tfoot Tahsilat Tutarı sütunu: TÜM kayıtların tutarı (iade satırları da tutar gösteriyor)
+  const topTutar=atListAll.reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
   // İptalden gelen acente komisyon iadesi
   // Her poliçe için o poliçeye bağlı tüm iptallerin acIade'si (satır bazlı ile tutarlı)
   const acenteIptaller=DB.iptaller.filter(ii=>{
@@ -7396,10 +7398,10 @@ function openAcenteDetay(id){
     return false;
   });
   const topAcIade=acenteIptaller.reduce((s,ii)=>s+(parseFloat(ii.acIade)||0),0);
-  // Ödenen = Tahsilat tutarı + İptal komisyon iadesi
-  const topOdenen=topTahsilat+topAcIade;
-  // Kalan = Komisyon − Komisyon İadesi − Tahsilat
-  const topKalan=topK-topAcIade-topTahsilat;
+  // Ödenen = Tüm atList kayıtlarının tutarı (tahsilat + iade satırları)
+  const topOdenen=topTutar;
+  // Kalan = Komisyon − Tüm ödenen tutar
+  const topKalan=topK-topTutar;
   const policeRows=ps.map(p=>{
     const m=getMusteri(p.musteriId);
     return `<tr>
@@ -7447,12 +7449,12 @@ function openAcenteDetay(id){
       <div style="background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--success);border-radius:10px;padding:12px 14px;">
         <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Ödenen</div>
         <div style="font-size:16px;font-weight:800;color:var(--success);margin-top:3px;">₺${fmt(topOdenen)}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Tahsilat: ₺${fmt(topTahsilat)}${topAcIade>0?' + İade: ₺'+fmt(topAcIade):''}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Tahsilat: ₺${fmt(topTahsilat)}${topAcIade>0?' | Kom.İadesi: ₺'+fmt(topAcIade):''}</div>
       </div>
       <div style="background:var(--bg);border:1px solid var(--border);border-left:3px solid ${topKalan>0?'var(--danger)':'var(--success)'};border-radius:10px;padding:12px 14px;">
         <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Kalan Bakiye</div>
         <div style="font-size:16px;font-weight:800;color:${topKalan>0?'var(--danger)':'var(--success)'};margin-top:3px;">₺${fmt(topKalan)}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Kom.(${fmt(topK)}) − İade(${fmt(topAcIade)}) − Tah.(${fmt(topTahsilat)})</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Kom.(${fmt(topK)}) − Ödenen(${fmt(topTutar)})</div>
       </div>
     </div>
     <div style="margin-bottom:8px;font-weight:700;color:var(--primary);">📋 Bağlı Poliçeler (${ps.length})</div>
@@ -7523,7 +7525,7 @@ function openAcenteDetay(id){
       <td style="color:var(--accent);font-weight:800;">₺${fmt(topK)}</td>
       <td style="color:var(--warning);font-weight:800;">₺${fmt(window._detayAcIade||topAcIade)}</td>
       <td></td>
-      <td style="color:var(--success);font-weight:800;">₺${fmt(topTahsilat)}</td>
+      <td style="color:var(--success);font-weight:800;">₺${fmt(topTutar)}</td>
       <td></td>
     </tr>
     <tr style="font-weight:800;background:color-mix(in srgb,${topKalan>0?'var(--danger)':'var(--success)'} 10%,transparent);border-top:2px solid color-mix(in srgb,${topKalan>0?'var(--danger)':'var(--success)'} 40%,transparent);">
