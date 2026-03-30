@@ -938,37 +938,53 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <div class="logo-user">👤 Hoş geldiniz, <strong id="sb-username">admin</strong></div>
   </div>
   <nav>
+    <!-- 1. Ana Sayfa -->
     <a onclick="showPage('dashboard')" id="nav-dashboard"><span class="ico">🏠</span>Ana Sayfa</a>
-    <div class="nav-sec">Müşteri</div>
-    <a onclick="showPage('musteriler')" id="nav-musteriler"><span class="ico">👤</span>Müşteriler</a>
-    <div class="nav-sec">Poliçe</div>
-    <a onclick="showPage('policeler')" id="nav-policeler"><span class="ico">📁</span>Poliçeler</a>
-    <a onclick="showPage('police-ekle')" id="nav-police-ekle"><span class="ico">➕</span>Poliçe Ekle</a>
-    <a onclick="showPage('police-listesi')" id="nav-police-listesi"><span class="ico">📋</span>Poliçe Listesi</a>
-    <a onclick="showPage('police-takip')" id="nav-police-takip"><span class="ico">🔍</span>Poliçe Takip</a>
-    <a onclick="showPage('pt-ekstra-ekle')" id="nav-pt-ekstra-ekle"><span class="ico">📌</span>Ekstra Kayıt Ekle</a>
-    <a onclick="showPage('pt-ekstra-liste')" id="nav-pt-ekstra-liste"><span class="ico">📋</span>Ekstra Kayıtlar</a>
-    <div class="nav-sec">Finans</div>
-    <a onclick="showPage('finans')" id="nav-finans"><span class="ico">💼</span>Finans</a>
-    <a onclick="showPage('cari')" id="nav-cari"><span class="ico">💰</span>Cari</a>
-    <a onclick="showPage('cari-liste')" id="nav-cari-liste"><span class="ico">📋</span>Cari Listesi</a>
-    <a onclick="showPage('tahsilat')" id="nav-tahsilat"><span class="ico">💳</span>Tahsilat Ekle</a>
-    <a onclick="showPage('tahsilat-liste')" id="nav-tahsilat-liste"><span class="ico">📋</span>Tahsilat Listesi</a>
-    <a onclick="showPage('kasa')" id="nav-kasa"><span class="ico">🏦</span>MKöçe Kasa</a>
-    <a onclick="showPage('kasa-pol')" id="nav-kasa-pol" style="padding-left:22px;font-size:11.5px;"><span class="ico" style="font-size:12px;">📋</span>Acente Komisyon</a>
-    <a onclick="showPage('kasa-ipt')" id="nav-kasa-ipt" style="padding-left:22px;font-size:11.5px;"><span class="ico" style="font-size:12px;">🔄</span>MKöçe İptal Kazanç</a>
-    <a onclick="showPage('kasa-acb')" id="nav-kasa-acb" style="padding-left:22px;font-size:11.5px;"><span class="ico" style="font-size:12px;">🏢</span>Acente Bana Kalan</a>
-    <a onclick="showPage('kasa-gen')" id="nav-kasa-gen" style="padding-left:22px;font-size:11.5px;"><span class="ico" style="font-size:12px;">🏆</span>Toplam Kazanç</a>
-    <a onclick="showPage('acente')" id="nav-acente"><span class="ico">🏢</span>Acente</a>
-    <div class="nav-sec">İşlemler</div>
-    <a onclick="showPage('iptal-ekle')" id="nav-iptal-ekle"><span class="ico">🔄</span>İptal &amp; İade Ekle</a>
-    <a onclick="showPage('iptal-liste')" id="nav-iptal-liste"><span class="ico">📋</span>İptal &amp; İade Listesi</a>
-    <a onclick="showPage('teklif')" id="nav-teklif"><span class="ico">📄</span>Teklif Oluştur</a>
-    <a onclick="showPage('iletisim')" id="nav-iletisim"><span class="ico">📞</span>İletişim Geçmişi</a>
     <a onclick="showPage('toplu-islem')" id="nav-toplu-islem"><span class="ico">☑️</span>Toplu İşlemler</a>
     <a onclick="showPage('belge-arama')" id="nav-belge-arama"><span class="ico">🔍</span>Belge &amp; Akıllı Arama</a>
+    <!-- 2. Müşteriler -->
+    <div class="nav-sec">Müşteriler</div>
+    <a onclick="showPage('musteriler');setTimeout(()=>openModal('modal-musteri'),100)" id="nav-musteri-ekle"><span class="ico">👤</span>Müşteri Ekle</a>
+    <a onclick="showPage('musteriler')" id="nav-musteriler"><span class="ico">📋</span>Müşteri Liste</a>
+    <!-- 3. Acenteler -->
+    <div class="nav-sec">Acenteler</div>
+    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('ekle'),100)" id="nav-acente-ekle"><span class="ico">🏢</span>Acente Ekle</a>
+    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('liste'),100)" id="nav-acente-liste"><span class="ico">📋</span>Acente Liste</a>
+    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('tahsilat-ekle'),100)" id="nav-acente-tahsilat"><span class="ico">💵</span>Acente Tahsilat</a>
+    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('tahsilat-liste'),100)" id="nav-acente-tahsilat-liste"><span class="ico">📊</span>Acente Tahsilat Liste</a>
+    <!-- 4. Poliçeler -->
+    <div class="nav-sec">Poliçeler</div>
+    <a onclick="showPage('police-ekle')" id="nav-police-ekle"><span class="ico">➕</span>Poliçe Ekle</a>
+    <a onclick="showPage('police-listesi')" id="nav-police-listesi"><span class="ico">📋</span>Poliçe Liste</a>
+    <a onclick="showPage('police-takip')" id="nav-police-takip"><span class="ico">🔍</span>Poliçe Takip</a>
+    <a onclick="showPage('pt-ekstra-ekle')" id="nav-pt-ekstra-ekle"><span class="ico">📌</span>Ekstra Kayıt Ekle</a>
+    <a onclick="showPage('pt-ekstra-liste')" id="nav-pt-ekstra-liste"><span class="ico">📋</span>Ekstra Takip Kayıtları</a>
+    <!-- 5. Cariler -->
+    <div class="nav-sec">Cariler</div>
+    <a onclick="showPage('cari')" id="nav-cari"><span class="ico">💰</span>Cari Ekle</a>
+    <a onclick="showPage('cari-liste')" id="nav-cari-liste"><span class="ico">📋</span>Cari Listesi</a>
+    <a onclick="showPage('tahsilat')" id="nav-tahsilat"><span class="ico">💳</span>Tahsilat</a>
+    <a onclick="showPage('tahsilat-liste')" id="nav-tahsilat-liste"><span class="ico">📊</span>Tahsilat Listesi</a>
+    <!-- 6. İptal ve İadeler -->
+    <div class="nav-sec">İptal ve İadeler</div>
+    <a onclick="showPage('iptal-ekle')" id="nav-iptal-ekle"><span class="ico">🔄</span>İptal &amp; İade Ekle</a>
+    <a onclick="showPage('iptal-liste')" id="nav-iptal-liste"><span class="ico">📋</span>İptal &amp; İade Liste</a>
+    <!-- 7. Teklifler -->
+    <div class="nav-sec">Teklifler</div>
+    <a onclick="showPage('teklif')" id="nav-teklif"><span class="ico">📄</span>Teklif Oluştur</a>
+    <a onclick="showPage('teklif');setTimeout(()=>{const el=byId('teklif-listesi');if(el)el.scrollIntoView({behavior:'smooth'});},300)" id="nav-teklif-liste"><span class="ico">📋</span>Teklif Liste</a>
+    <a onclick="showPage('iletisim')" id="nav-iletisim"><span class="ico">📞</span>İletişim Geçmişi</a>
+    <a onclick="showPage('toplu-islem')" id="nav-toplu-islem2" style="display:none;"><span class="ico">☑️</span>Toplu İşlemler</a>
     <a onclick="showPage('not-defteri')" id="nav-not-defteri"><span class="ico">📝</span>Not Defteri</a>
     <a onclick="showPage('whatsapp')" id="nav-whatsapp"><span class="ico">💬</span>WhatsApp</a>
+    <!-- 8. MKöçe Kasa -->
+    <div class="nav-sec">MKöçe Kasa</div>
+    <a onclick="showPage('kasa')" id="nav-kasa"><span class="ico">🏦</span>MKöçe Kasa</a>
+    <a onclick="showPage('kasa-pol')" id="nav-kasa-pol"><span class="ico">📋</span>Acente Komisyon</a>
+    <a onclick="showPage('kasa-ipt')" id="nav-kasa-ipt"><span class="ico">🔄</span>MKöçe İptal Kazanç</a>
+    <a onclick="showPage('kasa-acb')" id="nav-kasa-acb"><span class="ico">🏢</span>Acente Bana Kalan</a>
+    <a onclick="showPage('kasa-gen')" id="nav-kasa-gen"><span class="ico">🏆</span>Toplam Kazanç</a>
+    <!-- Sistem -->
     <div class="nav-sec">Sistem</div>
     <a onclick="showPage('ayarlar')" id="nav-ayarlar"><span class="ico">⚙️</span>Ayarlar</a>
     <a onclick="doLogout()"><span class="ico">🚪</span>Çıkış Yap</a>
@@ -11426,29 +11442,48 @@ async function addNewUser(){
 // MODÜL YÖNETİMİ
 // ==============================
 const MODULLER=[
-  {id:'musteriler',    label:'Müşteriler',          ico:'👤'},
-  {id:'policeler',     label:'Poliçeler Hub',        ico:'📁'},
-  {id:'police-ekle',   label:'Poliçe Ekle',          ico:'➕'},
-  {id:'police-listesi',label:'Poliçe Listesi',       ico:'📋'},
-  {id:'police-takip',  label:'Poliçe Takip',         ico:'🔍'},
-  {id:'pt-ekstra-ekle',label:'Ekstra Kayıt Ekle',    ico:'📌'},
-  {id:'pt-ekstra-liste',label:'Ekstra Kayıtlar',     ico:'📋'},
-  {id:'finans',        label:'Finans',               ico:'💼'},
-  {id:'cari',          label:'Cari',                 ico:'💰'},
-  {id:'cari-liste',    label:'Cari Listesi',         ico:'📋'},
-  {id:'tahsilat',      label:'Tahsilat Ekle',        ico:'💳'},
-  {id:'tahsilat-liste',label:'Tahsilat Listesi',     ico:'📋'},
-  {id:'kasa',          label:'MKöçe Kasa',           ico:'🏦'},
-  {id:'acente',        label:'Acente',               ico:'🏢'},
-  {id:'iptal-ekle',    label:'İptal & İade Ekle',    ico:'🔄'},
-  {id:'iptal-liste',   label:'İptal & İade Listesi', ico:'📋'},
-  {id:'teklif',        label:'Teklif Oluştur',       ico:'📄'},
-  {id:'iletisim',      label:'İletişim Geçmişi',     ico:'📞'},
+  // 1. Ana Sayfa grubu
   {id:'toplu-islem',   label:'Toplu İşlemler',       ico:'☑️'},
   {id:'belge-arama',   label:'Belge & Akıllı Arama', ico:'🔍'},
+  // 2. Müşteriler
+  {id:'musteri-ekle',  label:'Müşteri Ekle',         ico:'👤'},
+  {id:'musteriler',    label:'Müşteri Liste',         ico:'📋'},
+  // 3. Acenteler
+  {id:'acente-ekle',   label:'Acente Ekle',          ico:'🏢'},
+  {id:'acente-liste',  label:'Acente Liste',         ico:'📋'},
+  {id:'acente-tahsilat',label:'Acente Tahsilat',     ico:'💵'},
+  {id:'acente-tahsilat-liste',label:'Acente Tahsilat Liste',ico:'📊'},
+  // 4. Poliçeler
+  {id:'police-ekle',   label:'Poliçe Ekle',          ico:'➕'},
+  {id:'police-listesi',label:'Poliçe Liste',         ico:'📋'},
+  {id:'police-takip',  label:'Poliçe Takip',         ico:'🔍'},
+  {id:'pt-ekstra-ekle',label:'Ekstra Kayıt Ekle',    ico:'📌'},
+  {id:'pt-ekstra-liste',label:'Ekstra Takip Kayıtları',ico:'📋'},
+  // 5. Cariler
+  {id:'cari',          label:'Cari Ekle',            ico:'💰'},
+  {id:'cari-liste',    label:'Cari Listesi',         ico:'📋'},
+  {id:'tahsilat',      label:'Tahsilat',             ico:'💳'},
+  {id:'tahsilat-liste',label:'Tahsilat Listesi',     ico:'📊'},
+  // 6. İptal ve İadeler
+  {id:'iptal-ekle',    label:'İptal & İade Ekle',    ico:'🔄'},
+  {id:'iptal-liste',   label:'İptal & İade Liste',   ico:'📋'},
+  // 7. Teklifler
+  {id:'teklif',        label:'Teklif Oluştur',       ico:'📄'},
+  {id:'teklif-liste',  label:'Teklif Liste',         ico:'📋'},
+  {id:'iletisim',      label:'İletişim Geçmişi',     ico:'📞'},
   {id:'not-defteri',   label:'Not Defteri',          ico:'📝'},
   {id:'whatsapp',      label:'WhatsApp',             ico:'💬'},
+  // 8. MKöçe Kasa
+  {id:'kasa',          label:'MKöçe Kasa',           ico:'🏦'},
+  {id:'kasa-pol',      label:'Acente Komisyon',      ico:'📋'},
+  {id:'kasa-ipt',      label:'MKöçe İptal Kazanç',  ico:'🔄'},
+  {id:'kasa-acb',      label:'Acente Bana Kalan',    ico:'🏢'},
+  {id:'kasa-gen',      label:'Toplam Kazanç',        ico:'🏆'},
+  // Diğer
   {id:'gelir-grafigi', label:'Gelir Grafiği',        ico:'📈'},
+  {id:'policeler',     label:'Poliçeler Hub',        ico:'📁'},
+  {id:'finans',        label:'Finans',               ico:'💼'},
+  {id:'acente',        label:'Acente',               ico:'🏢'},
 ];
 const MODUL_KEY='mkModulAktif';
 const OZEL_MODUL_KEY='mkOzelModuller';
