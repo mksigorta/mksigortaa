@@ -1524,8 +1524,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         </div>
       </div>
 
-      <!-- 4. MÜŞTERİ SEÇ -->
-      <div class="fg" data-field-key="musteri">
+      <!-- 4. MÜŞTERİ SEÇ — tam satır, TC'nin üstüne gelmesin -->
+      <div class="fg" data-field-key="musteri" style="grid-column:1/-1;">
         <label>Müşteri Seç *</label>
         <div style="position:relative;">
           <input type="text" id="pe-musteri-search" placeholder="🔍 Müşteri ara..." autocomplete="off"
@@ -2244,9 +2244,10 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     </div>
     <div class="search-bar">
       <input type="text" placeholder="🔍 Müşteri ara..." id="srch-cari-liste" oninput="renderCariListe()">
-      <button class="btn btn-outline btn-sm" onclick="cariFilter='all';renderCariListe()">Tümü</button>
-      <button class="btn btn-warning btn-sm" onclick="cariFilter='borclu';renderCariListe()">Borçlular</button>
-      <button class="btn btn-success btn-sm" onclick="cariFilter='alacakli';renderCariListe()">Alacaklılar</button>
+      <button class="btn btn-outline btn-sm" id="clf-all"      onclick="cariFilter='all';renderCariListe()">Tümü</button>
+      <button class="btn btn-warning btn-sm" id="clf-borclu"   onclick="cariFilter='borclu';renderCariListe()">Borçlular</button>
+      <button class="btn btn-success btn-sm" id="clf-alacakli" onclick="cariFilter='alacakli';renderCariListe()">Alacaklılar</button>
+      <button class="btn btn-info    btn-sm" id="clf-ikisi"    onclick="cariFilter='ikisi';renderCariListe()">Borçlu ve Alacaklılar</button>
     </div>
     <div id="cari-liste-icerik">
       <div style="color:var(--muted);font-size:12px;padding:10px;">Yükleniyor...</div>
@@ -3031,8 +3032,18 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
   <div class="card">
     <div class="card-header">
       <div class="card-title">📋 Teklifler</div>
-      <div style="display:flex;gap:7px;align-items:center;">
-        <input type="text" id="srch-teklif" placeholder="🔍 Ara..." oninput="renderTeklifListesi()" style="width:160px;padding:5px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);">
+      <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="srch-teklif" placeholder="🔍 Genel arama..." oninput="renderTeklifListesi()" style="width:170px;padding:5px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);">
+        <select id="srch-teklif-yil" onchange="renderTeklifListesi()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);">
+          <option value="">Tüm Yıllar</option>
+        </select>
+        <select id="srch-teklif-ay" onchange="renderTeklifListesi()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);">
+          <option value="">Tüm Aylar</option>
+          <option value="01">Ocak</option><option value="02">Şubat</option><option value="03">Mart</option>
+          <option value="04">Nisan</option><option value="05">Mayıs</option><option value="06">Haziran</option>
+          <option value="07">Temmuz</option><option value="08">Ağustos</option><option value="09">Eylül</option>
+          <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
+        </select>
         <button class="btn btn-info btn-sm" onclick="exportTableCSV('tbl-teklif-list','teklifler')">📊 Excel</button>
       </div>
     </div>
@@ -3110,7 +3121,17 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
             <option value="email">📧 E-posta</option>
             <option value="yüzyüze">🤝 Yüz Yüze</option>
           </select>
-          <input type="text" id="srch-iletisim" placeholder="🔍 Ara..." oninput="renderIletisim()" style="width:140px;padding:5px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);">
+          <select id="ilet-filtre-yil" onchange="renderIletisim()" style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);">
+            <option value="">Tüm Yıllar</option>
+          </select>
+          <select id="ilet-filtre-ay" onchange="renderIletisim()" style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);">
+            <option value="">Tüm Aylar</option>
+            <option value="01">Ocak</option><option value="02">Şubat</option><option value="03">Mart</option>
+            <option value="04">Nisan</option><option value="05">Mayıs</option><option value="06">Haziran</option>
+            <option value="07">Temmuz</option><option value="08">Ağustos</option><option value="09">Eylül</option>
+            <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
+          </select>
+          <input type="text" id="srch-iletisim" placeholder="🔍 Genel arama..." oninput="renderIletisim()" style="width:155px;padding:5px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);">
           <button class="btn btn-info btn-sm" onclick="exportIletisimExcel()">📊 Excel</button>
         </div>
       </div>
@@ -3240,7 +3261,19 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
   </div>
   <div class="card">
     <div class="card-header"><div class="card-title">📋 Not Listesi</div></div>
-    <div class="search-bar"><input type="text" placeholder="🔍 Ara..." id="srch-not" oninput="_dRenderNots()"></div>
+    <div class="search-bar">
+      <input type="text" placeholder="🔍 Genel arama..." id="srch-not" oninput="_dRenderNots()">
+      <select id="srch-not-yil" onchange="renderNots()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);">
+        <option value="">Tüm Yıllar</option>
+      </select>
+      <select id="srch-not-ay" onchange="renderNots()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);">
+        <option value="">Tüm Aylar</option>
+        <option value="01">Ocak</option><option value="02">Şubat</option><option value="03">Mart</option>
+        <option value="04">Nisan</option><option value="05">Mayıs</option><option value="06">Haziran</option>
+        <option value="07">Temmuz</option><option value="08">Ağustos</option><option value="09">Eylül</option>
+        <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
+      </select>
+    </div>
     <div class="table-wrap">
       <table id="tbl-notlar">
         <thead><tr><th>Müşteri/Acente</th><th>Tarih</th><th>Not Başlığı</th><th>Not İçeriği</th><th>İşlem</th></tr></thead>
@@ -5216,6 +5249,33 @@ function openMusteriDetay(id){
           +'</tr>';
       }).join('')}</tbody></table></div>`:'' }
 
+    ${(()=>{const ptList=(DB.ptExtras||[]).filter(x=>x.musteriId===id);if(!ptList.length)return '';
+    const bugun2=new Date();
+    return '<div style="margin:18px 0 8px;font-weight:700;color:var(--primary);font-size:13px;">📌 Ekstra Takip Kayıtları ('+ptList.length+')</div>'
+      +'<div class="table-wrap"><table>'
+      +'<thead style="background:linear-gradient(135deg,#f59e0b,#d97706);"><tr>'
+      +'<th style="color:#fff;">Başlama</th><th style="color:#fff;">Bitiş</th>'
+      +'<th style="color:#fff;">Poliçe No</th><th style="color:#fff;">Şirket</th>'
+      +'<th style="color:#fff;">Plaka</th><th style="color:#fff;">Belge</th><th style="color:#fff;">Açıklama</th>'
+      +'</tr></thead><tbody>'
+      +ptList.sort((a,b)=>(b.baslama||'').localeCompare(a.baslama||'')).map((px,pxi)=>{
+        const bitis2=px.bitis?new Date(px.bitis):null;
+        const kalan2=bitis2?Math.ceil((bitis2-bugun2)/864e5):null;
+        const bRenk=kalan2!==null?(kalan2<0?'var(--danger)':kalan2<=30?'var(--warning)':'var(--success)'):'var(--muted)';
+        const rb=pxi%2?'background:color-mix(in srgb,var(--warning) 4%,transparent);':'';
+        return '<tr style="'+rb+'">'
+          +'<td style="font-size:11px;color:var(--muted);">'+fmtD(px.baslama)+'</td>'
+          +'<td style="font-size:11px;font-weight:700;color:'+bRenk+';">'+fmtD(px.bitis)+(kalan2!==null?'<div style="font-size:9px;">'+(kalan2<0?'⛔ Geçmiş':kalan2<=30?'⚠️ '+kalan2+'g':'✅ '+kalan2+'g')+'</div>':'')+'</td>'
+          +'<td style="font-family:monospace;font-size:11px;">'+(px.polNo||'-')+'</td>'
+          +'<td>'+(px.sirket||'-')+'</td>'
+          +'<td style="font-weight:700;">'+(px.plaka||'-')+'</td>'
+          +'<td style="font-size:11px;color:var(--muted);">'+(px.belge||'-')+'</td>'
+          +'<td style="font-size:11px;color:var(--muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(px.aciklama||'-')+'</td>'
+          +'</tr>';
+      }).join('')
+      +'</tbody></table></div>';
+    })()}
+
     ${notlar.length?`
     <div style="margin:18px 0 8px;font-weight:700;color:var(--primary);font-size:13px;">📝 Notlar (${notlar.length})</div>
     <div style="display:flex;flex-direction:column;gap:8px;">
@@ -6619,6 +6679,28 @@ function detayPolice(id){
     ${p.ackomisyon?_sec('Ac. Komisyon', '₺'+fmt(p.ackomisyon), false, 'var(--accent)'):''}
 
     ${taksitHtml?`<div style="margin-top:14px;">${taksitHtml}</div>`:''}
+
+    ${(()=>{
+      const pxList=(DB.ptExtras||[]).filter(x=>x.musteriId===p.musteriId);
+      if(!pxList.length) return '';
+      const bugunPx=new Date();
+      return '<div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 6px;">📌 Ekstra Takip Kayıtları</div>'
+        +'<div style="display:flex;flex-direction:column;gap:6px;">'
+        +pxList.sort((a,b)=>(b.baslama||'').localeCompare(a.baslama||'')).map(px=>{
+          const bitPx=px.bitis?new Date(px.bitis):null;
+          const klPx=bitPx?Math.ceil((bitPx-bugunPx)/864e5):null;
+          const rPx=klPx!==null?(klPx<0?'#fee2e2':klPx<=30?'#fef9c3':'#dcfce7'):'var(--bg)';
+          const tPx=klPx!==null?(klPx<0?'#991b1b':klPx<=30?'#854d0e':'#166534'):'var(--muted)';
+          return '<div style="background:'+rPx+';border-radius:8px;padding:9px 12px;border:1px solid var(--border);">'
+            +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">'
+            +'<span style="font-weight:700;font-size:12px;">'+(px.polNo||'—')+(px.plaka?' · '+px.plaka:'')+'</span>'
+            +'<span style="font-size:11px;font-weight:700;color:'+tPx+';">'+(klPx!==null?klPx<0?'⛔ Geçmiş':klPx<=30?'⚠️ '+klPx+' gün':'✅ '+klPx+' gün':'—')+'</span>'
+            +'</div>'
+            +'<div style="font-size:11px;color:var(--muted);margin-top:2px;">'+(px.sirket||'')+(px.bitis?' · '+fmtD(px.baslama)+'→'+fmtD(px.bitis):'')+'</div>'
+            +(px.aciklama?'<div style="font-size:11px;margin-top:3px;">'+px.aciklama+'</div>':'')
+            +'</div>';
+        }).join('')+'</div>';
+    })()}
 
   </div>`;
 
@@ -9190,8 +9272,18 @@ function editNot(id){
 }
 function renderNots(){
   const srch=gv('srch-not').toLowerCase();
+  const yil=gv('srch-not-yil')||'';
+  const ay =gv('srch-not-ay')||'';
+  // Yıl dropdown doldur
+  const yilSel=byId('srch-not-yil');
+  if(yilSel&&yilSel.options.length<=1){
+    const yillar=[...new Set((DB.notlar||[]).map(n=>(n.tarih||'').substr(0,4)).filter(y=>y&&y.length===4))].sort().reverse();
+    yillar.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;yilSel.appendChild(o);});
+  }
   const tb=byId('tbody-notlar');
   let list=DB.notlar.filter(n=>{
+    if(yil&&!(n.tarih||'').startsWith(yil))return false;
+    if(ay&&(n.tarih||'').slice(5,7)!==ay)return false;
     if(!srch)return true;
     const m=getMusteri(n.musteriId);const a=getAcente(n.acenteId);
     return (m&&m.ad.toLowerCase().includes(srch))||(a&&a.ad.toLowerCase().includes(srch))||
@@ -12871,8 +12963,19 @@ function renderTeklif(){
 
 function renderTeklifListesi(){
   const q=(gv('srch-teklif')||'').toLowerCase();
+  const yil=gv('srch-teklif-yil')||'';
+  const ay =gv('srch-teklif-ay')||'';
   const el=byId('teklif-listesi'); if(!el) return;
+  // Yıl dropdown doldur
+  const yilSel=byId('srch-teklif-yil');
+  if(yilSel&&yilSel.options.length<=1){
+    const yillar=[...new Set((DB.teklifler||[]).map(t=>(t.tarih||t.tanzim||'').substr(0,4)).filter(y=>y&&y.length===4))].sort().reverse();
+    yillar.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;yilSel.appendChild(o);});
+  }
   const list=(DB.teklifler||[]).slice().reverse().filter(t=>{
+    const tarihStr=t.tarih||t.tanzim||'';
+    if(yil&&!tarihStr.startsWith(yil))return false;
+    if(ay&&tarihStr.slice(5,7)!==ay)return false;
     if(!q) return true;
     const m=getMusteri(t.musteriId);
     return (m&&m.ad.toLowerCase().includes(q))||(t.no||'').toLowerCase().includes(q)||
@@ -13044,11 +13147,21 @@ function renderIletisim(){
   const el=byId('iletisim-listesi');if(!el)return;
   const q=(gv('srch-iletisim')||'').toLowerCase();
   const fk=gv('ilet-filtre-kanal')||'';
+  const fy=gv('ilet-filtre-yil')||'';
+  const fa=gv('ilet-filtre-ay')||'';
+  // Yıl dropdown doldur
+  const yilSel=byId('ilet-filtre-yil');
+  if(yilSel&&yilSel.options.length<=1){
+    const yillar=[...new Set((DB.iletisimler||[]).map(x=>(x.tarih||'').substr(0,4)).filter(y=>y&&y.length===4))].sort().reverse();
+    yillar.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;yilSel.appendChild(o);});
+  }
   const KANAL={telefon:{ico:'📞',c:'var(--success)'},whatsapp:{ico:'💬',c:'#25d366'},email:{ico:'📧',c:'var(--info)'},'yüzyüze':{ico:'🤝',c:'var(--accent)'},sms:{ico:'📱',c:'var(--warning)'},diger:{ico:'🔄',c:'var(--muted)'}};
   const SONUC={'bilgi-verildi':'ℹ️','teklif-verildi':'📄','police-yapildi':'✅','takip-gerekli':'🔔',ilgisiz:'❌'};
   const list=(DB.iletisimler||[]).slice().sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''))
     .filter(x=>{
       if(fk&&x.kanal!==fk)return false;
+      if(fy&&!(x.tarih||'').startsWith(fy))return false;
+      if(fa&&(x.tarih||'').slice(5,7)!==fa)return false;
       if(!q)return true;
       const m=getMusteri(x.musteriId);
       return (m&&m.ad.toLowerCase().includes(q))||(x.konu||'').toLowerCase().includes(q)||(x.notlar||'').toLowerCase().includes(q);
@@ -13947,6 +14060,13 @@ function renderCariListe(){
   if(!el) return;
   const srch=(gv('srch-cari-liste')||'').toLowerCase();
   const filter=window.cariFilter||'all';
+  // Aktif buton vurgula
+  ['all','borclu','alacakli','ikisi'].forEach(f=>{
+    const btn=byId('clf-'+f);
+    if(!btn)return;
+    btn.style.opacity=(filter===f)?'1':'0.55';
+    btn.style.fontWeight=(filter===f)?'800':'500';
+  });
   let list=(DB.musteriler||[]).map(m=>{
     const cs=DB.cariler.filter(c=>c.musteriId===m.id);
     const borc  =cs.reduce((s,c)=>s+(parseFloat(c.borc)||0),0);
@@ -13954,8 +14074,9 @@ function renderCariListe(){
     return {...m,borc,alacak,bakiye:borc-alacak};
   }).filter(m=>{
     if(srch&&!m.ad.toLowerCase().includes(srch))return false;
-    if(filter==='borclu'&&m.bakiye<=0)return false;
-    if(filter==='alacakli'&&m.bakiye>=0)return false;
+    if(filter==='borclu'   &&m.bakiye<=0)return false;
+    if(filter==='alacakli' &&m.bakiye>=0)return false;
+    if(filter==='ikisi'    &&!(m.borc>0&&m.alacak>0))return false;
     return true;
   });
   if(!list.length){
