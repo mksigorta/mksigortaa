@@ -3315,19 +3315,66 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </div>
     </div>
 
-    <!-- POLİÇE YENİLEME -->
+    <!-- POLİÇE YENİLEME / TEKLİF -->
     <div id="wa-takip" class="wa-section">
+      <!-- SATIR 1: Müşteri / Poliçe / Ekstra Takip -->
       <div class="form-grid">
-        <div class="fg"><label>Müşteri Seç</label><select id="wa-tm" onchange="waTakipMusteriDegis()"><option value="">-- Seçin --</option></select></div>
-        <div class="fg"><label>Poliçe (Opsiyonel)</label><select id="wa-tp" onchange="buildTakipMsg()"><option value="">Son Poliçe</option></select></div>
-        <div class="fg"><label>Teklif Fiyatı (₺)</label><input type="text" id="wa-teklif" placeholder="Fiyat gir..." oninput="buildTakipMsg()"></div>
-        <div class="fg"><label>Telefon</label><input type="text" id="wa-ttel" placeholder="0555..."></div>
+        <div class="fg"><label>👤 Müşteri Seç *</label><select id="wa-tm" onchange="waTakipMusteriDegis()"><option value="">-- Seçin --</option></select></div>
+        <div class="fg"><label>📋 Poliçe Seç <span style="color:var(--muted);font-weight:400;">(İsteğe Bağlı)</span></label><select id="wa-tp" onchange="buildTakipMsg()"><option value="">Son Poliçe</option></select></div>
+        <div class="fg"><label>📌 Ekstra Takip Kaydı <span style="color:var(--muted);font-weight:400;">(İsteğe Bağlı)</span></label><select id="wa-tekstra" onchange="waEkstraDegis()"><option value="">-- Seçiniz --</option></select></div>
       </div>
+      <!-- SATIR 2: Poliçe Türü / Taksit -->
+      <div class="form-grid">
+        <div class="fg"><label>🏷️ Poliçe Türü <span style="color:var(--muted);font-weight:400;">(İsteğe Bağlı)</span></label>
+          <select id="wa-poltur" onchange="buildTakipMsg()">
+            <option value="">-- Seçiniz --</option>
+            <option value="Trafik Sigortası">🚗 Trafik Sigortası</option>
+            <option value="İMM İhtiyari Mali Mesuliyet Sigortası">🛡️ İMM İhtiyari Mali Mesuliyet Sigortası</option>
+            <option value="Ferdi Kaza Sigortası">🧍 Ferdi Kaza Sigortası</option>
+            <option value="Kasko Sigortası">🚙 Kasko Sigortası</option>
+            <option value="DASK Sigortası">🏠 DASK Sigortası</option>
+            <option value="Konut Sigortası">🏡 Konut Sigortası</option>
+            <option value="İş Yeri Sigortası">🏢 İş Yeri Sigortası</option>
+            <option value="TSS Tamamlayıcı Sağlık Sigortası">💊 TSS Tamamlayıcı Sağlık Sigortası</option>
+            <option value="Seyahat Sigortası">✈️ Seyahat Sigortası</option>
+            <option value="Diğer">📄 Diğer</option>
+          </select>
+        </div>
+        <div class="fg"><label>💳 Taksit Seç *</label>
+          <select id="wa-taksit" onchange="buildTakipMsg()">
+            <option value="1">💵 1 – Nakit</option>
+            <option value="2">2 Taksit</option>
+            <option value="3">3 Taksit</option>
+            <option value="4">4 Taksit</option>
+            <option value="5">5 Taksit</option>
+            <option value="6">6 Taksit</option>
+            <option value="7">7 Taksit</option>
+            <option value="8">8 Taksit</option>
+            <option value="9">9 Taksit</option>
+            <option value="10">10 Taksit</option>
+            <option value="11">11 Taksit</option>
+            <option value="12">12 Taksit</option>
+          </select>
+        </div>
+        <div class="fg"><label>📞 Telefon</label><input type="text" id="wa-ttel" placeholder="0555..."></div>
+      </div>
+      <!-- EN UYGUN FİYAT - Manuel Giriş -->
+      <div style="margin:10px 0 6px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">⭐ 30 Şirkette En Uygun Fiyat (Manuel)</div>
+      <div class="form-grid" style="margin-bottom:12px;">
+        <div class="fg"><label>🏢 En Uygun Fiyat Şirket</label><input type="text" id="wa-minSirket" placeholder="Örn: Ankara Sigorta" oninput="buildTakipMsg()" style="font-weight:600;"></div>
+        <div class="fg"><label>💰 En Uygun Fiyat Tutar (₺)</label><input type="text" id="wa-minTutar" placeholder="Örn: 10.000,00" oninput="buildTakipMsg()" style="font-weight:700;color:var(--success);"></div>
+      </div>
+      <!-- ŞİRKET / TUTAR GRID -->
+      <div style="margin:10px 0 6px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">🏢 Şirket Teklifleri <span style="font-weight:400;color:var(--muted);text-transform:none;">(fiyat girilirse mesaja eklenir – 30 şirket)</span></div>
+      <div id="wa-sirket-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;margin-bottom:12px;">
+        <!-- 30 şirket satırı JS ile render edilecek -->
+      </div>
+      <!-- ÖNIZLEME -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 4px;">
         <span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">📋 Mesaj Önizleme</span>
         <button onclick="waCopyMsg('wa-tpreview')" style="background:none;border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-size:10px;cursor:pointer;color:var(--muted);">📋 Kopyala</button>
       </div>
-      <textarea class="wa-preview" id="wa-tpreview" style="width:100%;resize:vertical;min-height:160px;box-sizing:border-box;">Müşteri seçiniz...</textarea>
+      <textarea class="wa-preview" id="wa-tpreview" style="width:100%;resize:vertical;min-height:200px;box-sizing:border-box;">Müşteri seçiniz...</textarea>
       <div class="btn-group">
         <button class="btn btn-wa" onclick="sendWA('takip')">📤 WhatsApp'ta Gönder</button>
         <button class="btn btn-outline btn-sm" onclick="waCopyMsg('wa-tpreview')">📋 Metni Kopyala</button>
@@ -6799,6 +6846,7 @@ function renderTakip(){
       <td style="display:flex;gap:4px;flex-wrap:wrap;">
         <button class="btn-act btn-act-success" onclick='detayPolice("${p.id}")'>👁️ Detay</button>
         <button class="btn-act btn-act-primary" onclick='editPolice("${p.id}")'>✏️ Düzenle</button>
+        <button class="btn-act btn-act-wa" onclick='waTakipPolice("${p.musteriId}","${p.id}")' style="background:#25d366;color:#fff;">💬 WA</button>
         ${(p.docs&&(p.docs.ruhsat||p.docs.tc||p.docs.pdf))?`<button class="btn-act btn-act-info" onclick='openPoliceDocsModal("${p.id}")'>📎 Belgeler</button>`:''}
         <button class="btn-act btn-act-danger" onclick='delPolice("${p.id}");renderTakip()'>🗑️ Sil</button>
       </td>
@@ -6810,7 +6858,10 @@ function renderTakip(){
     const m=getMusteri(t.musteriId);
     return `<tr><td>${m?m.ad:'-'}</td><td>${fmtD(t.baslama)}</td><td>${fmtD(t.bitis)}</td><td>${t.polNo||'-'}</td>
       <td>${t.sirket||'-'}</td><td>${t.plaka||'-'}</td><td>${t.belge||'-'}</td><td>${t.aciklama||'-'}</td>
-      <td><button class="btn btn-danger btn-xs" onclick='DB.ptExtras=DB.ptExtras.filter(x=>x.id!=="'+t.id+'");saveDB();renderTakip()'>🗑️</button></td></tr>`;
+      <td style="white-space:nowrap;">
+        <button class="btn btn-wa btn-xs" onclick='waEkstraTakip("${t.musteriId}","${t.id}")' title="WhatsApp Teklif Gönder">💬 WA</button>
+        <button class="btn btn-danger btn-xs" onclick='DB.ptExtras=DB.ptExtras.filter(x=>x.id!=="'+t.id+'");saveDB();renderTakip()'>🗑️</button>
+      </td></tr>`;
   }).join(''):'<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';
 }
 
@@ -9353,7 +9404,7 @@ function waRenderGunler(){
 }
 function waSecGun(key){waSeciliGun=key;waRenderGunler();buildOzelMsg();}
 function initWA(){
-  populateSelects();waRenderGunler();waRenderOzelMusteriler();buildOzelMsg();
+  populateSelects();waRenderGunler();waRenderOzelMusteriler();buildOzelMsg();waRenderSirketGrid();
   byId('wa-borc').classList.add('active');
   ['wa-takip','wa-ozel','wa-toplu'].forEach(id=>{const el=byId(id);if(el)el.classList.remove('active');});
   if(gv('wa-bm'))waBorcMusteriDegis();
@@ -9386,12 +9437,52 @@ function buildBorcMsg(){
   if(p)polBilgi=`\n\n• Poliçe No : ${p.polNo||'-'}\n• Şirket    : ${p.sirket||'-'}\n• Tür       : ${p.polTur||p.islemTur||'-'}\n• Başlama   : ${fmtD(p.baslama)}\n• Bitiş     : ${fmtD(p.bitis)}${p.plaka?'\n• Plaka     : '+p.plaka:''}`;
   byId('wa-bpreview').value=`Sayın ${m.ad},\n\nMK Sigorta olarak borç durumunuzu hatırlatmak istedik.${polBilgi}\n\n• Toplam Borç   : ₺${fmt(borc)}\n• Toplam Alacak : ₺${fmt(alacak)}\n• Kalan Bakiye  : ₺${fmt(borc-alacak)}\n\nÖdemenizi en kısa sürede yapmanızı rica ederiz.\n\nSaygılarımızla,\nMK Sigorta – Muhammed Köçe\n📞 0555 170 46 27`;
 }
+// ── Şirket Teklif Grid Render ───────────────────────────────
+function waRenderSirketGrid(){
+  const grid=byId('wa-sirket-grid');if(!grid)return;
+  const taksitOpts=[['1','💵 NAKİT'],['2','2 Taksit'],['3','3 Taksit'],['4','4 Taksit'],['5','5 Taksit'],['6','6 Taksit'],['7','7 Taksit'],['8','8 Taksit'],['9','9 Taksit'],['10','10 Taksit'],['11','11 Taksit'],['12','12 Taksit']];
+  let html='';
+  for(let i=1;i<=30;i++){
+    const opts=taksitOpts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');
+    html+=`<div style="display:flex;gap:5px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 9px;">
+      <span style="font-size:10px;font-weight:700;color:var(--muted);min-width:18px;text-align:center;flex-shrink:0;">${i}</span>
+      <input type="text" id="wa-sirket-${i}" placeholder="Şirket adı..." oninput="buildTakipMsg()" style="flex:1;min-width:0;font-size:12px;font-weight:600;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);outline:none;">
+      <input type="text" id="wa-tutar-${i}" placeholder="₺ Tutar" oninput="buildTakipMsg()" style="width:85px;font-size:12px;font-weight:700;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--accent);outline:none;">
+      <select id="wa-taksit-${i}" onchange="buildTakipMsg()" style="font-size:11px;padding:4px 5px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);outline:none;cursor:pointer;">${opts}</select>
+    </div>`;
+  }
+  grid.innerHTML=html;
+}
 function waTakipMusteriDegis(){
   const mId=gv('wa-tm');
   const polSel=byId('wa-tp');
   polSel.innerHTML='<option value="">Son Poliçe</option>';
+  // Poliçeleri doldur
   if(mId){DB.policeler.filter(p=>p.musteriId===mId).forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.polNo+(p.islemTur?' ('+p.islemTur+')':'')+(p.sirket?' – '+p.sirket:'');polSel.appendChild(o);});}
+  // Ekstra takip kayıtlarını doldur
+  const ekstraSel=byId('wa-tekstra');
+  if(ekstraSel){
+    ekstraSel.innerHTML='<option value="">-- Seçiniz --</option>';
+    if(mId){(DB.ptExtras||[]).filter(x=>x.musteriId===mId).forEach(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=(x.no||x.id.substr(0,6))+(x.sirket?' – '+x.sirket:'')+(x.bitis?' ('+fmtD(x.bitis)+')':'');ekstraSel.appendChild(o);});}
+  }
   setTimeout(buildTakipMsg,0);
+}
+function waEkstraDegis(){
+  const eid=gv('wa-tekstra');
+  if(eid){
+    const ex=(DB.ptExtras||[]).find(x=>x.id===eid);
+    if(ex){
+      // Poliçe türünü otomatik doldur - ekstra kayıtta polTur yoksa boş bırak
+      const polTurSel=byId('wa-poltur');
+      if(polTurSel&&ex.polTur){
+        // Mevcut option'lar arasında eşleşen varsa seç
+        let matched=false;
+        for(let o of polTurSel.options){if(o.value&&ex.polTur&&ex.polTur.toLowerCase().includes(o.value.toLowerCase().replace(/^[^\w]+/,'').substr(0,6))){polTurSel.value=o.value;matched=true;break;}}
+        if(!matched)polTurSel.value='';
+      }
+    }
+  }
+  buildTakipMsg();
 }
 function buildTakipMsg(){
   const mId=gv('wa-tm');
@@ -9399,9 +9490,73 @@ function buildTakipMsg(){
   const m=getMusteri(mId);if(!m){byId('wa-tpreview').value='Müşteri bulunamadı...';return;}
   sv('wa-ttel',m.tel||'');
   const ps=DB.policeler.filter(p=>p.musteriId===mId);
-  const pid=gv('wa-tp');const p=pid?getPolice(pid):(ps[ps.length-1]||null);
-  const teklif=gv('wa-teklif')||'';
-  byId('wa-tpreview').value=`Sayın ${m.ad},\n\nPoliçenizin yenileme zamanı yaklaşıyor.\n\n${p?`• Başlama  : ${fmtD(p.baslama)}\n• Bitiş    : ${fmtD(p.bitis)}\n• Poliçe No: ${p.polNo}\n• Şirket   : ${p.sirket||'-'}${p.plaka?'\n• Plaka    : '+p.plaka:''}`:''}\n\n30 Şirkette En Uygun Taban Fiyat: ${teklif?'₺'+teklif:'___________'}\n\nBilgi ve yenileme için bize ulaşabilirsiniz.\n\nSaygılarımızla,\nMK Sigorta – Muhammed Köçe\n📞 0555 170 46 27`;
+  const pid=gv('wa-tp');
+  const p=pid?getPolice(pid):(ps[ps.length-1]||null);
+  // Ekstra takip kaydı
+  const eid=gv('wa-tekstra');
+  const ex=eid?(DB.ptExtras||[]).find(x=>x.id===eid):null;
+  // Poliçe türü - BÜYÜK HARF
+  const polTurSec=gv('wa-poltur')||'';
+  const polTurRaw=polTurSec||(p?p.islemTur||p.polTur||'':'');
+  const polTur=polTurRaw.toUpperCase();
+  // Genel taksit (başlık için)
+  const genTaksit=parseInt(gv('wa-taksit')||'1')||1;
+  const genNakit=(genTaksit===1);
+  // Şirket teklifleri - 30 şirket, her birinin kendi taksit seçimi var
+  let sirketSatirlar=[];
+  for(let i=1;i<=30;i++){
+    const sAd=(byId('wa-sirket-'+i)||{}).value||'';
+    const sTutar=(byId('wa-tutar-'+i)||{}).value||'';
+    if(sAd&&sTutar){
+      const sTaksit=parseInt((byId('wa-taksit-'+i)||{}).value||'1')||1;
+      const sNakit=(sTaksit===1);
+      const label=sNakit?'NAKİT':`${sTaksit} TAKSİT`;
+      sirketSatirlar.push(`  • ${sAd} : ${sTutar} TL  ${label}`);
+    }
+  }
+  // Manuel en uygun fiyat
+  const manuelSirket=(byId('wa-minSirket')||{}).value||'';
+  const manuelTutar=(byId('wa-minTutar')||{}).value||'';
+  // TEKLİF BİLGİLERİ bölümü
+  let teklifBaslik='';
+  if(polTur)teklifBaslik=`• ${polTur} TEKLİF BİLGİLERİ`;
+  else teklifBaslik=`• TEKLİF BİLGİLERİ`;
+  // Veri: önce seçili poliçe, sonra ekstra kayıt
+  const baslama=p?fmtD(p.baslama):(ex?fmtD(ex.baslama):'-');
+  const bitis=p?fmtD(p.bitis):(ex?fmtD(ex.bitis):'-');
+  const polNo=p?p.polNo:(ex?ex.no||ex.polNo||'-':'-');
+  const sirket=p?p.sirket||'-':(ex?ex.sirket||'-':'-');
+  const plaka=p?p.plaka||'':(ex?ex.plaka||'':'');
+  const arac=p?p.arac||p.marka||'':(ex?ex.arac||'':'');
+  const modelYili=p?p.modelYili||'':(ex?ex.modelYili||'':'');
+  // En uygun fiyat satırı
+  let minSatir='';
+  if(manuelTutar){
+    const minLabel=genNakit?'NAKİT':`${genTaksit} TAKSİT`;
+    if(manuelSirket)
+      minSatir=`30 Şirkette En Uygun Taban Fiyat: ₺${manuelTutar} TL  ${minLabel}`;
+    else
+      minSatir=`30 Şirkette En Uygun Taban Fiyat: ₺${manuelTutar} TL  ${minLabel}`;
+  } else {
+    minSatir='30 Şirkette En Uygun Taban Fiyat: ___________';
+  }
+  // Mesajı oluştur
+  let msg=`Sayın ${m.ad},\n\nPoliçenizin yenileme zamanı yaklaşıyor.\n\n${teklifBaslik}\n`;
+  msg+=`• Başlama    : ${baslama}\n`;
+  msg+=`• Bitiş      : ${bitis}\n`;
+  msg+=`• Poliçe No  : ${polNo}\n`;
+  msg+=`• Şirket     : ${sirket}\n`;
+  if(plaka)msg+=`• Plaka      : ${plaka}\n`;
+  if(arac)msg+=`• ARAÇ       : ${arac}\n`;
+  if(modelYili)msg+=`• MODEL YILI : ${modelYili}\n`;
+  msg+=`\n${minSatir}\n\nBilgi ve yenileme için bize ulaşabilirsiniz.\n`;
+  if(sirketSatirlar.length){
+    msg+=`\n──────────────────────\n`;
+    msg+=sirketSatirlar.join('\n');
+    msg+=`\n──────────────────────`;
+  }
+  msg+=`\n\nSaygılarımızla,\nMK Sigorta – Muhammed Köçe\n📞 0555 170 46 27`;
+  byId('wa-tpreview').value=msg;
 }
 function buildOzelMsg(){
   const gun=ozelGunler.find(g=>g.key===waSeciliGun)||ozelGunler[0];
@@ -14340,6 +14495,8 @@ function renderPtEkstraListe(){
         <td style="padding:7px 10px;font-size:11px;color:var(--muted);">${t.belge||'-'}</td>
         <td style="padding:7px 10px;font-size:11px;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${t.aciklama||''}">${t.aciklama||'-'}</td>
         <td style="padding:7px 10px;text-align:center;white-space:nowrap;" onclick="event.stopPropagation()">
+          <button onclick="waEkstraTakip('${t.musteriId}','${t.id}')" title="WhatsApp Teklif Gönder"
+            style="border:none;background:#25d366;color:#fff;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:3px;">💬</button>
           <button onclick="detayPtExtra('${t.id}')" title="Detay"
             style="border:none;background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:3px;">🔎</button>
           <button onclick="editPtExtra('${t.id}')" title="Düzenle"
@@ -14380,6 +14537,7 @@ function detayPtExtra(id){
       </div>
     </div>`,
     `<button class="btn btn-outline" onclick="hizliModalKapat()">Kapat</button>
+     <button class="btn btn-wa btn-sm" onclick="hizliModalKapat();waEkstraTakip('${t.musteriId}','${t.id}')">💬 WA Teklif</button>
      <button class="btn btn-warning btn-sm" onclick="hizliModalKapat();editPtExtra('${t.id}')">✏️ Düzenle</button>
      <button class="btn btn-primary btn-sm" onclick="hizliModalKapat();openMusteriDetay('${t.musteriId}')">👤 Müşteri</button>`
   );
@@ -14408,6 +14566,43 @@ function editPtExtra(id){
     if(btn) btn.textContent='💾 Güncelle';
     toast('Kayıt düzenleme modunda açıldı','');
   }, 200);
+}
+
+function waTakipPolice(musteriId, policeId){
+  showPage('whatsapp');
+  setTimeout(()=>{
+    const tabs=document.querySelectorAll('#page-whatsapp .ftab');
+    tabs.forEach(f=>f.classList.remove('active'));
+    const takipTab=Array.from(tabs).find(t=>t.textContent.includes('Yenileme'));
+    if(takipTab)takipTab.classList.add('active');
+    document.querySelectorAll('.wa-section').forEach(s=>s.classList.remove('active'));
+    const sec=byId('wa-takip');if(sec)sec.classList.add('active');
+    sv('wa-tm',musteriId);
+    waTakipMusteriDegis();
+    setTimeout(()=>{sv('wa-tp',policeId);buildTakipMsg();},150);
+  },200);
+}
+
+function waEkstraTakip(musteriId, ekstraId){
+  showPage('whatsapp');
+  setTimeout(()=>{
+    // Poliçe Yenileme sekmesine geç
+    const tabs=document.querySelectorAll('#page-whatsapp .ftab');
+    tabs.forEach(f=>f.classList.remove('active'));
+    const takipTab=Array.from(tabs).find(t=>t.textContent.includes('Yenileme'));
+    if(takipTab)takipTab.classList.add('active');
+    document.querySelectorAll('.wa-section').forEach(s=>s.classList.remove('active'));
+    const sec=byId('wa-takip');if(sec)sec.classList.add('active');
+    // Müşteri seç
+    sv('wa-tm',musteriId);
+    waTakipMusteriDegis();
+    setTimeout(()=>{
+      // Ekstra takip seç
+      const ekSel=byId('wa-tekstra');
+      if(ekSel&&ekstraId){sv('wa-tekstra',ekstraId);}
+      waEkstraDegis();
+    },150);
+  },200);
 }
 
 function silPtExtra(id){
