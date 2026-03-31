@@ -2244,10 +2244,10 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     </div>
     <div class="search-bar">
       <input type="text" placeholder="🔍 Müşteri ara..." id="srch-cari-liste" oninput="renderCariListe()">
-      <button class="btn btn-outline btn-sm" id="clf-all"      onclick="cariFilter='all';renderCariListe()">Tümü</button>
-      <button class="btn btn-warning btn-sm" id="clf-borclu"   onclick="cariFilter='borclu';renderCariListe()">Borçlular</button>
-      <button class="btn btn-success btn-sm" id="clf-alacakli" onclick="cariFilter='alacakli';renderCariListe()">Alacaklılar</button>
-      <button class="btn btn-info    btn-sm" id="clf-ikisi"    onclick="cariFilter='ikisi';renderCariListe()">Borçlu ve Alacaklılar</button>
+      <button class="btn btn-outline btn-sm" id="clf-all"      onclick="window.cariFilter='all';renderCariListe()" title="Tüm carileri göster">🗂️ Tümü</button>
+      <button class="btn btn-warning btn-sm" id="clf-borclu"   onclick="window.cariFilter='borclu';renderCariListe()" title="Sadece borçluları göster (bakiye > 0)">🔴 Borçlular</button>
+      <button class="btn btn-success btn-sm" id="clf-alacakli" onclick="window.cariFilter='alacakli';renderCariListe()" title="Sadece alacaklıları göster (bakiye < 0)">🟢 Alacaklılar</button>
+      <button class="btn btn-info    btn-sm" id="clf-ikisi"    onclick="window.cariFilter='ikisi';renderCariListe()" title="Hem borcu hem alacağı olan müşterileri göster">🔵 Borçlu &amp; Alacaklılar</button>
     </div>
     <div id="cari-liste-icerik">
       <div style="color:var(--muted);font-size:12px;padding:10px;">Yükleniyor...</div>
@@ -2275,6 +2275,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <option value="bekliyor">Bekliyor</option>
         <option value="tahsil-edildi">Tahsil Edildi</option>
         <option value="gecikti">Gecikti</option>
+        <option value="mk-iade-odendi">💚 MK İade Ödendi</option>
         <option value="iptal">İptal</option>
       </select>
       <select id="srch-th-liste-yil" onchange="renderTahsilatListe()" style="min-width:80px;">
@@ -2347,9 +2348,9 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     </div>
     <div class="search-bar">
       <input type="text" placeholder="🔍 Müşteri ara..." id="srch-cari" oninput="_dRenderCari()">
-      <button class="btn btn-outline btn-sm" onclick="cariFilter='all';renderCari()">Tümü</button>
-      <button class="btn btn-warning btn-sm" onclick="cariFilter='borclu';renderCari()">Borçlular</button>
-      <button class="btn btn-success btn-sm" onclick="cariFilter='alacakli';renderCari()">Alacaklılar</button>
+      <button class="btn btn-outline btn-sm" onclick="window.cariFilter='all';renderCari()">Tümü</button>
+      <button class="btn btn-warning btn-sm" onclick="window.cariFilter='borclu';renderCari()">Borçlular</button>
+      <button class="btn btn-success btn-sm" onclick="window.cariFilter='alacakli';renderCari()">Alacaklılar</button>
     </div>
     <div class="table-wrap">
       <table id="tbl-cari">
@@ -2374,11 +2375,47 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <div id="th-musteri-dd" style="display:none;position:absolute;z-index:500;width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-height:200px;overflow-y:auto;margin-top:2px;"></div>
         </div>
       </div>
+
+      <!-- POLİÇE SEÇ (İsteğe Bağlı) -->
+      <div class="fg">
+        <label>📋 Poliçe Seç <small style="color:var(--muted);font-weight:400;">(İsteğe Bağlı)</small></label>
+        <select id="th-police" onchange="thPoliceSecildi()" style="width:100%;">
+          <option value="">-- Poliçe Seçin (İsteğe Bağlı) --</option>
+        </select>
+      </div>
+
+      <!-- İPTAL / İADE SEÇ (Alacaklı müşteriler) -->
+      <div class="fg" style="grid-column:1/-1;">
+        <label>🔄 İptal / İade Seç <small style="color:var(--muted);font-weight:400;">(Alacaklı Müşteriler – İsteğe Bağlı)</small></label>
+        <select id="th-iptal-iade" onchange="thIptalIadeSecildi()" style="width:100%;">
+          <option value="">-- İptal / İade Seçin (İsteğe Bağlı) --</option>
+        </select>
+      </div>
+
+      <!-- İptal/İade bilgi kartı -->
+      <div id="th-iptal-bilgi" class="fg" style="grid-column:1/-1;display:none;">
+        <div style="background:color-mix(in srgb,var(--warning) 8%,transparent);border:1px solid var(--warning);border-radius:10px;padding:12px 16px;">
+          <div style="font-size:10px;font-weight:700;color:var(--warning);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📋 İptal / İade Bilgileri</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;" id="th-iptal-bilgi-icerik"></div>
+          <!-- MK İade - Tahsilat = Kalan (sadece Ödeme MK→Müşteri seçilince) -->
+          <div id="th-mk-kalan-kutu" style="display:none;margin-top:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;">
+            <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;">
+              <div><div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;">MK İade Tutarı</div><div id="th-mk-iade-goster" style="font-size:15px;font-weight:800;color:var(--warning);">₺0</div></div>
+              <div style="font-size:18px;color:var(--muted);">−</div>
+              <div><div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;">Tahsilat Tutarı</div><div id="th-mk-tahsilat-goster" style="font-size:15px;font-weight:800;color:var(--info);">₺0</div></div>
+              <div style="font-size:18px;color:var(--muted);">=</div>
+              <div><div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;">Kalan Tutar</div><div id="th-mk-kalan-goster" style="font-size:15px;font-weight:800;color:var(--success);">₺0</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="fg"><label>Tanzim Tarihi</label><input type="text" id="th-tanzim" readonly></div>
       <div class="fg"><label>Başlama</label><input type="text" id="th-baslama" readonly></div>
       <div class="fg"><label>Bitiş</label><input type="text" id="th-bitis" readonly></div>
       <div class="fg"><label>Poliçe No</label><input type="text" id="th-polno" readonly></div>
       <div class="fg"><label>Şirket</label><input type="text" id="th-sirket" readonly></div>
+      <div class="fg"><label>🚗 Plaka</label><input type="text" id="th-plaka" readonly></div>
       <div class="fg"><label>Acente</label><input type="text" id="th-acente" readonly></div>
       <div class="fg"><label>Ac. Komisyon %</label><input type="text" id="th-acoran" readonly></div>
       <div class="fg"><label>Ac. Komisyonu</label><input type="text" id="th-ackomisyon" readonly></div>
@@ -2386,14 +2423,14 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="fg"><label>Brüt Tutar</label><input type="text" id="th-brut" readonly></div>
       <div class="fg"><label>Tarih</label><input type="date" id="th-tarih"></div>
       <div class="fg"><label>İşlem Tipi</label>
-        <select id="th-tip">
+        <select id="th-tip" onchange="thTipDegisti()">
           <option value="borc">Borç (Brüt Tutar)</option>
           <option value="alacak">Alacak (Müşteriden)</option>
           <option value="iade">İade (İptalden)</option>
           <option value="odeme">Ödeme (MK→Müşteri)</option>
         </select>
       </div>
-      <div class="fg"><label>Tutar (₺)</label><input type="number" id="th-tutar" placeholder="0.00"></div>
+      <div class="fg"><label>Tutar (₺)</label><input type="number" id="th-tutar" placeholder="0.00" oninput="thTutarDegisti()"></div>
       <div class="fg"><label>Ödeme Yöntemi</label>
         <select id="th-odeme-yontemi">
           <option value="">-- Seçin --</option>
@@ -2410,6 +2447,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <option value="tahsil-edildi">✅ Tahsil Edildi</option>
           <option value="kismi">🔶 Kısmi Ödeme</option>
           <option value="gecikti">🔴 Gecikti</option>
+          <option value="mk-iade-odendi">💚 MK Müşteriye İade Ödemesi Yapıldı</option>
           <option value="iptal">❌ İptal</option>
         </select>
       </div>
@@ -2443,6 +2481,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <option value="tahsil-edildi">✅ Tahsil Edildi</option>
         <option value="kismi">🔶 Kısmi</option>
         <option value="gecikti">🔴 Gecikti</option>
+        <option value="mk-iade-odendi">💚 MK İade Ödendi</option>
         <option value="iptal">❌ İptal</option>
       </select>
       <select id="srch-th-yontemi" onchange="renderTahsilat()">
@@ -4645,7 +4684,7 @@ async function getStorageInfo(){
 }
 
 let DB={musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]};
-let cariFilter='all';
+window.cariFilter='all';
 let takipTabFilter='all';
 
 // saveDB: quota-aware + Supabase retry versiyonu script sonunda tanımlanmıştır
@@ -5027,8 +5066,8 @@ function openMusteriDetay(id){
   const topA=caris.reduce((s,c)=>s+(c.alacak||0),0);
   const kalan=topB-topA;
 
-  const DURUM_LABEL={'bekliyor':'⏳ Bekliyor','tahsil-edildi':'✅ Tahsil Edildi','kismi':'🔶 Kısmi','gecikti':'🔴 Gecikti','iptal':'❌ İptal'};
-  const DURUM_CLR={'bekliyor':'var(--warning)','tahsil-edildi':'var(--success)','kismi':'var(--info)','gecikti':'var(--danger)','iptal':'var(--muted)'};
+  const DURUM_LABEL={'bekliyor':'⏳ Bekliyor','tahsil-edildi':'✅ Tahsil Edildi','kismi':'🔶 Kısmi','gecikti':'🔴 Gecikti','mk-iade-odendi':'💚 MK İade Ödendi','iptal':'❌ İptal'};
+  const DURUM_CLR={'bekliyor':'var(--warning)','tahsil-edildi':'var(--success)','kismi':'var(--info)','gecikti':'var(--danger)','mk-iade-odendi':'var(--success)','iptal':'var(--muted)'};
   const YONTEM_LABEL={'nakit':'💵 Nakit','havale':'🏦 Havale','kredi':'💳 Kredi','cek':'📄 Çek','diger':'🔄 Diğer'};
 
   // IBAN kutusu
@@ -6892,8 +6931,8 @@ function renderCari(){
 
   let liste=Object.values(musteriMap).map(x=>({...x, kalan:x.toplamBorc-x.toplamAlacak}));
 
-  if(cariFilter==='borclu') liste=liste.filter(x=>x.kalan>0);
-  if(cariFilter==='alacakli') liste=liste.filter(x=>x.kalan<0);
+  if(window.cariFilter==='borclu') liste=liste.filter(x=>x.kalan>0);
+  if(window.cariFilter==='alacakli') liste=liste.filter(x=>x.kalan<0);
 
   if(!liste.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';return;}
 
@@ -6979,18 +7018,159 @@ function printCari(mid){
 // ==============================
 function loadTahsilatInfo(){
   const mid=gv('th-musteri');
-  if(!mid){['th-tanzim','th-baslama','th-bitis','th-polno','th-sirket','th-acente','th-acoran','th-ackomisyon','th-net','th-brut'].forEach(id=>sv(id,''));return;}
+  if(!mid){
+    ['th-tanzim','th-baslama','th-bitis','th-polno','th-sirket','th-plaka','th-acente','th-acoran','th-ackomisyon','th-net','th-brut'].forEach(id=>sv(id,''));
+    thDoldurPoliceSelect();
+    thDoldurIptalSelect();
+    return;
+  }
+  // Son poliçeyi otomatik çek (varsayılan)
   const ps=DB.policeler.filter(p=>p.musteriId===mid);
-  if(!ps.length)return;
-  const p=ps[ps.length-1];const a=getAcente(p.acenteId);
-  sv('th-tanzim',fmtD(p.tanzim));sv('th-baslama',fmtD(p.baslama));sv('th-bitis',fmtD(p.bitis));
-  sv('th-polno',p.polNo||'');sv('th-sirket',p.sirket||'');sv('th-acente',a?a.ad:'-');
-  sv('th-acoran',(p.oran||0)+'%');sv('th-ackomisyon','₺'+fmt(p.ackomisyon));
-  sv('th-net','₺'+fmt(p.net));sv('th-brut','₺'+fmt(p.brut));
+  if(ps.length){
+    const p=ps[ps.length-1];const a=getAcente(p.acenteId);
+    sv('th-tanzim',fmtD(p.tanzim));sv('th-baslama',fmtD(p.baslama));sv('th-bitis',fmtD(p.bitis));
+    sv('th-polno',p.polNo||'');sv('th-sirket',p.sirket||'');sv('th-plaka',p.plaka||'');
+    sv('th-acente',a?a.ad:'-');
+    sv('th-acoran',(p.oran||0)+'%');sv('th-ackomisyon','₺'+fmt(p.ackomisyon));
+    sv('th-net','₺'+fmt(p.net));sv('th-brut','₺'+fmt(p.brut));
+  }
   // IBAN: düzenleme modunda mevcut değeri koru, yoksa müşteriden getir
   if(!gv('th-iban')){
     const m=getMusteri(mid);
     if(m&&m.iban)sv('th-iban',m.iban);
+  }
+  thDoldurPoliceSelect();
+  thDoldurIptalSelect();
+}
+
+// Seçili müşteriye ait poliçe listesini doldur
+function thDoldurPoliceSelect(){
+  const mid=gv('th-musteri');
+  const sel=byId('th-police'); if(!sel)return;
+  sel.innerHTML='<option value="">-- Poliçe Seçin (İsteğe Bağlı) --</option>';
+  if(!mid)return;
+  const ps=(DB.policeler||[]).filter(p=>p.musteriId===mid).sort((a,b)=>(b.tanzim||'').localeCompare(a.tanzim||''));
+  ps.forEach(p=>{
+    const opt=document.createElement('option');
+    opt.value=p.id;
+    opt.textContent=(p.polNo||'?')+' – '+(p.sirket||'-')+' – '+fmtD(p.baslama)+' / '+fmtD(p.bitis);
+    sel.appendChild(opt);
+  });
+}
+
+// Poliçe seçilince tüm poliçe bilgilerini çek
+function thPoliceSecildi(){
+  const pid=gv('th-police');
+  if(!pid){loadTahsilatInfo();return;}
+  const p=DB.policeler.find(x=>x.id===pid); if(!p)return;
+  const a=getAcente(p.acenteId);
+  sv('th-tanzim',fmtD(p.tanzim));sv('th-baslama',fmtD(p.baslama));sv('th-bitis',fmtD(p.bitis));
+  sv('th-polno',p.polNo||'');sv('th-sirket',p.sirket||'');sv('th-plaka',p.plaka||'');
+  sv('th-acente',a?a.ad:'-');
+  sv('th-acoran',(p.oran||0)+'%');sv('th-ackomisyon','₺'+fmt(p.ackomisyon));
+  sv('th-net','₺'+fmt(p.net));sv('th-brut','₺'+fmt(p.brut));
+}
+
+// Alacaklı müşterilerin iptal/iade listesini doldur
+function thDoldurIptalSelect(){
+  const mid=gv('th-musteri');
+  const sel=byId('th-iptal-iade'); if(!sel)return;
+  sel.innerHTML='<option value="">-- İptal / İade Seçin (İsteğe Bağlı) --</option>';
+  // Alacaklı müşterilerin iptalleri (mkIade > 0 olanlar)
+  const liste=(DB.iptaller||[]).filter(ii=>{
+    if(mid&&ii.musteriId!==mid)return false;
+    return (parseFloat(ii.mkIade)||0)>0;
+  }).sort((a,b)=>(b.iptaltarihi||'').localeCompare(a.iptaltarihi||''));
+  liste.forEach(ii=>{
+    const m=getMusteri(ii.musteriId);
+    const opt=document.createElement('option');
+    opt.value=ii.id;
+    opt.textContent=(m?m.ad+' – ':'')+''+(ii.polNo||'?')+' – '+(ii.sirket||'-')+' – İptal: '+fmtD(ii.iptaltarihi)+' – MK İade: ₺'+fmt(ii.mkIade||0);
+    sel.appendChild(opt);
+  });
+  // Eğer seçili değilse bilgi kutusunu gizle
+  if(!gv('th-iptal-iade')){
+    const bilgi=byId('th-iptal-bilgi'); if(bilgi)bilgi.style.display='none';
+  }
+}
+
+// İptal/İade seçilince bilgileri otomatik doldur
+function thIptalIadeSecildi(){
+  const iid=gv('th-iptal-iade');
+  const bilgi=byId('th-iptal-bilgi');
+  if(!iid){if(bilgi)bilgi.style.display='none';return;}
+  const ii=DB.iptaller.find(x=>x.id===iid); if(!ii){if(bilgi)bilgi.style.display='none';return;}
+  const m=getMusteri(ii.musteriId);
+  // Müşteriyi otomatik seç
+  if(!gv('th-musteri')){
+    sv('th-musteri',ii.musteriId);
+    const inp=byId('th-musteri-search');if(inp&&m)inp.value=m.ad;
+    thDoldurPoliceSelect();
+  }
+  // Poliçe & plaka bilgilerini doldur
+  sv('th-polno',ii.polNo||'');
+  sv('th-sirket',ii.sirket||'');
+  // Plakanın iptal kaydında yoksa poliçeden çek
+  let plaka=ii.plaka||'';
+  if(!plaka && ii.policeId){
+    const p=DB.policeler.find(x=>x.id===ii.policeId);
+    if(p) plaka=p.plaka||'';
+  }
+  // Plaka'yı hidden alana yaz (kayıt sırasında kullanılmak üzere)
+  window._thPlakaSec = plaka;
+  // Bilgi kutusunu göster
+  if(bilgi)bilgi.style.display='block';
+  const icerik=byId('th-iptal-bilgi-icerik');
+  if(icerik){
+    const rows=[
+      ['👤 Müşteri',m?m.ad:'-'],
+      ['🔢 Poliçe No',ii.polNo||'-'],
+      ['🏢 Şirket',ii.sirket||'-'],
+      ['🚗 Plaka',plaka||'-'],
+      ['📅 İptal Tarihi',fmtD(ii.iptaltarihi)||'-'],
+      ['💰 Gerçek İade',`<span style="color:var(--success);font-weight:700;">₺${fmt(ii.gercekIade||0)}</span>`],
+      ['💛 MK İade',`<span style="color:var(--warning);font-weight:700;">₺${fmt(ii.mkIade||0)}</span>`],
+    ];
+    icerik.innerHTML=rows.map(([lbl,val])=>`
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:7px;padding:7px 10px;">
+        <div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;">${lbl}</div>
+        <div style="font-size:12px;font-weight:600;margin-top:2px;">${val}</div>
+      </div>`).join('');
+  }
+  // MK İade değerini sakla
+  window._thMkIade=parseFloat(ii.mkIade)||0;
+  thTipDegisti();
+  thTutarDegisti();
+}
+
+// İşlem tipi değişince kalan kutuyu göster/gizle
+function thTipDegisti(){
+  const tip=gv('th-tip');
+  const kutu=byId('th-mk-kalan-kutu'); if(!kutu)return;
+  if(tip==='odeme' && gv('th-iptal-iade')){
+    kutu.style.display='block';
+    thTutarDegisti();
+  } else {
+    kutu.style.display='none';
+  }
+}
+
+// Tutar girilince kalan hesapla
+function thTutarDegisti(){
+  const tip=gv('th-tip');
+  const kutu=byId('th-mk-kalan-kutu'); if(!kutu)return;
+  if(tip==='odeme' && gv('th-iptal-iade')){
+    const mkIade=window._thMkIade||0;
+    const tahsilat=parseFloat(gv('th-tutar'))||0;
+    const kalan=mkIade-tahsilat;
+    const mkEl=byId('th-mk-iade-goster');if(mkEl)mkEl.textContent='₺'+fmt(mkIade);
+    const thEl=byId('th-mk-tahsilat-goster');if(thEl)thEl.textContent='₺'+fmt(tahsilat);
+    const kalanEl=byId('th-mk-kalan-goster');
+    if(kalanEl){
+      kalanEl.textContent='₺'+fmt(Math.abs(kalan));
+      kalanEl.style.color=kalan>0?'var(--warning)':kalan<0?'var(--danger)':'var(--success)';
+    }
+    kutu.style.display='block';
   }
 }
 function thIbanMusteriden(){
@@ -7003,14 +7183,31 @@ function saveTahsilat(){
   const mid=gv('th-musteri');if(!mid){toast('Müşteri seçiniz!','error');return;}
   const tutar=parseFloat(gv('th-tutar'))||0;if(!tutar){toast('Tutar giriniz!','error');return;}
   const tip=gv('th-tip');
-  const borc=tip==='borc'?tutar:0;
-  const alacak=tip==='alacak'||tip==='iade'?tutar:0;
+  // İşlem Tipi Kuralları:
+  // borc   → Borç   (Police Brüt Tutar) : borç=tutar, alacak=0
+  // alacak → Alacak (Müşteriden Alınan) : borç=0, alacak=tutar
+  // iade   → İptal İadesi (Alacak)       : borç=0, alacak=tutar
+  // odeme  → MK Müşteriye Ödeme (Borç)  : borç=tutar, alacak=0
+  let borc=0, alacak=0;
+  if(tip==='borc')  { borc=tutar; alacak=0; }
+  else if(tip==='alacak') { borc=0; alacak=tutar; }
+  else if(tip==='iade')   { borc=0; alacak=tutar; }
+  else if(tip==='odeme')  { borc=tutar; alacak=0; }
   const eid=window._editTahsilatId||null;
+  // Plaka: form alanından ya da iptal/iade seçiminden gelen değer
+  const plaka=gv('th-plaka')||(window._thPlakaSec||'');
+  const aciklama=gv('th-aciklama')||({
+    'borc':'Poliçe Brüt Borç',
+    'alacak':'Müşteriden Tahsilat',
+    'iade':'İptal İadesi (Alacak)',
+    'odeme':'MK Sigorta → Müşteri Ödeme'
+  }[tip]||'Tahsilat');
   const obj={
     id:eid||uid(),musteriId:mid,
     tarih:gv('th-tarih')||new Date().toISOString().substr(0,10),
-    polNo:gv('th-polno'),sirket:gv('th-sirket'),plaka:'',
+    polNo:gv('th-polno'),sirket:gv('th-sirket'),plaka,
     tutar,tip,borc,alacak,
+    iptalId:gv('th-iptal-iade')||'',
     odemeyontemi:gv('th-odeme-yontemi'),
     durum:gv('th-durum')||'bekliyor',
     iban:gv('th-iban'),
@@ -7024,14 +7221,22 @@ function saveTahsilat(){
     DB.tahsilatlar.push(obj);
   }
   DB.cariler.push({id:obj.id+'_c',musteriId:mid,policeId:'',tarih:obj.tarih,
-    polNo:obj.polNo,sirket:obj.sirket,plaka:'',borc,alacak,aciklama:obj.aciklama||'Tahsilat'});
+    polNo:obj.polNo,sirket:obj.sirket,plaka,borc,alacak,
+    aciklama:aciklama});
   saveDB();renderTahsilat();toast(eid?'Tahsilat güncellendi':'Tahsilat kaydedildi','success');resetTahsilatForm();updateStats();
 }
 function resetTahsilatForm(){
-  ['th-musteri','th-tarih','th-tutar','th-aciklama','th-iban','th-odeme-yontemi'].forEach(id=>sv(id,''));
+  ['th-musteri','th-tarih','th-tutar','th-aciklama','th-iban','th-odeme-yontemi','th-plaka'].forEach(id=>sv(id,''));
   mkSearchClear('th-musteri');
   sv('th-durum','bekliyor');
-  sv('th-tip','borc'); // FIX2: tipi sıfırla
+  sv('th-tip','borc');
+  // Yeni alanları sıfırla
+  const polSel=byId('th-police'); if(polSel)polSel.innerHTML='<option value="">-- Poliçe Seçin (İsteğe Bağlı) --</option>';
+  const iptalSel=byId('th-iptal-iade'); if(iptalSel)iptalSel.innerHTML='<option value="">-- İptal / İade Seçin (İsteğe Bağlı) --</option>';
+  const bilgi=byId('th-iptal-bilgi'); if(bilgi)bilgi.style.display='none';
+  const kutu=byId('th-mk-kalan-kutu'); if(kutu)kutu.style.display='none';
+  window._thMkIade=0;
+  window._thPlakaSec='';
   window._editTahsilatId=null;
   loadTahsilatInfo();
 }
@@ -7040,9 +7245,11 @@ function renderTahsilat(){
   const t1=gv('th-t1');const t2=gv('th-t2');
   const fDurum=gv('srch-th-durum');
   const fYontem=gv('srch-th-yontemi');
-  const DURUM_LABEL={'bekliyor':'⏳ Bekliyor','tahsil-edildi':'✅ Tahsil Edildi','kismi':'🔶 Kısmi','gecikti':'🔴 Gecikti','iptal':'❌ İptal'};
-  const DURUM_CLR={'bekliyor':'var(--warning)','tahsil-edildi':'var(--success)','kismi':'var(--info)','gecikti':'var(--danger)','iptal':'var(--muted)'};
+  const DURUM_LABEL={'bekliyor':'⏳ Bekliyor','tahsil-edildi':'✅ Tahsil Edildi','kismi':'🔶 Kısmi','gecikti':'🔴 Gecikti','mk-iade-odendi':'💚 MK İade Ödendi','iptal':'❌ İptal'};
+  const DURUM_CLR={'bekliyor':'var(--warning)','tahsil-edildi':'var(--success)','kismi':'var(--info)','gecikti':'var(--danger)','mk-iade-odendi':'var(--success)','iptal':'var(--muted)'};
   const YONTEM_LABEL={'nakit':'💵 Nakit','havale':'🏦 Havale','kredi':'💳 Kredi','cek':'📄 Çek','diger':'🔄 Diğer'};
+  const TIP_LABEL={'borc':'🔴 Borç (Brüt)','alacak':'🟢 Alacak (Müşteri)','iade':'🔵 İptal İadesi','odeme':'🟠 MK→Müşteri Ödeme'};
+  const TIP_CLR={'borc':'var(--danger)','alacak':'var(--success)','iade':'var(--info)','odeme':'var(--warning)'};
   let list=DB.tahsilatlar.filter(t=>{
     const m=getMusteri(t.musteriId);
     if(srch&&!(m&&m.ad.toLowerCase().includes(srch))&&!(t.polNo||'').toLowerCase().includes(srch)&&!(t.iban||'').toLowerCase().includes(srch))return false;
@@ -7061,6 +7268,8 @@ function renderTahsilat(){
     const dur=DURUM_LABEL[durum]||durum;
     const durClr=DURUM_CLR[durum]||'var(--text)';
     const yon=YONTEM_LABEL[t.odemeyontemi||'']||t.odemeyontemi||'-';
+    const tipLbl=TIP_LABEL[t.tip||'borc']||t.tip||'-';
+    const tipClr=TIP_CLR[t.tip||'borc']||'var(--text)';
     const ibanDisplay=t.iban?`<span style="font-size:10px;font-family:monospace;letter-spacing:.3px;">${t.iban}</span>`:'<span style="color:var(--muted);">-</span>';
     // Poliçeyi bul: polNo+musteriId → polNo genel
     const tp=t.polNo?(DB.policeler.find(x=>x.musteriId===t.musteriId&&x.polNo===t.polNo)||DB.policeler.find(x=>x.polNo===t.polNo)):null;
@@ -7071,7 +7280,7 @@ function renderTahsilat(){
       <td><b style="cursor:pointer;color:var(--info);" onclick="openMusteriDetay('${t.musteriId}')">${m?m.ad:'-'}</b>${m&&m.iban&&!t.iban?`<br><span style="font-size:9px;color:var(--muted);">${m.iban}</span>`:''}</td>
       <td>${tp?tp.sirket||t.sirket||'-':t.sirket||'-'}</td>
       <td>${tp?tp.polTur||'-':'-'}</td>
-      <td>${tp?tp.islemTur||'-':'-'}</td>
+      <td><span style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;background:color-mix(in srgb,${tipClr} 14%,transparent);color:${tipClr};">${tipLbl}</span></td>
       <td>${tp?(tp.tc||(m?m.tc:'')||'-'):(m?m.tc||'-':'-')}</td>
       <td>${tp?tp.vergino||'-':(m?m.vergino||'-':'-')}</td>
       <td>${tp?tp.mPolNo||tp.polNo||t.polNo||'-':t.polNo||'-'}</td>
@@ -8230,7 +8439,7 @@ function saveIptal(){
   _iptalCalc.gercekCalisan=(_iptalCalc.brut||0)-gercekIadeManuel;
   _iptalCalc.acIade=acIadeManuel;
   const obj={id:uid(),musteriId:mid,policeId:pid,tanzim:p.tanzim,baslama:p.baslama,bitis:p.bitis,
-    iptaltarihi:gv('ii-iptaltarihi'),polNo:p.polNo,sirket:p.sirket,acenteId:p.acenteId,
+    iptaltarihi:gv('ii-iptaltarihi'),polNo:p.polNo,sirket:p.sirket,plaka:p.plaka||'',acenteId:p.acenteId,
     sebep:gv('ii-sebep'),..._iptalCalc,mkIade,
     mkIadeDurum:'bekliyor',
     noterIsmi:gv('ii-noter-ismi')||'',noterNo:gv('ii-noter-no')||'',aciklama:gv('ii-aciklama')||'',
@@ -14221,11 +14430,21 @@ function renderCariListe(){
   const srch=(gv('srch-cari-liste')||'').toLowerCase();
   const filter=window.cariFilter||'all';
   // Aktif buton vurgula
+  const btnStyles={
+    'all':      {base:'btn btn-outline btn-sm', active:'btn btn-primary btn-sm'},
+    'borclu':   {base:'btn btn-warning btn-sm', active:'btn btn-warning btn-sm'},
+    'alacakli': {base:'btn btn-success btn-sm', active:'btn btn-success btn-sm'},
+    'ikisi':    {base:'btn btn-info btn-sm',    active:'btn btn-info btn-sm'},
+  };
   ['all','borclu','alacakli','ikisi'].forEach(f=>{
     const btn=byId('clf-'+f);
     if(!btn)return;
-    btn.style.opacity=(filter===f)?'1':'0.55';
-    btn.style.fontWeight=(filter===f)?'800':'500';
+    const isActive=(filter===f);
+    btn.style.opacity=isActive?'1':'0.5';
+    btn.style.fontWeight=isActive?'800':'400';
+    btn.style.outline=isActive?'3px solid currentColor':'none';
+    btn.style.outlineOffset=isActive?'2px':'0';
+    btn.style.transform=isActive?'scale(1.05)':'scale(1)';
   });
   let list=(DB.musteriler||[]).map(m=>{
     const cs=DB.cariler.filter(c=>c.musteriId===m.id);
@@ -14314,11 +14533,12 @@ function renderTahsilatListe(){
     return;
   }
   const DURUM_CFG={
-    'bekliyor':      {lbl:'⏳ Bekliyor',   c:'var(--warning)'},
-    'tahsil-edildi': {lbl:'✅ Tahsil',     c:'var(--success)'},
-    'gecikti':       {lbl:'⚠️ Gecikti',   c:'var(--danger)'},
-    'kismi':         {lbl:'🔸 Kısmi',     c:'var(--info)'},
-    'iptal':         {lbl:'❌ İptal',      c:'var(--muted)'},
+    'bekliyor':      {lbl:'⏳ Bekliyor',          c:'var(--warning)'},
+    'tahsil-edildi': {lbl:'✅ Tahsil',             c:'var(--success)'},
+    'gecikti':       {lbl:'⚠️ Gecikti',           c:'var(--danger)'},
+    'kismi':         {lbl:'🔸 Kısmi',             c:'var(--info)'},
+    'mk-iade-odendi':{lbl:'💚 MK İade Ödendi',    c:'var(--success)'},
+    'iptal':         {lbl:'❌ İptal',              c:'var(--muted)'},
   };
   el.innerHTML=`<div style="overflow-x:auto;"><table id="tbl-tahsilat-liste2" style="width:100%;border-collapse:collapse;font-size:12px;">
     <thead><tr style="background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;">
