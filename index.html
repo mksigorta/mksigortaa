@@ -7024,21 +7024,8 @@ function loadTahsilatInfo(){
     thDoldurIptalSelect();
     return;
   }
-  // Son poliçeyi otomatik çek (varsayılan)
-  const ps=DB.policeler.filter(p=>p.musteriId===mid);
-  if(ps.length){
-    const p=ps[ps.length-1];const a=getAcente(p.acenteId);
-    sv('th-tanzim',fmtD(p.tanzim));sv('th-baslama',fmtD(p.baslama));sv('th-bitis',fmtD(p.bitis));
-    sv('th-polno',p.polNo||'');sv('th-sirket',p.sirket||'');sv('th-plaka',p.plaka||'');
-    sv('th-acente',a?a.ad:'-');
-    sv('th-acoran',(p.oran||0)+'%');sv('th-ackomisyon','₺'+fmt(p.ackomisyon));
-    sv('th-net','₺'+fmt(p.net));sv('th-brut','₺'+fmt(p.brut));
-  }
-  // IBAN: düzenleme modunda mevcut değeri koru, yoksa müşteriden getir
-  if(!gv('th-iban')){
-    const m=getMusteri(mid);
-    if(m&&m.iban)sv('th-iban',m.iban);
-  }
+  // Müşteri seçilince sadece poliçe/iptal dropdownları dolar, alanlar otomatik doldurulmaz
+  // Poliçe seçilince thPoliceSecildi() ile bilgiler çekilir
   thDoldurPoliceSelect();
   thDoldurIptalSelect();
 }
