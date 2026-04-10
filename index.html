@@ -2434,7 +2434,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     </div>
     <div class="table-wrap">
       <table id="tbl-pt-extra">
-        <thead><tr><th>#</th><th>Müşteri / Başlama / Bitiş</th><th>Poliçe No / Şirket / Plaka</th><th>Belge Seri No / Açıklama</th><th>İşlem</th></tr></thead>
+        <thead><tr><th>#</th><th>Müşteri / Başlama / Bitiş</th><th>Poliçe No / Şirket / Plaka</th><th>Belge Seri No</th><th>İşlem</th></tr></thead>
         <tbody id="tbody-pt-extra"></tbody>
       </table>
     </div>
@@ -6719,15 +6719,18 @@ function savePolice(){
     docs:{ruhsat:_peDocsTemp.ruhsat?{..._peDocsTemp.ruhsat}:null,tc:_peDocsTemp.tc?{..._peDocsTemp.tc}:null,pdf:_peDocsTemp.pdf?{..._peDocsTemp.pdf}:null}
   };
 
-  if(eid){
+  const _isGuncelleme = !!eid;
+  if(_isGuncelleme){
     const idx=DB.policeler.findIndex(p=>p.id===eid);
+    // Güncelleme: önce bu poliçeye ait TÜM cari kayıtları sil (çift kayıt önlemi)
     if(idx>-1){DB.policeler[idx]=obj;DB.cariler=DB.cariler.filter(c=>c.policeId!==eid);}
     else DB.policeler.push(obj);
   }else{
     DB.policeler.push(obj);
   }
 
-  // Cari – Borç her zaman girer
+  // Cari – Borç: yalnızca YENİ kayıtta veya güncelleme+brüt değişmişse ekle
+  // Güncelleme durumunda cariler zaten silindi, yeniden oluştur
   DB.cariler.push({
     id:uid(),musteriId,policeId:obj.id,
     tarih:obj.tanzim||new Date().toISOString().substr(0,10),
@@ -6736,8 +6739,8 @@ function savePolice(){
     aciklama:'Poliçe borcu – '+obj.polNo
   });
 
-  // Ödendi/nakit/kredi/havale → alacak gir
-  if(odemeDurum==='odendi'||odemeTip==='nakit'||odemeTip==='kredi'||odemeTip==='havale'){
+  // Ödendi/nakit/kredi/havale → alacak gir (taksitli ise ekleme — çakışma önlemi)
+  if(odemeDurum!=='taksitli'&&(odemeDurum==='odendi'||odemeTip==='nakit'||odemeTip==='kredi'||odemeTip==='havale')){
     DB.cariler.push({
       id:uid(),musteriId,policeId:obj.id,
       tarih:obj.tanzim||new Date().toISOString().substr(0,10),
@@ -6844,6 +6847,7 @@ function renderPoliceListesi(){
       </td>
       <td style="display:flex;gap:4px;flex-wrap:wrap;" onclick="event.stopPropagation()">
         <button class="btn-act btn-act-success" onclick='event.stopPropagation();detayPolice("${p.id}")'>👁️ Detay</button>
+        ${p.aciklama?`<button class="btn-act btn-act-warning" onclick='event.stopPropagation();showAciklamaPopup(this,"${p.id}")' title="Açıklama">💬</button>`:''}
         <button class="btn-act btn-act-wa" onclick='event.stopPropagation();waTakipPolice("${p.musteriId}","${p.id}")' style="background:#25d366;color:#fff;border-color:#25d366;">💬 WA</button>
         <button class="btn-act btn-act-primary" onclick='event.stopPropagation();editPolice("${p.id}")'>✏️ Düzenle</button>
         <button class="btn-act btn-act-danger" onclick='event.stopPropagation();delPolice("${p.id}")'>🗑️ Sil</button>
@@ -7961,42 +7965,32 @@ function openPoliceDocsModal(id){
   if(modal) modal.style.display='flex';
 }
 function showAciklamaPopup(btn, policeId){
-  const old = document.getElementById('aciklama-popup');
-  if(old){ old.remove(); if(old._policeId===policeId) return; }
   const p = getPolice(policeId);
   if(!p || !p.aciklama) return;
-  const popup = document.createElement('div');
-  popup.className = 'aciklama-popup';
-  popup.id = 'aciklama-popup';
-  popup._policeId = policeId;
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'aciklama-popup-close';
-  closeBtn.textContent = '✕';
-  closeBtn.onclick = function(){ popup.remove(); };
-  const title = document.createElement('div');
-  title.className = 'aciklama-popup-title';
-  title.textContent = '💬 Açıklama';
-  const body = document.createElement('div');
-  body.textContent = p.aciklama || '';
-  popup.appendChild(closeBtn);
-  popup.appendChild(title);
-  popup.appendChild(body);
-  document.body.appendChild(popup);
-  const rect = btn.getBoundingClientRect();
-  let left = rect.left;
-  if(left + 300 > window.innerWidth - 10) left = window.innerWidth - 310;
-  let top = rect.bottom + 6;
-  if(top + 120 > window.innerHeight) top = rect.top - 130;
-  popup.style.left = Math.max(10,left) + 'px';
-  popup.style.top = Math.max(10,top) + 'px';
-  setTimeout(function(){
-    document.addEventListener('click', function handler(e){
-      if(!popup.contains(e.target) && e.target !== btn){
-        if(document.getElementById('aciklama-popup')) popup.remove();
-        document.removeEventListener('click', handler);
-      }
-    });
-  }, 10);
+  const m = getMusteri(p.musteriId);
+  const satirlar = p.aciklama.split('\n').filter(l=>l.trim())
+    .map(l=>`<div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.6;color:var(--text);">${l}</div>`)
+    .join('') || '<div style="font-size:13px;color:var(--muted);">—</div>';
+  const html=`<div style="padding:0 2px;">
+    <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Poliçe</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:12px;color:var(--muted);">Müşteri</span>
+      <span style="font-size:13px;font-weight:700;color:var(--info);">${m?m.ad:'-'}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:12px;color:var(--muted);">Poliçe No</span>
+      <span style="font-size:13px;font-weight:700;font-family:monospace;">${p.polNo||'-'}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:12px;color:var(--muted);">Şirket</span>
+      <span style="font-size:13px;font-weight:500;">${p.sirket||'-'}</span>
+    </div>
+    <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 6px;">Açıklama</div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 12px;">${satirlar}</div>
+  </div>`;
+  openDrawer('💬 Poliçe Açıklaması', html,
+    `<button class="btn btn-outline btn-sm" onclick="closeDrawer()">Kapat</button>
+     <button class="btn btn-primary btn-sm" onclick="closeDrawer();detayPolice('${p.id}')">👁️ Tam Detay</button>`);
 }
 
 function closeDocsModal(){
@@ -10473,7 +10467,7 @@ function renderDashboard(){
     </div>`;
   }).join(''):'<div style="color:var(--muted);font-size:12px;padding:8px;">Bitimine 30 gün kalan poliçe yok.</div>';
 
-  const recent=DB.tahsilatlar.slice(-6).reverse();
+  const recent=DB.tahsilatlar.slice().sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||'')).slice(0,6);
   const recEl=byId('dash-recent');
   recEl.innerHTML=recent.length?recent.map(t=>{
     const m=getMusteri(t.musteriId);
@@ -10529,7 +10523,7 @@ function renderDashboard(){
                   <td style="padding:7px 10px;font-weight:600;">${m?m.ad:'-'}</td>
                   <td style="padding:7px 10px;font-family:monospace;font-size:11px;font-weight:700;color:var(--primary);">${p.polNo||'-'}</td>
                   <td style="padding:7px 10px;font-weight:600;">${p.sirket||'-'}</td>
-                  <td style="padding:7px 10px;color:var(--muted);font-size:11px;">${p.poltur||p.islemtur||'-'}</td>
+                  <td style="padding:7px 10px;color:var(--muted);font-size:11px;">${p.polTur||p.poltur||p.islemTur||p.islemtur||'-'}</td>
                   <td style="padding:7px 10px;font-size:11px;">${p.plaka||'-'}</td>
                   <td style="padding:7px 10px;color:var(--muted);font-size:11px;">${fmtD(p.tanzim)||'-'}</td>
                   <td style="padding:7px 10px;color:var(--info);font-size:11px;">${fmtD(p.baslama)||'-'}</td>
@@ -13771,9 +13765,41 @@ function saveDB(){
     localStorage.setItem(DBKEY, JSON.stringify(DB));
   }catch(e){
     if(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||(e.code&&e.code===22)){
-      toast('⚠️ Depolama alanı doldu! Eski yedekleri silin veya Supabase kullanın.','error');
       console.error('[saveDB] localStorage quota aşıldı:', e);
+      if(_supabaseEnabled){
+        // Supabase aktifse oraya kaydet ve kullanıcıyı bilgilendir
+        toast('⚠️ Yerel depo doldu — veriler buluta kaydediliyor.','');
+        saveDBToSupabase();
+        return;
+      }
+      // Supabase yoksa acil uyarı modalı göster
+      const _qModal=document.createElement('div');
+      _qModal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;align-items:center;justify-content:center;';
+      _qModal.innerHTML=`<div style="background:var(--card);border-radius:var(--radius);padding:28px 24px;max-width:380px;width:90%;box-shadow:var(--shadow-lg);border:2px solid var(--danger);">
+        <div style="font-size:22px;margin-bottom:10px;">⚠️</div>
+        <div style="font-weight:800;font-size:15px;color:var(--danger);margin-bottom:8px;">Depolama Alanı Doldu!</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:16px;">
+          Tarayıcı belleği (~5MB) doldu. <b>Son işlem kaydedilemedi.</b><br><br>
+          Çözüm seçenekleri:<br>
+          • Ayarlar → Veri Yönetimi → JSON İndir ile yedeği alın<br>
+          • Ayarlar → Supabase bağlantısı ile buluta geçin<br>
+          • Eski yedekleri silin
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="showPage('ayarlar');setTimeout(()=>showAyarlarTab('veri'),100);this.closest('[style*=fixed]').remove();"
+            style="flex:1;padding:9px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-size:13px;">
+            📦 Veri Yönetimi
+          </button>
+          <button onclick="this.closest('[style*=fixed]').remove();"
+            style="padding:9px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:13px;">
+            Kapat
+          </button>
+        </div>
+      </div>`;
+      document.body.appendChild(_qModal);
+      return;
     }
+    console.error('[saveDB] Bilinmeyen kayıt hatası:', e);
   }
   if(_supabaseEnabled){ saveDBToSupabase(); }
 }
@@ -14349,12 +14375,12 @@ function renderTopluIslem(){
     [...new Set((DB.policeler||[]).map(p=>p.sirket).filter(Boolean))].forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sirketSel.appendChild(o);});
   }
   if(turSel&&turSel.options.length<=1){
-    [...new Set((DB.policeler||[]).map(p=>p.poltur).filter(Boolean))].forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;turSel.appendChild(o);});
+    [...new Set((DB.policeler||[]).map(p=>p.polTur||p.poltur||p.islemTur||p.islemtur).filter(Boolean))].forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;turSel.appendChild(o);});
   }
   const list=(DB.policeler||[]).filter(p=>{
     const m=getMusteri(p.musteriId);
     if(fs&&p.sirket!==fs)return false;
-    if(ft&&p.poltur!==ft)return false;
+    if(ft&&(p.polTur||p.poltur||p.islemTur||p.islemtur)!==ft)return false;
     if(!q)return true;
     return (m&&m.ad.toLowerCase().includes(q))||(p.polNo||'').toLowerCase().includes(q)||(p.plaka||'').toLowerCase().includes(q);
   });
@@ -14367,7 +14393,7 @@ function renderTopluIslem(){
       <td style="font-weight:600;">${m?m.ad:'-'}</td>
       <td style="font-family:monospace;font-size:11px;">${p.polNo||'-'}</td>
       <td>${p.sirket||'-'}</td>
-      <td>${p.poltur||'-'}</td>
+      <td>${p.polTur||p.poltur||p.islemTur||p.islemtur||'-'}</td>
       <td style="font-size:11px;">${fmtD(p.baslama)||'-'}</td>
       <td style="font-size:11px;">${fmtD(p.bitis)||'-'}</td>
       <td style="font-weight:700;color:var(--accent);">₺${fmt(p.brut)}</td>
@@ -14409,7 +14435,7 @@ function topluExcelIndir(){
   if(!_topluSecilen.size){toast('Seçim yok','error');return;}
   const list=DB.policeler.filter(p=>_topluSecilen.has(p.id));
   let csv='Müşteri;Poliçe No;Şirket;Tür;Başlama;Bitiş;Net;Brüt\n';
-  list.forEach(p=>{const m=getMusteri(p.musteriId);csv+=`"${m?m.ad:'-'}";"${p.polNo||''}";"${p.sirket||''}";"${p.poltur||''}";"${fmtD(p.baslama)||''}";"${fmtD(p.bitis)||''}";${p.net||0};${p.brut||0}\n`;});
+  list.forEach(p=>{const m=getMusteri(p.musteriId);csv+=`"${m?m.ad:'-'}";"${p.polNo||''}";"${p.sirket||''}";"${p.polTur||p.poltur||p.islemTur||p.islemtur||''}";"${fmtD(p.baslama)||''}";"${fmtD(p.bitis)||''}";${p.net||0};${p.brut||0}\n`;});
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='secili_policeler.csv';
   document.body.appendChild(a);a.click();document.body.removeChild(a);toast('İndirildi','success');
@@ -14424,7 +14450,7 @@ function topluYazdir(){
   td{padding:7px;border:1px solid #ddd;}@page{margin:12mm;}</style></head><body>
   <h3>Seçili Poliçeler (${list.length} adet)</h3>
   <table><thead><tr><th>Müşteri</th><th>Poliçe No</th><th>Şirket</th><th>Tür</th><th>Başlama</th><th>Bitiş</th><th>Net</th><th>Brüt</th></tr></thead>
-  <tbody>${list.map(p=>{const m=getMusteri(p.musteriId);return `<tr><td>${m?m.ad:'-'}</td><td>${p.polNo||'-'}</td><td>${p.sirket||'-'}</td><td>${p.poltur||'-'}</td><td>${fmtD(p.baslama)||'-'}</td><td>${fmtD(p.bitis)||'-'}</td><td>₺${fmt(p.net)}</td><td>₺${fmt(p.brut)}</td></tr>`;}).join('')}</tbody></table>
+  <tbody>${list.map(p=>{const m=getMusteri(p.musteriId);return `<tr><td>${m?m.ad:'-'}</td><td>${p.polNo||'-'}</td><td>${p.sirket||'-'}</td><td>${p.polTur||p.poltur||p.islemTur||p.islemtur||'-'}</td><td>${fmtD(p.baslama)||'-'}</td><td>${fmtD(p.bitis)||'-'}</td><td>₺${fmt(p.net)}</td><td>₺${fmt(p.brut)}</td></tr>`;}).join('')}</tbody></table>
   <script>window.onload=function(){window.print();}<\/script></body></html>`);
   win.document.close();
 }
@@ -14434,6 +14460,89 @@ function topluYazdir(){
 // ══════════════════════════════════════════════════════
 function renderBelgeArama(){ /* sayfa yüklenince hazır */ }
 function belgeSrchTemizle(){sv('belge-srch-input','');sv('belge-srch-tur','');sv('belge-srch-t1','');sv('belge-srch-t2','');belgeArama();}
+
+function belgeAramaTiklandi(idx){
+  const s=(window._belgeAramaSonuclar||[])[idx];
+  if(!s)return;
+  const d=s.data;
+  switch(s.tur){
+    case 'police':
+      detayPolice(d.id);
+      break;
+    case 'musteri':
+      openMusteriDetay(d.id);
+      break;
+    case 'iptal':
+      detayIptal(d.id);
+      break;
+    case 'teklif':
+      detayTeklif(d.id);
+      break;
+    case 'not':{
+      const mN=getMusteri(d.musteriId);
+      const notBody=`
+        <div style="padding:0 2px;">
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Not Bilgileri</div>
+          ${d.baslik?`<div style="font-size:15px;font-weight:700;margin-bottom:10px;color:var(--text);">${d.baslik}</div>`:''}
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Tarih</span>
+            <span style="font-size:13px;font-weight:500;">${fmtD(d.tarih)||'-'}</span>
+          </div>
+          ${mN?`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Müşteri</span>
+            <span style="font-size:13px;font-weight:700;color:var(--info);cursor:pointer;" onclick="openMusteriDetay('${mN.id}')">${mN.ad}</span>
+          </div>`:''}
+          ${d.icerik?`
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 6px;">İçerik</div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px;font-size:13px;line-height:1.7;white-space:pre-wrap;color:var(--text);">${d.icerik}</div>
+          `:''}
+        </div>`;
+      openDrawer('\u{1F4DD} '+(d.baslik||'Not Detayı'), notBody,
+        `<button class="btn btn-outline btn-sm" onclick="closeDrawer()">Kapat</button>`);
+      break;
+    }
+    case 'iletisim':{
+      const mI=getMusteri(d.musteriId);
+      const KANAL_ICO={telefon:'\u{1F4DE}',email:'\u{1F4E7}',whatsapp:'\u{1F4AC}',yuzyuze:'\u{1F91D}',sms:'\u{1F4F1}'};
+      const iBody=`
+        <div style="padding:0 2px;">
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">İletişim Bilgileri</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Tarih</span>
+            <span style="font-size:13px;font-weight:500;">${fmtD(d.tarih)||'-'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Kanal</span>
+            <span style="font-size:13px;font-weight:700;">${KANAL_ICO[d.kanal]||''} ${d.kanal||'-'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Konu</span>
+            <span style="font-size:13px;font-weight:700;">${d.konu||'-'}</span>
+          </div>
+          ${mI?`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Müşteri</span>
+            <span style="font-size:13px;font-weight:700;color:var(--info);cursor:pointer;" onclick="openMusteriDetay('${mI.id}')">${mI.ad}</span>
+          </div>`:''}
+          ${d.sonuc?`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Sonuç</span>
+            <span style="font-size:13px;font-weight:500;">${d.sonuc}</span>
+          </div>`:''}
+          ${d.notlar?`
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 6px;">Notlar</div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px;font-size:13px;line-height:1.7;white-space:pre-wrap;color:var(--text);">${d.notlar}</div>
+          `:''}
+        </div>`;
+      openDrawer('\u{1F4DE} İletişim Detayı', iBody,
+        `<button class="btn btn-outline btn-sm" onclick="closeDrawer()">Kapat</button>`);
+      break;
+    }
+    case 'belge':
+      detayIptal(d.id);
+      break;
+    default:
+      toast('Bu kayıt türü için detay görüntüleme mevcut değil.','');
+  }
+}
 function belgeArama(){
   const q=(gv('belge-srch-input')||'').toLowerCase().trim();
   const tur=gv('belge-srch-tur')||'';
@@ -14449,10 +14558,10 @@ function belgeArama(){
   if(!tur||tur==='police'){
     (DB.policeler||[]).forEach(p=>{
       const m=getMusteri(p.musteriId);
-      const hay=(m?m.ad+' '+m.tc+' ':'')+p.polNo+' '+(p.sirket||'')+' '+(p.poltur||'')+' '+(p.plaka||'')+' '+(p.aciklama||'');
+      const hay=(m?m.ad+' '+m.tc+' ':'')+p.polNo+' '+(p.sirket||'')+' '+(p.polTur||p.poltur||p.islemTur||p.islemtur||'')+' '+(p.plaka||'')+' '+(p.aciklama||'');
       if((!q||hay.toLowerCase().includes(q))&&inDate(p.tanzim))
         sonuclar.push({tur:'police',ikon:'📋',renk:'var(--gold)',baslik:(m?m.ad:'?')+' — '+p.polNo,
-          alt:(p.sirket||'')+' · '+(p.poltur||'')+' · ₺'+fmt(p.brut),tarih:p.tanzim,data:p,musteri:m});
+          alt:(p.sirket||'')+' · '+(p.polTur||p.poltur||p.islemTur||p.islemtur||'')+' · ₺'+fmt(p.brut),tarih:p.tanzim,data:p,musteri:m});
     });
   }
   if(!tur||tur==='musteri'){
@@ -14510,18 +14619,26 @@ function belgeArama(){
   sonuclar.sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
 
   el.innerHTML=sonuclar.length
-    ?`<div style="font-size:11px;color:var(--muted);margin-bottom:10px;padding:0 4px;">${sonuclar.length} sonuç bulundu</div>`
-      +sonuclar.map(s=>`
-      <div style="display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;"
-        onmouseover="this.style.background='color-mix(in srgb,var(--accent) 5%,transparent)'" onmouseout="this.style.background=''">
-        <div style="width:32px;height:32px;border-radius:8px;background:color-mix(in srgb,${s.renk} 15%,transparent);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">${s.ikon}</div>
+    ?`<div style="font-size:11px;color:var(--muted);margin-bottom:10px;padding:0 4px;">${sonuclar.length} sonuç bulundu — <span style="color:var(--accent);font-weight:700;">detay için üstüne tıklayın</span></div>`
+      +sonuclar.map((s,_si)=>`
+      <div style="display:flex;gap:10px;padding:11px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s,border-left .1s;border-left:3px solid transparent;"
+        onmouseover="this.style.background='color-mix(in srgb,var(--accent) 7%,transparent)';this.style.borderLeftColor='var(--accent)';"
+        onmouseout="this.style.background='';this.style.borderLeftColor='transparent';"
+        onclick="belgeAramaTiklandi(${_si})">
+        <div style="width:34px;height:34px;border-radius:9px;background:color-mix(in srgb,${s.renk} 15%,transparent);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">${s.ikon}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:12px;font-weight:700;">${hl(s.baslik)}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${hl(s.alt)}</div>
+          <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${hl(s.baslik)}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${hl(s.alt)}</div>
         </div>
-        <div style="font-size:10px;color:var(--muted);flex-shrink:0;">${fmtD(s.tarih)||''}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+          <div style="font-size:10px;color:var(--muted);">${fmtD(s.tarih)||''}</div>
+          <div style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:color-mix(in srgb,${s.renk} 12%,transparent);color:${s.renk};">${
+            {police:'POLİÇE',musteri:'MÜŞTERİ',iptal:'İPTAL',teklif:'TEKLİF',not:'NOT',iletisim:'İLETİŞİM',belge:'BELGE'}[s.tur]||s.tur.toUpperCase()
+          }</div>
+        </div>
       </div>`).join('')
     :'<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:28px;">🔍</div><div style="margin-top:8px;font-size:13px;">Sonuç bulunamadı</div></div>';
+  window._belgeAramaSonuclar = sonuclar;
 }
 
 // ══════════════════════════════════════════════════════
@@ -15441,7 +15558,7 @@ function renderPtEkstraListe(){
       <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);width:38px;">#</th>
       <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Müşteri / Başlama / Bitiş</th>
       <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Poliçe No / Şirket / Plaka</th>
-      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Belge Seri No / Açıklama</th>
+      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Belge Seri No</th>
       <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);min-width:120px;">İşlem</th>
     </tr></thead>
     <tbody>${liste.map((t,i)=>{
@@ -15466,13 +15583,14 @@ function renderPtEkstraListe(){
           <div style="font-size:11px;font-weight:700;color:var(--text);">${t.plaka||'-'}</div>
         </td>
         <td style="padding:7px 10px;">
-          <div style="font-size:11px;color:var(--muted);">${t.belge||'-'}</div>
-          ${t.aciklama?`<div style="font-size:10px;color:var(--muted);margin-top:2px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${t.aciklama}">${t.aciklama}</div>`:''}
+          <div style="font-size:11px;font-weight:600;color:var(--text);">${t.belge||'-'}</div>
         </td>
         <td style="padding:7px 10px;text-align:center;white-space:nowrap;" onclick="event.stopPropagation()">
           <div style="display:flex;gap:3px;align-items:center;justify-content:center;flex-wrap:nowrap;">
             <button onclick="detayPtExtra('${t.id}')" title="Detay"
               style="border:none;background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">👁️</button>
+            ${t.aciklama?`<button onclick="event.stopPropagation();showPtAciklama('${t.id}')" title="Açıklama"
+              style="border:none;background:color-mix(in srgb,var(--warning) 15%,transparent);color:var(--warning);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">💬</button>`:''}
             <button onclick="waEkstraTakip('${t.musteriId}','${t.id}')" title="WhatsApp"
               style="border:none;background:#25d366;color:#fff;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">💬</button>
             <button onclick="editPtExtra('${t.id}')" title="Düzenle"
@@ -15484,6 +15602,34 @@ function renderPtEkstraListe(){
       </tr>`;
     }).join('')}</tbody>
   </table></div>`;
+}
+
+function showPtAciklama(id){
+  const t=DB.ptExtras.find(x=>x.id===id); if(!t||!t.aciklama)return;
+  const m=getMusteri(t.musteriId);
+  const satirlar=t.aciklama.split('\n').filter(l=>l.trim())
+    .map(l=>`<div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.6;color:var(--text);">${l}</div>`)
+    .join('')||'<div style="font-size:13px;color:var(--muted);">—</div>';
+  const html=`<div style="padding:0 2px;">
+    <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Kayıt Bilgileri</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:12px;color:var(--muted);">Müşteri</span>
+      <span style="font-size:13px;font-weight:700;color:var(--info);">${m?m.ad:'-'}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:12px;color:var(--muted);">Poliçe No</span>
+      <span style="font-size:13px;font-weight:700;font-family:monospace;">${t.polNo||'-'}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:12px;color:var(--muted);">Belge Seri</span>
+      <span style="font-size:13px;font-weight:500;">${t.belge||'-'}</span>
+    </div>
+    <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 6px;">Açıklama</div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 12px;">${satirlar}</div>
+  </div>`;
+  openDrawer('💬 Ekstra Kayıt Açıklaması', html,
+    `<button class="btn btn-outline btn-sm" onclick="closeDrawer()">Kapat</button>
+     <button class="btn btn-primary btn-sm" onclick="closeDrawer();detayPtExtra('${t.id}')">👁️ Tam Detay</button>`);
 }
 
 function detayPtExtra(id){
