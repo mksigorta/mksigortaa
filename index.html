@@ -888,42 +888,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
 .btn-act-warning{background:var(--warning);color:#fff;}
 .btn-act-wa{background:#25d366;color:#fff;}
 .btn-act-accent{background:var(--accent);color:#fff;}
-.btn-act-tel{background:#16a34a;color:#fff;}
-.btn-act-sms{background:#0ea5e9;color:#fff;}
-
-/* ── Telefon Entegrasyonu ── */
-.tel-link{
-  display:inline-flex;align-items:center;gap:4px;
-  color:var(--success);font-weight:600;text-decoration:none;
-  border-radius:6px;padding:2px 6px;
-  background:color-mix(in srgb,var(--success) 10%,transparent);
-  transition:background .15s;
-  -webkit-tap-highlight-color:transparent;
-}
-.tel-link:hover{background:color-mix(in srgb,var(--success) 18%,transparent);}
-.tel-link:active{transform:scale(.97);}
-
-/* Telefon hızlı aksiyon paneli */
-.tel-action-bar{
-  display:flex;gap:6px;flex-wrap:wrap;align-items:center;
-  padding:10px 14px;background:color-mix(in srgb,var(--success) 8%,transparent);
-  border:1px solid color-mix(in srgb,var(--success) 25%,transparent);
-  border-radius:10px;margin-bottom:10px;
-}
-.tel-action-btn{
-  display:inline-flex;align-items:center;gap:5px;padding:8px 14px;
-  border:none;border-radius:8px;font-size:12px;font-weight:700;
-  cursor:pointer;text-decoration:none;transition:opacity .15s,transform .1s;
-  -webkit-tap-highlight-color:transparent;
-}
-.tel-action-btn:active{transform:scale(.96);}
-.tab-call{background:#16a34a;color:#fff;}
-.tab-sms{background:#0ea5e9;color:#fff;}
-.tab-wap{background:#25d366;color:#fff;}
-.tab-copy{background:var(--primary);color:#fff;}
-@media(max-width:600px){
-  .tel-action-btn{padding:10px 12px;font-size:11px;}
-}
 </style>
 </head>
 <body>
@@ -970,7 +934,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="logo-icon">MK</div>
       <div><div class="logo-brand">MK SİGORTA</div><div class="logo-sub">YÖNETİM SİSTEMİ</div></div>
     </div>
-    <div class="logo-tel">📞 <a href="tel:05551704627" style="color:rgba(255,255,255,.55);font-weight:500;text-decoration:none;"><span>0555 170 46 27</span></a></div>
+    <div class="logo-tel">📞 <span>0555 170 46 27</span></div>
     <div class="logo-user">👤 Hoş geldiniz, <strong id="sb-username">admin</strong></div>
   </div>
   <nav>
@@ -5144,14 +5108,12 @@ function renderMusteriler(){
   tb.innerHTML=list.map(m=>`<tr>
     <td><b style="cursor:pointer;color:var(--info);" onclick="openMusteriDetay(this.dataset.mid)" data-mid="${m?m.id:''}">${m.ad}</b>${m.yetkili&&m.yetkili!==m.ad?`<div style="font-size:10px;color:var(--muted);">Yetkili: ${m.yetkili}</div>`:''}</td>
     <td>${tipBadge[m.tip||'bireysel']||tipBadge.bireysel}</td>
-    <td>${m.tel?`<a class="tel-link" href="tel:${m.tel.replace(/\s/g,'')}">📞 ${m.tel}</a>`:'-'}</td><td>${m.sehir||'-'}</td>
+    <td>${m.tel||'-'}</td><td>${m.sehir||'-'}</td>
     <td>${m.tip==='kurumsal'||m.tip==='kobi'?'VN: '+(m.vergino||'-'):'TC: '+(m.tc||'-')}</td>
     <td>${fmtD(m.dogum)}</td><td>${m.aciklama||'-'}</td>
     <td style="display:flex;gap:4px;flex-wrap:wrap;">
         <button class="btn-act btn-act-success" onclick='openMusteriDetay("${m.id}")'>👁️ Detay</button>
         <button class="btn-act btn-act-primary" onclick='editMusteri("${m.id}")'>✏️ Düzenle</button>
-        ${m.tel?`<a class="btn-act tab-call" href="tel:${m.tel.replace(/\s/g,'')}">📞 Ara</a>`:''}
-        ${m.tel?`<button class="btn-act tab-sms" onclick='telSmsGonder("${m.id}")'>💬 SMS</button>`:''}
         <button class="btn-act btn-act-wa" onclick='waMusteri("${m.id}")'>💬 WA</button>
         <button class="btn-act btn-act-danger" onclick='delMusteri("${m.id}")'>🗑️ Sil</button>
       </td>
@@ -5265,7 +5227,7 @@ function openMusteriDetay(id){
         <div style="font-size:20px;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;line-height:1.2;">${m.ad}</div>
         <div style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
           <span style="font-size:10px;font-weight:700;padding:2px 10px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;">${tipLabel[mTip]||mTip}</span>
-          ${m.tel?`<a class="tel-link" href="tel:${m.tel.replace(/\s/g,'')}" style="font-size:11px;background:rgba(255,255,255,.2);color:#fff;">📞 ${m.tel}</a>`:''}
+          ${m.tel?`<span style="font-size:11px;color:rgba(255,255,255,.8);">📞 ${m.tel}</span>`:''}
           ${m.sehir?`<span style="font-size:11px;color:rgba(255,255,255,.8);">📍 ${m.sehir}</span>`:''}
         </div>
       </div>
@@ -5295,17 +5257,10 @@ function openMusteriDetay(id){
   <!-- KİŞİSEL BİLGİLER -->
   <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;">
     <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:6px;">🪪 Kişisel Bilgiler</div>
-    ${m.tel?`<div class="tel-action-bar">
-      <span style="font-size:12px;font-weight:700;color:var(--success);">📞 ${m.tel}</span>
-      <a class="tel-action-btn tab-call" href="tel:${m.tel.replace(/\s/g,'')}">📞 Ara</a>
-      <button class="tel-action-btn tab-sms" onclick='telSmsGonder("${m.id}")'>✉️ SMS</button>
-      <a class="tel-action-btn tab-wap" href="https://wa.me/9${m.tel.replace(/\D/g,'').replace(/^0/,'')}" target="_blank">💬 WhatsApp</a>
-      <button class="tel-action-btn tab-copy" onclick="navigator.clipboard.writeText('${m.tel}').then(()=>toast('Telefon kopyalandı','success'))">📋 Kopyala</button>
-    </div>`:''}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
       ${[
         {icon:'👤',label:'Ad Soyad',val:m.ad,clr:'var(--primary)'},
-        {icon:'📞',label:'Telefon',val:m.tel?`<a class="tel-link" href="tel:${m.tel.replace(/\s/g,'')}">${m.tel}</a>`:'<span style="color:var(--muted);">-</span>',clr:'var(--success)',raw:true},
+        {icon:'📞',label:'Telefon',val:m.tel||'-',clr:'var(--success)'},
         {icon:'📍',label:'Şehir',val:m.sehir||'-',clr:'var(--info)'},
         {icon:'🪪',label:'TC Kimlik',val:m.tc||'-',clr:'var(--accent)'},
         {icon:'🎂',label:'Doğum Tarihi',val:fmtD(m.dogum)||'-',clr:'var(--warning)'},
@@ -5548,8 +5503,6 @@ function openMusteriDetay(id){
   `;
   openFP('👤 '+m.ad+' – Müşteri Detayı',html,
     `<button class="btn btn-primary btn-sm" onclick='editMusteri("${m.id}");closeFP()'>✏️ Düzenle</button>
-     ${m.tel?`<a class="btn btn-success btn-sm" href="tel:${m.tel.replace(/\s/g,'')}" style="display:inline-flex;align-items:center;gap:5px;text-decoration:none;">📞 Ara</a>`:''}
-     ${m.tel?`<button class="btn btn-sm" style="background:#0ea5e9;color:#fff;" onclick='telSmsGonder("${m.id}")'>✉️ SMS</button>`:''}
      <button class="btn btn-wa btn-sm" onclick='waMusteri("${m.id}")'>💬 WhatsApp</button>
      <button class="btn btn-outline btn-sm" onclick='window.print()'>🖨️ Yazdır</button>`);
 }
@@ -5557,57 +5510,6 @@ function waMusteri(id){
   const m=getMusteri(id);if(!m)return;
   showPage('whatsapp');
   setTimeout(()=>{sv('wa-bm',id);sv('wa-btel',m.tel||'');waBorcMusteriDegis();},100);
-}
-
-// ── Telefon Entegrasyonu ──────────────────────────────────────
-function telSmsGonder(musteriId){
-  const m=getMusteri(musteriId);
-  if(!m||!m.tel){toast('Bu müşterinin telefon numarası yok','error');return;}
-  const tel=m.tel.replace(/\s/g,'');
-  // SMS şablonunu aç
-  hizliModalAc('✉️ SMS Gönder – '+m.ad,
-    `<div style="margin-bottom:14px;">
-      <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:4px;">Alıcı</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:color-mix(in srgb,var(--success) 10%,transparent);border-radius:8px;border:1px solid color-mix(in srgb,var(--success) 25%,transparent);">
-        <span style="font-size:18px;">📱</span>
-        <div>
-          <div style="font-size:12px;font-weight:700;">${m.ad}</div>
-          <a href="tel:${tel}" style="font-size:13px;font-weight:600;color:var(--success);text-decoration:none;">${m.tel}</a>
-        </div>
-      </div>
-    </div>
-    <div class="fg" style="margin-bottom:10px;">
-      <label>SMS Metni</label>
-      <textarea id="sms-metin" rows="4" placeholder="Mesajınızı yazın..." style="width:100%;box-sizing:border-box;font-size:13px;resize:vertical;">${smsSablonGetir(m)}</textarea>
-    </div>
-    <div id="sms-karakter" style="font-size:10px;color:var(--muted);text-align:right;margin-top:-6px;margin-bottom:8px;"></div>`,
-    `<button class="btn btn-outline" onclick="hizliModalKapat()" style="min-width:80px;">İptal</button>
-     <a class="btn btn-success" href="sms:${tel}?body=" id="sms-gonder-btn" style="min-width:120px;text-decoration:none;display:inline-flex;align-items:center;gap:5px;">✉️ SMS Uygulat Aç</a>`
-  );
-  setTimeout(()=>{
-    const ta=byId('sms-metin');
-    const btn=byId('sms-gonder-btn');
-    const kar=byId('sms-karakter');
-    function updateSms(){
-      const txt=ta.value;
-      kar.textContent=txt.length+' karakter';
-      btn.href='sms:'+tel+'?body='+encodeURIComponent(txt);
-    }
-    if(ta){ta.addEventListener('input',updateSms);updateSms();}
-  },100);
-}
-
-function smsSablonGetir(m){
-  return `Sayın ${m.ad}, poliçeniz hakkında görüşmek isteriz. MK Sigorta`;
-}
-
-function telAra(tel){
-  if(!tel){toast('Telefon numarası bulunamadı','error');return;}
-  window.location.href='tel:'+tel.replace(/\s/g,'');
-}
-
-function telKopyala(tel){
-  navigator.clipboard.writeText(tel).then(()=>toast('📞 Telefon kopyalandı','success'));
 }
 
 // ==============================
@@ -6979,7 +6881,7 @@ function detayPolice(id){
     <!-- MÜŞTERİ -->
     <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 6px;">Müşteri</div>
     ${_sec('Ünvanı', m?m.ad:'-', true)}
-    ${_sec('Tel 1', m&&m.tel?`<a class="tel-link" href="tel:${m.tel.replace(/\s/g,'')}">${m.tel}</a>`:'—', false, 'var(--success)', true)}
+    ${_sec('Tel 1', m&&m.tel?m.tel:'—')}
     ${_sec('GSM', m&&m.gsm?m.gsm:'—')}
     ${m&&m.tc?_sec('TC No', m.tc, false):''}
     ${m&&m.dogum?_sec('Doğum Tarihi', '🎂 '+fmtD(m.dogum), false, 'var(--warning)'):''}
@@ -7893,7 +7795,7 @@ function renderAcente(){
       }
       rows+=`<tr style="cursor:pointer;" onclick="toggleAcenteRow('${a.id}')" title="Detayları göster/gizle">
         <td><b style="color:var(--info);">${a.ad}</b> <span style="font-size:10px;color:var(--muted);" id="acente-arrow-${a.id}">▼</span></td>
-        <td>${a.tel?`<a class="tel-link" href="tel:${a.tel.replace(/\s/g,'')}" onclick="event.stopPropagation()">📞 ${a.tel}</a>`:'-'}</td><td style="font-size:11px;color:var(--muted);">${a.tarih?fmtD(a.tarih):'-'}</td><td>${a.aciklama||'-'}</td>
+        <td>${a.tel||'-'}</td><td style="font-size:11px;color:var(--muted);">${a.tarih?fmtD(a.tarih):'-'}</td><td>${a.aciklama||'-'}</td>
         <td><span style="font-weight:700;color:var(--info);">${musteriSayisi}</span><span style="font-size:10px;color:var(--muted);margin-left:3px;">kişi</span></td>
         <td style="color:var(--text);font-weight:600;">₺${fmt(topNet)}</td>
         <td style="color:var(--accent);font-weight:700;">₺${fmt(topBrut)}</td>
@@ -7903,7 +7805,6 @@ function renderAcente(){
         <td style="display:flex;gap:4px;flex-wrap:wrap;" onclick="event.stopPropagation()">
           <button style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:var(--info);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick='openAcenteDetay("${a.id}")'>👁️ Detay</button>
           <button style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:var(--warning);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick='editAcente("${a.id}")'>✏️ Düzenle</button>
-          ${a.tel?`<a href="tel:${a.tel.replace(/\s/g,'')}" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:#16a34a;color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;text-decoration:none;">📞 Ara</a>`:''}
           <button style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:transparent;color:var(--danger);border:1.5px solid var(--danger);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick='delAcente("${a.id}")'>🗑️ Sil</button>
         </td>
       </tr>
@@ -8732,8 +8633,8 @@ function renderIptal(){
     }
     if(!hasDocs) docBtns+='<span style="color:var(--muted);font-size:10px;">Belge yok</span>';
     docBtns+='</div>';
-    return '<tr style="cursor:pointer;" onclick="openMusteriDetay(\''+ ii.musteriId +'\')">'+
-      '<td><b style="color:var(--info);display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--info);flex-shrink:0;"></span>'+(m?m.ad:'-')+'</b></td>'+
+    return '<tr style="cursor:pointer;" onclick="detayIptal(\''+ ii.id +'\')">'
+      +'<td><b style="color:var(--info);display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--info);flex-shrink:0;"></span>'+(m?m.ad:'-')+'</b></td>'+
       '<td>'+(ii.polNo||'-')+'</td>'+
       '<td>'+(ii.sirket||'-')+'</td>'+
       '<td>'+fmtD(ii.iptaltarihi)+'</td>'+
@@ -8754,12 +8655,133 @@ function renderIptal(){
       '<td style="min-width:100px;">'+noterInfo+(ii.aciklama?'<div style="font-size:10px;color:var(--muted);margin-top:3px;">'+ii.aciklama+'</div>':'')+'</td>'+
       '<td style="min-width:95px;">'+docBtns+'</td>'+
       '<td style="white-space:nowrap;display:flex;gap:4px;flex-wrap:wrap;" onclick="event.stopPropagation()">'+
+        '<button class="btn-act btn-act-success" onclick=\'detayIptal("'+ii.id+'")\'>👁️ Detay</button>'+
         '<button class="btn-act btn-act-primary" onclick=\'editIptal("'+ii.id+'")\'>✏️ Düzenle</button>'+
         '<button class="btn-act btn-act-danger" onclick=\'delIptal("'+ii.id+'")\'>🗑️ Sil</button>'+
       '</td>'+
       '</tr>';
   }).join('');
 }
+// ── İPTAL DETAY DRAWER ──
+function detayIptal(id){
+  const ii = DB.iptaller.find(x=>x.id===id);
+  if(!ii) return;
+  const m  = getMusteri(ii.musteriId);
+  const a  = getAcente(ii.acenteId);
+  const ia = ii.iadAcenteId ? getAcente(ii.iadAcenteId) : null;
+  const docs = ii.docs||{};
+
+  function _row(label, val, bold, color){
+    if(val===''||val===undefined||val===null) return '';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:12px;color:var(--muted);">${label}</span>
+      <span style="font-size:13px;font-weight:${bold?700:500};color:${color||'var(--text)'};">${val}</span>
+    </div>`;
+  }
+
+  function _sec(title){
+    return `<div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 6px;">${title}</div>`;
+  }
+
+  // Belge butonları
+  let docHtml = '';
+  if(docs.senet||docs.pdf){
+    docHtml += _sec('📎 Belgeler');
+    docHtml += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;">';
+    if(docs.senet){
+      docHtml += `<div style="display:flex;flex-direction:column;gap:4px;background:color-mix(in srgb,var(--info) 8%,transparent);border:1px solid color-mix(in srgb,var(--info) 20%,transparent);border-radius:8px;padding:8px 12px;">
+        <div style="font-size:10px;font-weight:700;color:var(--info);">📄 Senet</div>
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-outline btn-xs" data-iid="${ii.id}" data-dtype="senet" data-action="preview" onclick="iptalDocBtnClick(this)">👁️ Görüntüle</button>
+          <button class="btn btn-info btn-xs" data-iid="${ii.id}" data-dtype="senet" data-action="download" onclick="iptalDocBtnClick(this)">⬇️ İndir</button>
+        </div>
+      </div>`;
+    }
+    if(docs.pdf){
+      docHtml += `<div style="display:flex;flex-direction:column;gap:4px;background:color-mix(in srgb,var(--accent) 8%,transparent);border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);border-radius:8px;padding:8px 12px;">
+        <div style="font-size:10px;font-weight:700;color:var(--accent);">📑 Poliçe PDF</div>
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-outline btn-xs" data-iid="${ii.id}" data-dtype="pdf" data-action="preview" onclick="iptalDocBtnClick(this)">👁️ Görüntüle</button>
+          <button class="btn btn-info btn-xs" data-iid="${ii.id}" data-dtype="pdf" data-action="download" onclick="iptalDocBtnClick(this)">⬇️ İndir</button>
+        </div>
+      </div>`;
+    }
+    docHtml += '</div>';
+  }
+
+  // Noter bilgisi
+  let noterHtml = '';
+  if(ii.noterIsmi||ii.noterNo){
+    noterHtml = _sec('⚖️ Noter Bilgisi');
+    if(ii.noterIsmi) noterHtml += _row('Noter İsmi', ii.noterIsmi, true);
+    if(ii.noterNo)   noterHtml += _row('Yevmiye / No', ii.noterNo, false);
+  }
+
+  const html = `<div style="padding:0 2px;">
+
+    ${_sec('🔄 İptal Bilgileri')}
+    ${_row('Müşteri', m?`<b style="color:var(--info);cursor:pointer;" onclick="openMusteriDetay('${ii.musteriId}');closeDrawer()">${m.ad} ↗</b>`:'—', true)}
+    ${_row('Poliçe No', `<span style="font-family:JetBrains Mono,monospace;font-size:12px;">${ii.polNo||'—'}</span>`, true)}
+    ${_row('Şirket', ii.sirket||'—', true)}
+    ${_row('İptal Tarihi', fmtD(ii.iptaltarihi), true, 'var(--danger)')}
+    ${_row('İptal Sebebi', ii.sebep||'—', false)}
+    ${_row('Poliçe Başlangıç', fmtD(ii.baslama), false)}
+    ${_row('Poliçe Bitiş', fmtD(ii.bitis), false)}
+    ${_row('Kullanılan Gün', (ii.kulGun||0)+' gün', false, 'var(--warning)')}
+    ${_row('Kalan Gün', (ii.kalGun||0)+' gün', false, 'var(--success)')}
+    ${a ? _row('Poliçe Acentesi', a.ad, false) : ''}
+    ${ia ? _row('İade Acentesi', ia.ad, false, 'var(--info)') : ''}
+
+    ${_sec('💰 Prim Bilgileri')}
+    ${_row('Brüt Prim', '₺'+fmt(ii.brut), true, 'var(--text)')}
+    ${_row('Net Prim', '₺'+fmt(ii.net), false)}
+    ${_row('Acente Komisyonu', '₺'+fmt(ii.acKom), false, 'var(--accent)')}
+    ${_row('Oran', (ii.oran||0)+'%', false)}
+    ${_row('Günlük Brüt', '₺'+fmt(ii.gunluk), false)}
+    ${_row('Günlük Acente', '₺'+fmt(ii.acGunluk), false)}
+
+    ${_sec('🔁 İade Hesabı')}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
+      <div style="background:color-mix(in srgb,var(--success) 10%,transparent);border:1px solid color-mix(in srgb,var(--success) 25%,transparent);border-radius:10px;padding:10px 14px;">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Şirketten İade</div>
+        <div style="font-size:16px;font-weight:800;color:var(--success);">₺${fmt(ii.gercekIade)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Çalışan: ₺${fmt(ii.gercekCalisan)}</div>
+      </div>
+      <div style="background:color-mix(in srgb,var(--warning) 10%,transparent);border:1px solid color-mix(in srgb,var(--warning) 25%,transparent);border-radius:10px;padding:10px 14px;">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Müşteriye İade (MK)</div>
+        <div style="font-size:16px;font-weight:800;color:var(--warning);">₺${fmt(ii.mkIade)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Çalışan: ₺${fmt(ii.mkCalisan)}</div>
+      </div>
+      <div style="background:color-mix(in srgb,var(--info) 10%,transparent);border:1px solid color-mix(in srgb,var(--info) 25%,transparent);border-radius:10px;padding:10px 14px;">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Acente Komisyon İadesi</div>
+        <div style="font-size:16px;font-weight:800;color:var(--info);">₺${fmt(ii.acIade)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">Ba Kalan: ₺${fmt(ii.acBaKalan)}</div>
+      </div>
+      <div style="background:color-mix(in srgb,var(--accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:10px;padding:10px 14px;">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">MK Kazanç</div>
+        <div style="font-size:16px;font-weight:800;color:var(--accent);">₺${fmt(ii.kazanc)}</div>
+      </div>
+    </div>
+    <div style="background:var(--accent);border-radius:10px;padding:12px 16px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,.8);">💎 NET MK KAZANCI</span>
+      <span style="font-size:20px;font-weight:900;color:#fff;">₺${fmt(ii.mkKazanc)}</span>
+    </div>
+
+    ${ii.aciklama ? `${_sec('📝 Açıklama')}<div style="background:var(--bg);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);border:1px solid var(--border);white-space:pre-wrap;line-height:1.6;">${ii.aciklama}</div>` : ''}
+
+    ${noterHtml}
+    ${docHtml}
+
+  </div>`;
+
+  const footer = `
+    <button class="btn btn-outline btn-sm" onclick="closeDrawer()">Kapat</button>
+    <button class="btn btn-primary btn-sm" onclick='editIptal("${ii.id}");closeDrawer()'>✏️ Düzenle</button>
+    ${m ? `<button class="btn btn-success btn-sm" onclick='openMusteriDetay("${ii.musteriId}");closeDrawer()'>Müşteri Hesabı →</button>` : ''}
+  `;
+  openDrawer('🔄 İptal & İade Detayı', html, footer);
+}
+
 // ── İPTAL BELGE FONKSİYONLARI ──
 const _iiDocsTemp = {senet:null, pdf:null};
 
@@ -10568,7 +10590,7 @@ function renderDashboard(){
               ${a.ad}
             </div>
           </td>
-          <td style="padding:9px 12px;color:var(--muted);font-size:11px;">${a.tel?`<a class="tel-link" href="tel:${a.tel.replace(/\s/g,'')}" onclick="event.stopPropagation()">📞 ${a.tel}</a>`:'—'}</td>
+          <td style="padding:9px 12px;color:var(--muted);font-size:11px;">${a.tel||'—'}</td>
           <td style="padding:9px 12px;text-align:center;">
             <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:color-mix(in srgb,var(--info) 10%,transparent);color:var(--info);">${ps.length} poliçe</span>
           </td>
@@ -13922,11 +13944,7 @@ function renderIletisim(){
         ${x.konu?`<div style="font-size:12px;font-weight:600;margin-top:2px;">${x.konu}</div>`:''}
         ${x.notlar?`<div style="font-size:11px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${x.notlar}</div>`:''}
         ${hasTakip?`<div style="font-size:10px;color:var(--warning);margin-top:3px;">🔔 Takip: ${fmtD(x.takipTarihi)}</div>`:''}
-        ${m&&m.tel?`<div style="margin-top:4px;display:flex;gap:5px;flex-wrap:wrap;">
-          <a class="tel-link" href="tel:${(m.tel||'').replace(/\s/g,'')}" style="font-size:10px;">📞 ${m.tel}</a>
-          ${(x.kanal==='telefon'||x.kanal==='sms')?`<a href="tel:${(m.tel||'').replace(/\s/g,'')}" style="font-size:10px;font-weight:700;padding:2px 8px;background:#16a34a;color:#fff;border-radius:5px;text-decoration:none;">Ara</a>`:''}
-          <a href="https://wa.me/9${(m.tel||'').replace(/\D/g,'').replace(/^0/,'')}" target="_blank" style="font-size:10px;font-weight:700;padding:2px 8px;background:#25d366;color:#fff;border-radius:5px;text-decoration:none;">WA</a>
-        </div>`:''}      </div>
+      </div>
       <div style="display:flex;gap:4px;flex-shrink:0;">
         <button class="btn btn-outline btn-xs" onclick="editIletisim('${x.id}')">✏️</button>
         <button class="btn btn-danger btn-xs" onclick="delIletisim('${x.id}')">🗑️</button>
