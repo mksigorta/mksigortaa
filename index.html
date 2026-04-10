@@ -2,7 +2,11 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#18181b">
 <title>MK SİGORTA</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -609,102 +613,234 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
 .exp-days{font-weight:700;padding:2px 8px;border-radius:20px;font-size:10.5px;}
 
 /* ══════════════════════════════════════════
-   RESPONSIVE
+   RESPONSIVE – SAMSUNG S23 TAM UYUM
+   (393×851 fiziksel, ~360dp mantıksal)
 ══════════════════════════════════════════ */
-/* ══════════════════════════════════════════
-   RESPONSIVE – MOBİL OPTİMİZASYON
-══════════════════════════════════════════ */
-@media(max-width:768px){
-  :root{--sw:0px;}
-  #sidebar{transform:translateX(-240px);width:240px;}
-  #sidebar.open{transform:translateX(0);z-index:300;}
-  #main{margin-left:0;padding:12px 10px 80px;} /* alt nav için boşluk */
-  #topbar{left:0;padding:0 12px;}
-  #hamburger{display:flex;}
 
-  /* Topbar sadeleştir */
+/* ── Mobil kart tablosu ── */
+.m-card-list{display:none;}
+.m-card-item{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:10px;
+  overflow:hidden;box-shadow:var(--shadow);
+  transition:box-shadow .15s;
+}
+.m-card-item:active{box-shadow:var(--shadow-md);}
+.m-card-head{
+  padding:11px 14px;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);
+  background:color-mix(in srgb,var(--primary) 3%,var(--card));
+}
+.m-card-avatar{
+  width:34px;height:34px;border-radius:50%;background:var(--grad-1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.m-card-name{font-size:13px;font-weight:700;color:var(--text);flex:1;line-height:1.3;}
+.m-card-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.m-card-body{padding:10px 14px;}
+.m-card-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:5px 0;border-bottom:1px solid color-mix(in srgb,var(--border) 50%,transparent);
+  font-size:12px;
+}
+.m-card-row:last-child{border-bottom:none;}
+.m-card-label{color:var(--muted);font-size:11px;font-weight:600;flex-shrink:0;margin-right:8px;}
+.m-card-value{font-weight:600;color:var(--text);text-align:right;font-size:12px;}
+.m-card-actions{
+  padding:10px 14px;display:flex;gap:6px;flex-wrap:wrap;
+  border-top:1px solid var(--border);
+  background:color-mix(in srgb,var(--bg) 60%,var(--card));
+}
+.m-card-actions .btn-act{flex:1;justify-content:center;min-width:44px;padding:8px 6px;font-size:11px;}
+.m-card-actions .btn-act-danger{border-width:1.5px;}
+
+/* İptal kart özel */
+.m-iptal-amounts{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;
+  padding:8px 14px;border-top:1px solid var(--border);
+}
+.m-amount-box{
+  background:var(--bg);border-radius:8px;padding:8px 10px;
+  border:1px solid var(--border);
+}
+.m-amount-box .lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+.m-amount-box .val{font-size:14px;font-weight:800;margin-top:2px;}
+
+@media(max-width:768px){
+  /* ─ Temel layout ─ */
+  :root{--sw:0px;}
+  #sidebar{transform:translateX(-260px);width:260px;box-shadow:none;}
+  #sidebar.open{transform:translateX(0);z-index:400;box-shadow:4px 0 32px rgba(0,0,0,.35);}
+  #main{margin-left:0;padding:10px 10px 84px;}
+  #topbar{left:0;padding:0 10px;height:52px;}
+  #hamburger{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;}
+
+  /* ─ Topbar sadeleştir ─ */
   .dt-box{display:none;}
   .topbar-uname{display:none;}
-  .topbar-user{padding:4px;}
+  .topbar-user{padding:5px;}
+  .topbar-avatar{width:30px;height:30px;font-size:11px;}
+  .page-title{font-size:13px;}
 
-  /* Kartlar */
-  .card{padding:13px 11px;margin-bottom:12px;}
-  .card-header{flex-direction:column;align-items:flex-start;gap:8px;}
-  .card-title{font-size:12px;}
+  /* ─ Kartlar ─ */
+  .card{padding:12px 12px;margin-bottom:10px;border-radius:12px;}
+  .card-header{flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .card-header .btn-sm,.card-header .btn{font-size:11px;padding:7px 11px;}
+  .card-title{font-size:13px;}
 
-  /* Stats grid – 2 kolon */
-  .stats-grid{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
-  .stat-card{padding:12px 10px;}
-  .stat-value{font-size:22px;}
+  /* ─ Stats grid – 2 kolon ─ */
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;}
+  .stat-card{padding:12px 11px;}
+  .stat-card::after{font-size:38px;}
+  .stat-value{font-size:20px;}
   .stat-label{font-size:9px;}
+  .stat-sub{font-size:9px;}
 
-  /* Shortcuts – 3lü kaydırma */
-  .shortcuts{gap:7px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
-  .sc-btn{min-width:80px;max-width:90px;padding:10px 8px;font-size:10px;flex-shrink:0;}
+  /* ─ Shortcuts kaydırmalı ─ */
+  .shortcuts{gap:6px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;-ms-overflow-style:none;}
+  .shortcuts::-webkit-scrollbar{display:none;}
+  .sc-btn{min-width:76px;max-width:84px;padding:10px 6px;font-size:9.5px;flex-shrink:0;border-radius:12px;}
   .sc-btn .sc-ico{font-size:20px;}
 
-  /* Tablolar – yatay scroll */
-  .table-wrap{border-radius:var(--radius-sm);overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  table{min-width:520px;}
-  thead th{padding:8px 10px;font-size:9.5px;}
+  /* ─ Tablo → Kart modu ─ */
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;}
+  table{min-width:600px;}
+  thead th{padding:8px 10px;font-size:9px;letter-spacing:.2px;}
   tbody td{padding:7px 10px;font-size:11.5px;}
 
-  /* Formlar – tek kolon */
-  .form-grid{grid-template-columns:1fr;}
-  .fg input,.fg select,.fg textarea{font-size:16px !important; /* iOS zoom engeli */}
+  /* Müşteri listesi → kart modu */
+  #tbl-musteriler{display:none;}
+  #m-musteri-cards{display:block;}
+
+  /* İptal listesi → kart modu */
+  #tbl-iptal{display:none;}
+  #m-iptal-cards{display:block;}
+
+  /* Ekstra takip → kart modu */
+  #tbl-pt-extra-2{display:none;}
+  #m-ekstra-cards{display:block;}
+
+  /* ─ Formlar ─ */
+  .form-grid{grid-template-columns:1fr;gap:9px;}
+  .fg input,.fg select,.fg textarea{
+    font-size:16px !important;
+    padding:10px 12px !important;
+    min-height:44px;
+  }
   .fg label{font-size:10px;}
+  .fg textarea{min-height:80px;}
 
-  /* Butonlar */
-  .btn-group{gap:6px;}
-  .btn{padding:10px 14px;font-size:12px;}
-  .btn-sm{padding:8px 12px;font-size:11px;}
-  .btn-xs{padding:5px 9px;font-size:10px;}
+  /* ─ Butonlar – büyük dokunma hedefi ─ */
+  .btn-group{gap:7px;margin-top:14px;}
+  .btn{padding:11px 16px;font-size:12px;min-height:44px;}
+  .btn-sm{padding:9px 13px;font-size:11px;min-height:40px;}
+  .btn-xs{padding:6px 10px;font-size:10px;}
+  .btn-act{padding:8px 12px;font-size:11px;min-height:38px;}
 
-  /* Search bar */
+  /* ─ Search bar ─ */
   .search-bar{flex-direction:column;gap:7px;}
-  .search-bar input,.search-bar select{width:100%;box-sizing:border-box;font-size:16px !important;}
+  .search-bar input,.search-bar select{
+    width:100%;box-sizing:border-box;
+    font-size:16px !important;min-height:44px;
+  }
 
-  /* Detail grid */
-  .detail-grid{grid-template-columns:1fr 1fr;}
+  /* ─ Filter tabs ─ */
+  .ftabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;
+    padding-bottom:6px;scrollbar-width:none;}
+  .ftabs::-webkit-scrollbar{display:none;}
+  .ftab{flex-shrink:0;font-size:10.5px;padding:7px 14px;min-height:36px;}
+
+  /* ─ Detail grid ─ */
+  .detail-grid{grid-template-columns:1fr 1fr;gap:7px;}
   .dr{padding:8px 10px;}
   .dr span{font-size:12px;}
 
-  /* Full-page overlay */
-  .fp-header{padding:10px 14px;gap:10px;}
-  .fp-title{font-size:13px;}
-  .fp-body{padding:14px 12px;}
+  /* ─ Drawer tam ekran ─ */
+  #drawer-panel{width:100vw;border-left:none;border-radius:20px 20px 0 0;top:auto;height:92vh;}
+  #drawer-header{padding:12px 16px;border-radius:20px 20px 0 0;}
+  #drawer-body{padding:14px 16px;}
+  #drawer-footer{padding:10px 16px;gap:7px;}
+  #drawer-footer .btn{flex:1;justify-content:center;}
 
-  /* Notes */
+  /* ─ Full-page overlay ─ */
+  .fp-header{padding:10px 14px;gap:8px;}
+  .fp-title{font-size:13px;}
+  .fp-body{padding:12px 10px;}
+
+  /* ─ Notlar ─ */
   .notes-grid{grid-template-columns:1fr;}
 
-  /* Toast – alta taşı, nav üstü */
-  #toast{bottom:76px;right:10px;left:10px;}
-  .ti{font-size:11px;padding:9px 12px;}
+  /* ─ Toast – nav üstü ─ */
+  #toast{bottom:78px;right:8px;left:8px;}
+  .ti{font-size:11px;padding:10px 13px;border-radius:10px;}
 
-  /* Settings theme-grid */
-  .theme-grid{grid-template-columns:repeat(3,1fr);}
+  /* ─ Settings ─ */
+  .theme-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
+  .set-card{padding:13px;}
 
-  /* Kasa özet grid */
+  /* ─ Kasa ─ */
   #kasa-ozet{grid-template-columns:repeat(2,1fr);}
+  #kf-aylik,#kf-yillik,#kf-aralik{font-size:11px;padding:8px 12px;min-height:40px;}
 
-  /* Filter tabs */
-  .ftabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4px;}
-  .ftab{flex-shrink:0;font-size:10px;padding:5px 11px;}
-
-  /* Kasa filtre butonları */
-  #kf-aylik,#kf-yillik,#kf-aralik{font-size:11px;padding:7px 11px;}
-
-  /* Modal büyüklüğü */
+  /* ─ Modal ─ */
   [style*="max-width:620px"]{max-width:100%!important;}
   [style*="max-width:700px"]{max-width:100%!important;}
+  [style*="max-width:480px"]{max-width:calc(100vw - 24px)!important;}
+  #hizli-modal{width:calc(100vw - 16px)!important;border-radius:16px!important;}
+
+  /* ─ Poliçe hub kartları ─ */
+  #page-policeler>div:first-child{grid-template-columns:repeat(2,1fr)!important;}
+
+  /* ─ Dashboard takvim/event grid ─ */
+  [style*="grid-template-columns:1fr 1.6fr"]{grid-template-columns:1fr!important;}
+
+  /* ─ Dashboard acente/iptal küçük tablolar ─ */
+  [style*="overflow-x:auto"] table{min-width:unset;font-size:11px;}
+
+  /* ─ Belge yükleme ─ */
+  .doc-upload-section{grid-template-columns:1fr;}
+
+  /* ─ Floating tema ─ */
+  #floating-theme{bottom:80px;right:12px;}
+  #ft-toggle{width:38px;height:38px;font-size:16px;}
+  #ft-panel{width:200px;bottom:48px;}
+
+  /* ─ İptal hesap ekranı ─ */
+  #iptal-hesap-grid{grid-template-columns:1fr!important;}
+
+  /* ─ Whatsapp sayfası ─ */
+  .wa-preview{font-size:11px;padding:12px;}
+
+  /* ─ WA satır yapısı ─ */
+  [style*="grid-template-columns:1fr 1.6fr;margin-top:14px"]{grid-template-columns:1fr!important;}
+
+  /* ─ Kasa full-screen ─ */
+  #kasa-fs-header{flex-wrap:wrap;gap:7px;padding:10px 12px;}
 }
 
-/* Küçük telefon (375px altı) */
+/* ── Samsung S23 / küçük ekran (≤390px) ── */
 @media(max-width:390px){
-  .stats-grid{grid-template-columns:1fr 1fr;}
-  .stat-value{font-size:19px;}
+  #main{padding:8px 8px 84px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:7px;}
+  .stat-value{font-size:18px;}
+  .stat-card{padding:10px 9px;}
   .detail-grid{grid-template-columns:1fr;}
-  #main{padding:10px 8px 80px;}
+  .card{padding:11px 10px;}
+  .card-header .btn-sm{font-size:10px;padding:7px 10px;}
+  .m-card-actions .btn-act{font-size:10px;padding:7px 5px;}
+  .m-amount-box .val{font-size:13px;}
+}
+
+/* ── Landscape S23 (yatay) ── */
+@media(max-width:851px) and (orientation:landscape){
+  #main{padding:6px 14px 70px;}
+  .stats-grid{grid-template-columns:repeat(4,1fr);}
+  #bottom-nav{height:52px;}
+  #bottom-nav .bn-item .bn-lbl{display:none;}
+  #bottom-nav .bn-item .bn-ico{font-size:22px;}
+  #bnav-panel{bottom:52px;}
 }
 
 /* ALT NAVİGASYON ÇUBUĞU – SADECE MOBİLDE */
@@ -877,7 +1013,103 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
 .ft-item .ft-check{position:absolute;top:2px;right:2px;width:10px;height:10px;border-radius:50%;background:var(--primary);font-size:6px;color:#fff;display:flex;align-items:center;justify-content:center;}
 @media(max-width:600px){#floating-theme{bottom:14px;right:14px;}}
 
-/* ── Detay Aksiyon Butonları – Renkli Etiketli ── */
+/* ── Safe Area (iPhone X+ / Android notch desteği) ── */
+@supports(padding:max(0px)){
+  #topbar{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right));}
+  #bottom-nav{padding-bottom:env(safe-area-inset-bottom);height:calc(62px + env(safe-area-inset-bottom));}
+  @media(max-width:768px){
+    #main{padding-bottom:calc(84px + env(safe-area-inset-bottom));}
+    #toast{bottom:calc(78px + env(safe-area-inset-bottom));}
+    #bnav-panel{bottom:calc(62px + env(safe-area-inset-bottom));}
+  }
+}
+
+/* ── Dokunma geri bildirimi ── */
+@media(max-width:768px){
+  .m-card-item{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+  .btn-act,.btn,.btn-sm,.btn-xs{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+  .bn-item,.bn-more{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+  .sc-btn{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+
+  /* Aktif basma animasyonu */
+  .m-card-item:active{transform:scale(.985);transition:transform .1s;}
+  .btn-act:active{transform:scale(.94)!important;}
+  .bn-item:active,.bn-more:active{background:color-mix(in srgb,var(--primary) 10%,transparent);}
+
+  /* Scroll momentum */
+  .table-wrap,.shortcuts,.ftabs,#drawer-body,.fp-body,#bnav-panel{
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* Input alanları büyük dokunma hedefi */
+  .fg input,.fg select,.fg textarea{
+    -webkit-appearance:none;
+    border-radius:var(--radius-sm)!important;
+  }
+
+  /* Select'e ok ikonu */
+  .fg select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2371717a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;padding-right:32px!important;
+  }
+
+  /* Tablo kartları için border-left aksan */
+  .m-card-item{border-left:3px solid var(--primary);}
+
+  /* Card header aktif durumda biraz koyulaş */
+  .m-card-head:active{background:color-mix(in srgb,var(--primary) 8%,var(--card));}
+
+  /* Sidebar kapandığında transition */
+  #sidebar{transition:transform .28s cubic-bezier(.4,0,.2,1),box-shadow .28s;}
+
+  /* Alt nav label boyutu */
+  #bottom-nav .bn-item .bn-lbl{font-size:9px;letter-spacing:.1px;}
+
+  /* Drawer handle bar */
+  #drawer-header::before{
+    content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);
+    width:36px;height:4px;border-radius:2px;
+    background:color-mix(in srgb,var(--primary) 20%,var(--border));
+  }
+  #drawer-header{position:relative;padding-top:20px;}
+
+  /* Modal'ları aşağıdan slide up yap */
+  #hizli-modal{
+    position:fixed!important;
+    top:auto!important;bottom:0!important;
+    left:0!important;right:0!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    border-radius:20px 20px 0 0!important;
+    max-height:92vh!important;
+    overflow-y:auto;
+  }
+  #hizli-modal-body{max-height:65vh!important;overflow-y:auto;}
+
+  /* Floating tema butonu bottom-nav üstüne taşı */
+  #floating-theme{bottom:calc(68px + env(safe-area-inset-bottom,0px));right:12px;}
+
+  /* Search bar mobilden daha iyi */
+  .search-bar{gap:8px;}
+  .search-bar input{border-radius:10px!important;}
+
+  /* Card header action buton grubu */
+  .card-header{flex-direction:row;align-items:center;flex-wrap:wrap;}
+  .card-header>div:last-child{display:flex;gap:6px;flex-wrap:wrap;}
+
+  /* İptal miktar kutuları 2x2 grid */
+  .m-iptal-amounts{gap:7px;}
+  .m-amount-box{border-radius:10px;}
+
+  /* Poliçe form'unda islem tur butonları scroll edilebilir */
+  #pe-islemtur-btns{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  #pe-islemtur-btns::-webkit-scrollbar{display:none;}
+  #pe-poltur-btns{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  #pe-poltur-btns::-webkit-scrollbar{display:none;}
+  #pe-islemtur-btns .btn,#pe-poltur-btns .btn{flex-shrink:0;}
+}
+
 .btn-act{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .15s,transform .1s;line-height:1.2;}
 .btn-act:hover{opacity:.85;transform:translateY(-1px);}
 .btn-act:active{transform:translateY(0);}
@@ -1306,9 +1538,15 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     </div>
     <div class="table-wrap">
       <table id="tbl-musteriler">
-        <thead><tr><th>#</th><th>Ad Soyad / TC / Vergi No / Doğum Tarihi</th><th>Tip / Telefon / Şehir / Açıklama</th><th>İşlem</th></tr></thead>
+        <thead><tr>
+          <th style="width:38px;text-align:center;">#</th>
+          <th>Ad Soyad / TC / Vergi No / Doğum Tarihi</th>
+          <th>Tip / Telefon / Şehir / Açıklama</th>
+          <th style="white-space:nowrap;">İşlem</th>
+        </tr></thead>
         <tbody id="tbody-musteriler"></tbody>
       </table>
+      <div id="m-musteri-cards" style="display:none;"></div>
     </div>
   </div>
 </div>
@@ -1475,6 +1713,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <div id="pt-ekstra-liste-icerik">
       <div style="color:var(--muted);font-size:12px;padding:10px;">Ekstra kayıt bulunamadı</div>
     </div>
+    <div id="m-ekstra-cards" style="display:none;padding:0;"></div>
   </div>
 </div>
 
@@ -3016,20 +3255,21 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <div class="table-wrap">
       <table id="tbl-iptal">
         <thead><tr>
-          <th>#</th>
-          <th>Müşteri / Poliçe No / Şirket / Plaka</th>
-          <th>İptal Tarihi</th>
-          <th>Brüt / Net / Ac.Kom. / Ac.Oran%</th>
+          <th style="width:38px;text-align:center;">#</th>
+          <th>Müşteri / Poliçe No / Şirket</th>
+          <th>Plaka / İptal Tarihi</th>
+          <th>Brüt / Net</th>
+          <th>Ac.Kom. / Ac.Kom.Oran%</th>
           <th>Kul.Gün / Kal.Gün</th>
           <th>Gerçek İade / Gerçek Çalışan / Gerçek Kazanç</th>
           <th>MK İade / Bana Göre Çalışan / Kazanç</th>
-          <th>Ac.İade / Ac.Bana Kalan / MKöçe Kazanç</th>
+          <th>Ac.İadesi / Ac.Bana Kalan / MKöçe Kazanç</th>
           <th>Noter / Noter No / Açıklama</th>
-          <th>Belgeler</th>
-          <th>İşlem</th>
+          <th style="white-space:nowrap;">İşlem</th>
         </tr></thead>
         <tbody id="tbody-iptal"></tbody>
       </table>
+      <div id="m-iptal-cards" style="display:none;"></div>
     </div>
   </div>
 </div>
@@ -4937,6 +5177,7 @@ function showPage(name){
   if(['police-ekle','police-takip','tahsilat','iptal-ekle','iptal-liste','iptal-iade','whatsapp','not-defteri','cari','teklif','iletisim','toplu-islem'].includes(name))populateSelects();
   const renders={dashboard:renderDashboard,musteriler:renderMusteriler,'police-listesi':renderPoliceListesi,'police-takip':renderTakip,policeler:renderPolicelerHub,'pt-ekstra-ekle':()=>populateSelects(),'pt-ekstra-liste':renderPtEkstraListe,finans:renderFinansHub,cari:renderCari,'cari-liste':renderCariListe,tahsilat:renderTahsilat,'tahsilat-liste':renderTahsilatListe,kasa:renderKasa,'kasa-pol':()=>renderKasaAlt('pol'),'kasa-ipt':()=>renderKasaAlt('ipt'),'kasa-acb':()=>renderKasaAlt('acb'),'kasa-gen':()=>renderKasaAlt('gen'),acente:renderAcente,'iptal-ekle':()=>{},'iptal-liste':renderIptal,'iptal-iade':()=>showPage('iptal-ekle'),'iptal-hesap':renderIptalHesap,'not-defteri':renderNots,whatsapp:initWA,ayarlar:renderAyarlar,'gelir-grafigi':renderGelirGrafigi,teklif:renderTeklif,iletisim:renderIletisim,'toplu-islem':renderTopluIslem,'belge-arama':renderBelgeArama};
   if(renders[name])renders[name]();
+  if(typeof syncMobileView === 'function') syncMobileView();
 }
 function toggleSidebar(){byId('sidebar').classList.toggle('open');byId('sb-overlay').classList.toggle('show');}
 function closeSidebar(){byId('sidebar').classList.remove('open');byId('sb-overlay').classList.remove('show');}
@@ -5106,26 +5347,31 @@ function renderMusteriler(){
   if(!list.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';return;}
   const tipBadge={bireysel:'<span style="background:#dbeafe;color:#1d4ed8;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;">👤 Bireysel</span>',kurumsal:'<span style="background:#ede9fe;color:#7c3aed;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;">🏢 Kurumsal</span>',kobi:'<span style="background:#d1fae5;color:#065f46;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;">🏪 KOBİ</span>'};
   tb.innerHTML=list.map((m,idx)=>`<tr>
-    <td style="color:var(--muted);font-size:11px;text-align:center;">${idx+1}</td>
+    <td style="color:var(--muted);font-size:11px;text-align:center;font-weight:700;">${idx+1}</td>
     <td style="cursor:pointer;" onclick="openMusteriDetay('${m.id}')">
-      <b style="color:var(--info);">${m.ad}</b>${m.yetkili&&m.yetkili!==m.ad?`<div style="font-size:10px;color:var(--muted);">Yetkili: ${m.yetkili}</div>`:''}
+      <b style="color:var(--info);font-size:13px;">${m.ad}</b>
+      ${m.yetkili&&m.yetkili!==m.ad?`<div style="font-size:10px;color:var(--muted);">Yetkili: ${m.yetkili}</div>`:''}
       ${m.tip==='kurumsal'||m.tip==='kobi'
         ?`<div style="font-size:10px;color:var(--muted);">VN: ${m.vergino||'-'}</div>`
         :`<div style="font-size:10px;color:var(--muted);">TC: ${m.tc||'-'}</div>`}
       ${m.dogum?`<div style="font-size:10px;color:var(--muted);">🎂 ${fmtD(m.dogum)}</div>`:''}
     </td>
     <td>
-      ${tipBadge[m.tip||'bireysel']||tipBadge.bireysel}
-      ${m.tel?`<div style="font-size:11px;margin-top:3px;">📞 ${m.tel}</div>`:''}
-      ${m.sehir?`<div style="font-size:10px;color:var(--muted);">📍 ${m.sehir}</div>`:''}
-      ${m.aciklama?`<div style="font-size:10px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.aciklama}</div>`:''}
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        ${tipBadge[m.tip||'bireysel']||tipBadge.bireysel}
+        ${m.tel?`<span style="font-size:11px;">📞 ${m.tel}</span>`:''}
+        ${m.sehir?`<span style="font-size:10px;color:var(--muted);">📍 ${m.sehir}</span>`:''}
+      </div>
+      ${m.aciklama?`<div style="font-size:10px;color:var(--muted);margin-top:2px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.aciklama}</div>`:''}
     </td>
-    <td style="display:flex;gap:4px;flex-wrap:wrap;">
-        <button class="btn-act btn-act-success" onclick='openMusteriDetay("${m.id}")'>👁️ Detay</button>
-        <button class="btn-act btn-act-wa" onclick='waMusteri("${m.id}")'>💬 WA</button>
-        <button class="btn-act btn-act-primary" onclick='editMusteri("${m.id}")'>✏️ Düzenle</button>
-        <button class="btn-act btn-act-danger" onclick='delMusteri("${m.id}")'>🗑️ Sil</button>
-      </td>
+    <td style="white-space:nowrap;" onclick="event.stopPropagation()">
+      <div style="display:flex;gap:3px;flex-wrap:nowrap;align-items:center;">
+        <button class="btn-act btn-act-success" onclick='openMusteriDetay("${m.id}")' title="Detay">👁️</button>
+        <button class="btn-act btn-act-wa" onclick='waMusteri("${m.id}")' title="WhatsApp">💬</button>
+        <button class="btn-act btn-act-primary" onclick='editMusteri("${m.id}")' title="Düzenle">✏️</button>
+        <button class="btn-act btn-act-danger" onclick='delMusteri("${m.id}")' title="Sil">🗑️</button>
+      </div>
+    </td>
   </tr>`).join('');
 }
 function editMusteri(id){
@@ -8668,8 +8914,8 @@ function resetIptalForm(){
 }
 function renderIptal(){
   const tb=byId('tbody-iptal');
-  if(!DB.iptaller.length){tb.innerHTML='<tr><td colspan="21" style="text-align:center;color:var(--muted);padding:18px;">Kay\u0131t bulunamad\u0131</td></tr>';return;}
-  tb.innerHTML=DB.iptaller.map(ii=>{
+  if(!DB.iptaller.length){tb.innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';return;}
+  tb.innerHTML=DB.iptaller.map((ii,_idx)=>{
     const m=getMusteri(ii.musteriId);
     const docs=ii.docs||{};
     const hasDocs=docs.senet||docs.pdf;
@@ -8693,32 +8939,54 @@ function renderIptal(){
     }
     if(!hasDocs) docBtns+='<span style="color:var(--muted);font-size:10px;">Belge yok</span>';
     docBtns+='</div>';
-    return '<tr style="cursor:pointer;" onclick="detayIptal(\''+ ii.id +'\')">'
-      +'<td><b style="color:var(--info);display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--info);flex-shrink:0;"></span>'+(m?m.ad:'-')+'</b></td>'+
-      '<td>'+(ii.polNo||'-')+'</td>'+
-      '<td>'+(ii.sirket||'-')+'</td>'+
-      '<td>'+fmtD(ii.iptaltarihi)+'</td>'+
-      '<td style="font-weight:700;">\u20ba'+fmt(ii.brut)+'</td>'+
-      '<td>\u20ba'+fmt(ii.net)+'</td>'+
-      '<td>\u20ba'+fmt(ii.acKom)+'</td>'+
-      '<td>'+(ii.oran||0)+'%</td>'+
-      '<td>'+(ii.kulGun||0)+'</td>'+
-      '<td>'+(ii.kalGun||0)+'</td>'+
-      '<td style="color:var(--success);font-weight:700;">\u20ba'+fmt(ii.gercekIade)+'</td>'+
-      '<td style="color:var(--success);">\u20ba'+fmt(ii.gercekCalisan)+'</td>'+
-      '<td style="color:var(--warning);font-weight:700;">\u20ba'+fmt(ii.mkIade)+'</td>'+
-      '<td style="color:var(--warning);">\u20ba'+fmt(ii.mkCalisan)+'</td>'+
-      '<td style="color:var(--accent);font-weight:700;">\u20ba'+fmt(ii.kazanc)+'</td>'+
-      '<td style="color:var(--info);">\u20ba'+fmt(ii.acIade)+'</td>'+
-      '<td style="color:var(--primary);">\u20ba'+fmt(ii.acBaKalan)+'</td>'+
-      '<td style="color:var(--accent);font-weight:800;background:color-mix(in srgb,var(--accent) 8%,transparent);">\u20ba'+fmt(ii.mkKazanc)+'</td>'+
-      '<td style="min-width:100px;">'+noterInfo+(ii.aciklama?'<div style="font-size:10px;color:var(--muted);margin-top:3px;">'+ii.aciklama+'</div>':'')+'</td>'+
-      '<td style="min-width:95px;">'+docBtns+'</td>'+
-      '<td style="white-space:nowrap;display:flex;gap:4px;flex-wrap:wrap;" onclick="event.stopPropagation()">'+
-        '<button class="btn-act btn-act-success" onclick=\'detayIptal("'+ii.id+'")\'>👁️ Detay</button>'+
-        '<button class="btn-act btn-act-primary" onclick=\'editIptal("'+ii.id+'")\'>✏️ Düzenle</button>'+
-        '<button class="btn-act btn-act-danger" onclick=\'delIptal("'+ii.id+'")\'>🗑️ Sil</button>'+
+    return '<tr style="cursor:pointer;" onclick="detayIptal(\''+ ii.id +'\')">'+
+      '<td style="color:var(--muted);font-size:11px;text-align:center;font-weight:700;">'+(_idx+1)+'</td>'+
+      '<td onclick="event.stopPropagation();detayIptal(\''+ii.id+'\')" style="cursor:pointer;">'+
+        '<b style="color:var(--info);display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--info);flex-shrink:0;"></span>'+(m?m.ad:'-')+'</b>'+
+        '<div style="font-size:10px;color:var(--muted);margin-top:1px;font-family:monospace;">'+(ii.polNo||'-')+'</div>'+
+        '<div style="font-size:10px;color:var(--muted);">'+(ii.sirket||'-')+'</div>'+
       '</td>'+
+      '<td>'+
+        (ii.plaka?'<div style="font-weight:700;font-size:11px;">'+ii.plaka+'</div>':'<div style="color:var(--muted);font-size:10px;">-</div>')+
+        '<div style="font-size:11px;color:var(--danger);font-weight:600;">'+fmtD(ii.iptaltarihi)+'</div>'+
+      '</td>'+
+      '<td>'+
+        '<div style="font-weight:700;">₺'+fmt(ii.brut)+'</div>'+
+        '<div style="font-size:10px;color:var(--muted);">₺'+fmt(ii.net)+'</div>'+
+      '</td>'+
+      '<td>'+
+        '<div style="color:var(--accent);">₺'+fmt(ii.acKom)+'</div>'+
+        '<div style="font-size:10px;color:var(--muted);">'+(ii.oran||0)+'%</div>'+
+      '</td>'+
+      '<td>'+
+        '<div>'+(ii.kulGun||0)+' gün</div>'+
+        '<div style="font-size:10px;color:var(--muted);">'+(ii.kalGun||0)+' gün</div>'+
+      '</td>'+
+      '<td>'+
+        '<div style="color:var(--success);font-weight:700;">₺'+fmt(ii.gercekIade)+'</div>'+
+        '<div style="font-size:10px;color:var(--muted);">₺'+fmt(ii.gercekCalisan)+'</div>'+
+        '<div style="font-size:10px;color:var(--muted);">—</div>'+
+      '</td>'+
+      '<td>'+
+        '<div style="color:var(--warning);font-weight:700;">₺'+fmt(ii.mkIade)+'</div>'+
+        '<div style="font-size:10px;color:var(--muted);">₺'+fmt(ii.mkCalisan)+'</div>'+
+        '<div style="font-size:10px;color:var(--accent);font-weight:700;">₺'+fmt(ii.kazanc)+'</div>'+
+      '</td>'+
+      '<td>'+
+        '<div style="color:var(--info);">₺'+fmt(ii.acIade)+'</div>'+
+        '<div style="font-size:10px;color:var(--muted);">₺'+fmt(ii.acBaKalan)+'</div>'+
+        '<div style="font-size:11px;color:var(--accent);font-weight:800;background:color-mix(in srgb,var(--accent) 8%,transparent);border-radius:4px;padding:1px 4px;display:inline-block;">₺'+fmt(ii.mkKazanc)+'</div>'+
+      '</td>'+
+      '<td style="min-width:100px;">'+noterInfo+(ii.aciklama?'<div style="font-size:10px;color:var(--muted);margin-top:3px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ii.aciklama+'</div>':'')+'</td>'+
+      '<td style="white-space:nowrap;" onclick="event.stopPropagation()">'+
+        '<div style="display:flex;gap:3px;align-items:center;flex-wrap:nowrap;">'+
+          '<button class="btn-act btn-act-success" onclick=\'detayIptal("'+ii.id+'")\' title="Detay">👁️</button>'+
+          (m&&m.tel?'<button class="btn-act btn-act-wa" onclick=\'(function(){var tel=(DB.musteriler.find(x=>x.id==="'+ii.musteriId+'")||{}).tel||"";if(tel){window.open("https://wa.me/90"+tel.replace(/[^0-9]/g,"").slice(-10),"_blank");}else{toast("Müşteri telefonu yok","error");}})()\' title="WhatsApp">💬</button>':'<button class="btn-act btn-act-wa" onclick=\'toast("Müşteri telefonu bulunamadı","error")\' title="WhatsApp" style="opacity:.5;">💬</button>')+
+          '<button class="btn-act btn-act-primary" onclick=\'editIptal("'+ii.id+'")\' title="Düzenle">✏️</button>'+
+          '<button class="btn-act btn-act-danger" onclick=\'delIptal("'+ii.id+'")\' title="Sil">🗑️</button>'+
+        '</div>'+
+        (hasDocs?'<div style="margin-top:3px;">'+docBtns+'</div>':'')
+      +'</td>'+
       '</tr>';
   }).join('');
 }
@@ -12899,6 +13167,7 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   rebuildModelYiliSelect(loadModelYillari());
   rebuildIptalSebepSelect(loadIptalSebepler());
   initBackupSystem();
+  setTimeout(syncMobileView, 300);
 });
 
 // ══════════════════════════════════════════
@@ -15171,15 +15440,11 @@ function renderPtEkstraListe(){
   const bugun=new Date();
   el.innerHTML=`<div style="overflow-x:auto;"><table id="tbl-pt-extra-2" style="width:100%;border-collapse:collapse;font-size:12px;">
     <thead><tr style="background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;">
-      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Müşteri</th>
-      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Başlama</th>
-      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Bitiş</th>
-      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Poliçe No</th>
-      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Şirket</th>
-      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Plaka</th>
-      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Belge Seri</th>
-      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Açıklama</th>
-      <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);min-width:110px;">İşlem</th>
+      <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);width:38px;">#</th>
+      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Müşteri / Başlama / Bitiş</th>
+      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Poliçe No / Şirket / Plaka</th>
+      <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);">Belge Seri No / Açıklama</th>
+      <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);min-width:120px;">İşlem</th>
     </tr></thead>
     <tbody>${liste.map((t,i)=>{
       const m=getMusteri(t.musteriId);
@@ -15191,23 +15456,32 @@ function renderPtEkstraListe(){
           onclick="openMusteriDetay('${t.musteriId}')"
           onmouseover="this.style.background='color-mix(in srgb,var(--accent) 5%,transparent)'"
           onmouseout="this.style.background='${i%2?'var(--bg)':''}'">
-        <td style="padding:7px 10px;font-weight:600;">${m?'<span style="color:var(--info);">●</span> '+m.ad:'-'}</td>
-        <td style="padding:7px 10px;font-size:11px;color:var(--muted);">${fmtD(t.baslama)||'-'}</td>
-        <td style="padding:7px 10px;font-size:11px;font-weight:700;color:${bitisRenk};">${fmtD(t.bitis)||'-'}${kalan!==null?'<div style="font-size:9px;">'+(kalan<0?'⛔ Geçmiş':kalan<=30?'⚠️ '+kalan+'g':'✅ '+kalan+'g')+'</div>':''}</td>
-        <td style="padding:7px 10px;font-family:monospace;font-size:11px;">${t.polNo||'-'}</td>
-        <td style="padding:7px 10px;">${t.sirket||'-'}</td>
-        <td style="padding:7px 10px;font-weight:700;">${t.plaka||'-'}</td>
-        <td style="padding:7px 10px;font-size:11px;color:var(--muted);">${t.belge||'-'}</td>
-        <td style="padding:7px 10px;font-size:11px;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${t.aciklama||''}">${t.aciklama||'-'}</td>
+        <td style="padding:7px 10px;color:var(--muted);font-size:11px;text-align:center;font-weight:700;">${i+1}</td>
+        <td style="padding:7px 10px;">
+          <div style="font-weight:700;color:var(--info);">${m?'● '+m.ad:'-'}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:1px;">📅 ${fmtD(t.baslama)||'-'}</div>
+          <div style="font-size:11px;font-weight:700;color:${bitisRenk};">⏳ ${fmtD(t.bitis)||'-'}${kalan!==null?'<span style="font-size:9px;margin-left:4px;">'+(kalan<0?'⛔ Geçmiş':kalan<=30?'⚠️ '+kalan+'g':'✅ '+kalan+'g')+'</span>':''}</div>
+        </td>
+        <td style="padding:7px 10px;">
+          <div style="font-family:monospace;font-size:11px;font-weight:700;">${t.polNo||'-'}</div>
+          <div style="font-size:10px;color:var(--muted);">${t.sirket||'-'}</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text);">${t.plaka||'-'}</div>
+        </td>
+        <td style="padding:7px 10px;">
+          <div style="font-size:11px;color:var(--muted);">${t.belge||'-'}</div>
+          ${t.aciklama?`<div style="font-size:10px;color:var(--muted);margin-top:2px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${t.aciklama}">${t.aciklama}</div>`:''}
+        </td>
         <td style="padding:7px 10px;text-align:center;white-space:nowrap;" onclick="event.stopPropagation()">
-          <button onclick="waEkstraTakip('${t.musteriId}','${t.id}')" title="WhatsApp Teklif Gönder"
-            style="border:none;background:#25d366;color:#fff;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:3px;">💬</button>
-          <button onclick="detayPtExtra('${t.id}')" title="Detay"
-            style="border:none;background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:3px;">🔎</button>
-          <button onclick="editPtExtra('${t.id}')" title="Düzenle"
-            style="border:none;background:color-mix(in srgb,var(--warning) 15%,transparent);color:var(--warning);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:3px;">✏️</button>
-          <button onclick="silPtExtra('${t.id}')" title="Sil"
-            style="border:none;background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">🗑️</button>
+          <div style="display:flex;gap:3px;align-items:center;justify-content:center;flex-wrap:nowrap;">
+            <button onclick="detayPtExtra('${t.id}')" title="Detay"
+              style="border:none;background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">👁️</button>
+            <button onclick="waEkstraTakip('${t.musteriId}','${t.id}')" title="WhatsApp"
+              style="border:none;background:#25d366;color:#fff;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">💬</button>
+            <button onclick="editPtExtra('${t.id}')" title="Düzenle"
+              style="border:none;background:color-mix(in srgb,var(--warning) 15%,transparent);color:var(--warning);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">✏️</button>
+            <button onclick="silPtExtra('${t.id}')" title="Sil"
+              style="border:none;background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">🗑️</button>
+          </div>
         </td>
       </tr>`;
     }).join('')}</tbody>
@@ -15348,7 +15622,57 @@ function hizliModalKapat(){
   _hizliGeriDon=null;
 }
 
-// ── Hızlı Müşteri Ekle ──────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// MOBİL SWIPE GESTURE – Sidebar & Drawer kapatma
+// ══════════════════════════════════════════════════════════════
+(function(){
+  let _sx=0,_sy=0,_target=null;
+  const SWIPE_THRESH=60,RATIO=1.5;
+
+  document.addEventListener('touchstart',function(e){
+    _sx=e.touches[0].clientX;
+    _sy=e.touches[0].clientY;
+    _target=e.target;
+  },{passive:true});
+
+  document.addEventListener('touchend',function(e){
+    if(!e.changedTouches.length)return;
+    const dx=e.changedTouches[0].clientX-_sx;
+    const dy=e.changedTouches[0].clientY-_sy;
+    if(Math.abs(dy)>Math.abs(dx)*RATIO)return; // dikey scroll — görmezden gel
+
+    // Sağdan sola swipe → drawer kapat
+    if(dx<-SWIPE_THRESH){
+      const dp=byId('drawer-panel');
+      if(dp&&dp.classList.contains('open'))closeDrawer();
+    }
+
+    // Soldan sağa swipe → sidebar aç (sol kenardan)
+    if(dx>SWIPE_THRESH&&_sx<40&&window.innerWidth<=768){
+      const sb=byId('sidebar');
+      if(sb&&!sb.classList.contains('open'))toggleSidebar();
+    }
+
+    // Sağdan sola swipe → sidebar kapat
+    if(dx<-SWIPE_THRESH&&window.innerWidth<=768){
+      const sb=byId('sidebar');
+      if(sb&&sb.classList.contains('open'))closeSidebar();
+    }
+  },{passive:true});
+})();
+
+// ══════════════════════════════════════════════════════════════
+// MOBİL – Mobil ekranda sayfa geçişinde scroll'u en üste taşı
+// ══════════════════════════════════════════════════════════════
+const _origShowPage = showPage;
+showPage = function(name){
+  _origShowPage(name);
+  if(window.innerWidth<=768){
+    setTimeout(()=>{ window.scrollTo({top:0,behavior:'smooth'}); },60);
+  }
+};
+
+
 function hizliMusteriEkle(fieldId, oneriAd){
   _hizliGeriDon = function(m){
     sv(fieldId, m.id);
@@ -15456,6 +15780,230 @@ function hizliAcenteKaydet(){
   if(typeof peAcenteAutoOran==='function')peAcenteAutoOran();
   hizliModalKapat();
 }
+
+// ══════════════════════════════════════════════════════════════
+// MOBİL KART RENDER FONKSİYONLARI – Samsung S23 tam uyum
+// ══════════════════════════════════════════════════════════════
+
+const isMobile = ()=> window.innerWidth <= 768;
+
+// ─── Müşteri Kartları ───────────────────────────────────────
+function renderMusteriCards(list){
+  const el = byId('m-musteri-cards');
+  if(!el) return;
+  const tipBadgeStyle = {
+    bireysel:'background:#dbeafe;color:#1d4ed8;',
+    kurumsal:'background:#ede9fe;color:#7c3aed;',
+    kobi:'background:#d1fae5;color:#065f46;'
+  };
+  const tipLabel={bireysel:'👤 Bireysel',kurumsal:'🏢 Kurumsal',kobi:'🏪 KOBİ'};
+  if(!list.length){
+    el.innerHTML='<div style="text-align:center;padding:32px 16px;color:var(--muted);font-size:13px;">Kayıt bulunamadı</div>';
+    return;
+  }
+  el.innerHTML = list.map((m,idx)=>{
+    const tip = m.tip||'bireysel';
+    const initials = (m.ad||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const tcOrVn = (tip==='kurumsal'||tip==='kobi') ? (m.vergino?'VN: '+m.vergino:'—') : (m.tc?'TC: '+m.tc:'—');
+    const waHref = m.tel ? 'https://wa.me/90'+m.tel.replace(/[^0-9]/g,'').slice(-10) : null;
+    return `<div class="m-card-item">
+      <div class="m-card-head" onclick="openMusteriDetay('${m.id}')">
+        <div class="m-card-avatar">${initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="m-card-name">${idx+1}. ${m.ad}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${tcOrVn}${m.dogum?' · 🎂 '+fmtD(m.dogum):''}</div>
+        </div>
+        <span class="m-card-badge" style="${tipBadgeStyle[tip]||tipBadgeStyle.bireysel}">${tipLabel[tip]||tipLabel.bireysel}</span>
+      </div>
+      ${(m.tel||m.sehir||m.aciklama)?`<div class="m-card-body">
+        ${m.tel?`<div class="m-card-row"><span class="m-card-label">📞 Tel</span><span class="m-card-value">${m.tel}</span></div>`:''}
+        ${m.sehir?`<div class="m-card-row"><span class="m-card-label">📍 Şehir</span><span class="m-card-value">${m.sehir}</span></div>`:''}
+        ${m.aciklama?`<div class="m-card-row"><span class="m-card-label">📝</span><span class="m-card-value" style="font-size:11px;color:var(--muted);">${m.aciklama.substring(0,60)}${m.aciklama.length>60?'…':''}</span></div>`:''}
+      </div>`:''}
+      <div class="m-card-actions">
+        <button class="btn-act btn-act-success" onclick='openMusteriDetay("${m.id}")'>👁️</button>
+        ${waHref?`<button class="btn-act btn-act-wa" onclick='window.open("${waHref}","_blank")'>💬</button>`:`<button class="btn-act btn-act-wa" onclick='toast("Telefon no yok","error")' style="opacity:.4;">💬</button>`}
+        <button class="btn-act btn-act-primary" onclick='editMusteri("${m.id}")'>✏️</button>
+        <button class="btn-act btn-act-danger" onclick='delMusteri("${m.id}")'>🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── İptal & İade Kartları ──────────────────────────────────
+function renderIptalCards(){
+  const el = byId('m-iptal-cards');
+  if(!el) return;
+  if(!DB.iptaller.length){
+    el.innerHTML='<div style="text-align:center;padding:32px 16px;color:var(--muted);font-size:13px;">Kayıt bulunamadı</div>';
+    return;
+  }
+  el.innerHTML = DB.iptaller.map((ii,idx)=>{
+    const m = getMusteri(ii.musteriId);
+    const waHref = m&&m.tel ? 'https://wa.me/90'+m.tel.replace(/[^0-9]/g,'').slice(-10) : null;
+    const docs = ii.docs||{};
+    const hasSenet = docs.senet&&docs.senet.data;
+    const hasPdf   = docs.pdf&&docs.pdf.data;
+    return `<div class="m-card-item">
+      <div class="m-card-head" onclick="detayIptal('${ii.id}')">
+        <div class="m-card-avatar" style="background:linear-gradient(135deg,var(--danger),#f97316);">🔄</div>
+        <div style="flex:1;min-width:0;">
+          <div class="m-card-name">${idx+1}. ${m?m.ad:'—'}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;font-family:monospace;">${ii.polNo||'-'} · ${ii.sirket||'-'}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:10px;color:var(--danger);font-weight:700;">${fmtD(ii.iptaltarihi)||'-'}</div>
+          ${ii.plaka?`<div style="font-size:10px;font-weight:700;color:var(--text);margin-top:1px;">${ii.plaka}</div>`:''}
+        </div>
+      </div>
+      <div class="m-iptal-amounts">
+        <div class="m-amount-box">
+          <div class="lbl">Brüt / Net</div>
+          <div class="val" style="color:var(--text);">₺${fmt(ii.brut)}</div>
+          <div style="font-size:10px;color:var(--muted);">₺${fmt(ii.net)}</div>
+        </div>
+        <div class="m-amount-box">
+          <div class="lbl">MK İade</div>
+          <div class="val" style="color:var(--warning);">₺${fmt(ii.mkIade)}</div>
+          <div style="font-size:10px;color:var(--muted);">Çalışan: ₺${fmt(ii.mkCalisan)}</div>
+        </div>
+        <div class="m-amount-box">
+          <div class="lbl">Gerçek İade</div>
+          <div class="val" style="color:var(--success);">₺${fmt(ii.gercekIade)}</div>
+          <div style="font-size:10px;color:var(--muted);">${ii.kulGun||0}g / ${ii.kalGun||0}g</div>
+        </div>
+        <div class="m-amount-box">
+          <div class="lbl">MKöçe Kazanç</div>
+          <div class="val" style="color:var(--accent);">₺${fmt(ii.mkKazanc)}</div>
+          <div style="font-size:10px;color:var(--muted);">Ac.İade: ₺${fmt(ii.acIade)}</div>
+        </div>
+      </div>
+      ${(ii.noterIsmi||ii.noterNo)?`<div style="padding:7px 14px;font-size:10px;color:var(--muted);border-top:1px solid var(--border);">⚖️ ${ii.noterIsmi||''}${ii.noterNo?' · No: '+ii.noterNo:''}</div>`:''}
+      ${(hasSenet||hasPdf)?`<div style="padding:6px 14px;display:flex;gap:6px;border-top:1px solid var(--border);">
+        ${hasSenet?`<button onclick="event.stopPropagation();iptalDocBtnClick({dataset:{iid:'${ii.id}',dtype:'senet',action:'preview'}})" style="border:none;background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;">📄 Senet</button>`:''}
+        ${hasPdf?`<button onclick="event.stopPropagation();iptalDocBtnClick({dataset:{iid:'${ii.id}',dtype:'pdf',action:'preview'}})" style="border:none;background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;">📑 PDF</button>`:''}
+      </div>`:''}
+      <div class="m-card-actions">
+        <button class="btn-act btn-act-success" onclick='detayIptal("${ii.id}")'>👁️</button>
+        ${waHref?`<button class="btn-act btn-act-wa" onclick='window.open("${waHref}","_blank")'>💬</button>`:`<button class="btn-act btn-act-wa" onclick='toast("Telefon no yok","error")' style="opacity:.4;">💬</button>`}
+        <button class="btn-act btn-act-primary" onclick='editIptal("${ii.id}")'>✏️</button>
+        <button class="btn-act btn-act-danger" onclick='delIptal("${ii.id}")'>🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Ekstra Takip Kartları ──────────────────────────────────
+function renderEkstraCards(liste){
+  const el = byId('m-ekstra-cards');
+  if(!el) return;
+  const bugun = new Date();
+  if(!liste||!liste.length){
+    el.innerHTML='<div style="text-align:center;padding:32px 16px;color:var(--muted);font-size:13px;">Kayıt bulunamadı. <span style="color:var(--accent);cursor:pointer;" onclick="showPage(\'pt-ekstra-ekle\')">➕ Yeni ekle →</span></div>';
+    return;
+  }
+  el.innerHTML = liste.map((t,i)=>{
+    const m = getMusteri(t.musteriId);
+    const bitis = t.bitis ? new Date(t.bitis) : null;
+    const kalan = bitis ? Math.ceil((bitis-bugun)/(1000*60*60*24)) : null;
+    const bitisRenk = kalan!==null?(kalan<0?'var(--danger)':kalan<=30?'var(--warning)':'var(--success)'):'var(--muted)';
+    const kalanBadge = kalan!==null?(kalan<0?'⛔ Geçmiş':kalan<=30?'⚠️ '+kalan+'g':'✅ '+kalan+'g'):'';
+    const waHref = m&&m.tel ? 'https://wa.me/90'+m.tel.replace(/[^0-9]/g,'').slice(-10) : null;
+    return `<div class="m-card-item">
+      <div class="m-card-head" onclick="detayPtExtra('${t.id}')">
+        <div class="m-card-avatar" style="background:linear-gradient(135deg,var(--warning),var(--gold));font-size:16px;">📌</div>
+        <div style="flex:1;min-width:0;">
+          <div class="m-card-name">${i+1}. ${m?m.ad:'—'}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;font-family:monospace;">${t.polNo||'-'} · ${t.sirket||'-'}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          ${t.plaka?`<div style="font-size:11px;font-weight:800;color:var(--text);">${t.plaka}</div>`:''}
+          ${kalanBadge?`<div style="font-size:10px;font-weight:700;color:${bitisRenk};margin-top:2px;">${kalanBadge}</div>`:''}
+        </div>
+      </div>
+      <div class="m-card-body">
+        <div class="m-card-row"><span class="m-card-label">📅 Başlama</span><span class="m-card-value">${fmtD(t.baslama)||'-'}</span></div>
+        <div class="m-card-row"><span class="m-card-label">⏳ Bitiş</span><span class="m-card-value" style="color:${bitisRenk};font-weight:700;">${fmtD(t.bitis)||'-'}</span></div>
+        ${t.belge?`<div class="m-card-row"><span class="m-card-label">📄 Belge Seri</span><span class="m-card-value">${t.belge}</span></div>`:''}
+        ${t.aciklama?`<div class="m-card-row"><span class="m-card-label">📝</span><span class="m-card-value" style="font-size:11px;color:var(--muted);">${t.aciklama.substring(0,60)}${t.aciklama.length>60?'…':''}</span></div>`:''}
+      </div>
+      <div class="m-card-actions">
+        <button class="btn-act btn-act-success" onclick='detayPtExtra("${t.id}")'>👁️</button>
+        ${waHref?`<button class="btn-act btn-act-wa" onclick='waEkstraTakip("${t.musteriId}","${t.id}")'>💬</button>`:`<button class="btn-act btn-act-wa" onclick='toast("Telefon no yok","error")' style="opacity:.4;">💬</button>`}
+        <button class="btn-act btn-act-primary" onclick='editPtExtra("${t.id}")'>✏️</button>
+        <button class="btn-act btn-act-danger" onclick='silPtExtra("${t.id}")'>🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Render hook'ları – mobil/masaüstü otomatik geçiş ───────
+const _origRenderMusteriler = renderMusteriler;
+renderMusteriler = function(){
+  _origRenderMusteriler();
+  if(!isMobile()) return;
+  const srch = gv('srch-m').toLowerCase();
+  let list = DB.musteriler.filter(m=>!srch||m.ad.toLowerCase().includes(srch)||(m.tc&&m.tc.includes(srch))||(m.tel&&m.tel.includes(srch))||(m.vergino&&m.vergino.includes(srch)));
+  renderMusteriCards(list);
+};
+
+const _origRenderIptal = renderIptal;
+renderIptal = function(){
+  _origRenderIptal();
+  if(isMobile()) renderIptalCards();
+};
+
+const _origRenderPtEkstraListe = renderPtEkstraListe;
+renderPtEkstraListe = function(){
+  _origRenderPtEkstraListe();
+  if(!isMobile()) return;
+  // filtrelenmiş listeyi yeniden hesapla
+  const srch   =(gv('srch-pt-ekstra')||'').toLowerCase();
+  const musteri=(gv('srch-pt-musteri')||'').toLowerCase();
+  const polno  =(gv('srch-pt-polno')||'').toLowerCase();
+  const plaka  =(gv('srch-pt-plaka')||'').toLowerCase();
+  const yil    = gv('srch-pt-yil')||'';
+  const ay     = gv('srch-pt-ay')||'';
+  const t1     = gv('srch-pt-t1')||'';
+  const t2     = gv('srch-pt-t2')||'';
+  const liste=(DB.ptExtras||[]).filter(t=>{
+    const m=getMusteri(t.musteriId);
+    const mAd=(m?m.ad:'').toLowerCase();
+    const pNo=(t.polNo||'').toLowerCase();
+    const pPl=(t.plaka||'').toLowerCase();
+    const sir=(t.sirket||'').toLowerCase();
+    if(srch&&!mAd.includes(srch)&&!pNo.includes(srch)&&!pPl.includes(srch)&&!sir.includes(srch))return false;
+    if(musteri&&!mAd.includes(musteri))return false;
+    if(polno&&!pNo.includes(polno))return false;
+    if(plaka&&!pPl.includes(plaka))return false;
+    if(yil&&t.baslama&&!t.baslama.startsWith(yil))return false;
+    if(ay&&t.baslama&&t.baslama.slice(5,7)!==ay)return false;
+    if(t1&&t.baslama&&t.baslama<t1)return false;
+    if(t2&&t.bitis&&t.bitis>t2)return false;
+    return true;
+  }).sort((a,b)=>(b.baslama||'').localeCompare(a.baslama||''));
+  renderEkstraCards(liste);
+};
+
+// ─── Ekran boyutu değişince tabloyu/kartı göster/gizle ──────
+function syncMobileView(){
+  const mob = isMobile();
+  // Müşteri
+  const tblM = byId('tbl-musteriler'); const carM = byId('m-musteri-cards');
+  if(tblM) tblM.style.display = mob ? 'none' : '';
+  if(carM) carM.style.display = mob ? 'block' : 'none';
+  // İptal
+  const tblI = byId('tbl-iptal'); const carI = byId('m-iptal-cards');
+  if(tblI) tblI.style.display = mob ? 'none' : '';
+  if(carI) carI.style.display = mob ? 'block' : 'none';
+  // Ekstra takip
+  const tblE = byId('pt-ekstra-liste-icerik'); const carE = byId('m-ekstra-cards');
+  if(tblE) tblE.style.display = mob ? 'none' : 'block';
+  if(carE) carE.style.display = mob ? 'block' : 'none';
+}
+window.addEventListener('resize', ()=>{ syncMobileView(); });
+// İlk yüklemede senkronize et
+document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(syncMobileView, 200); });
 
 
 </script>
