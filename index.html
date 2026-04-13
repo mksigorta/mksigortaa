@@ -3644,8 +3644,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         style="width:100%;padding:12px 16px;font-size:14px;border:2px solid var(--accent);border-radius:10px;background:var(--card);color:var(--text);">
     </div>
     <!-- Filtreler -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-      <select id="belge-srch-tur" onchange="belgeArama()" style="font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      <select id="belge-srch-tur" onchange="belgeAramaTurDegis()" style="font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);">
         <option value="">Tüm Kategoriler</option>
         <option value="police">📋 Poliçeler</option>
         <option value="musteri">👤 Müşteriler</option>
@@ -3655,10 +3655,19 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <option value="iletisim">📞 İletişim</option>
         <option value="belge">📎 Belgeler (Dosyalar)</option>
         <option value="iskonto">🏷️ İskonto Kayıtları</option>
+        <option value="cari">💰 Cari Hesap</option>
       </select>
       <input type="date" id="belge-srch-t1" onchange="belgeArama()" style="font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);" title="Başlangıç tarihi">
       <input type="date" id="belge-srch-t2" onchange="belgeArama()" style="font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);" title="Bitiş tarihi">
       <button class="btn btn-outline btn-sm" onclick="belgeSrchTemizle()">✖ Temizle</button>
+    </div>
+    <!-- Cari alt filtre butonları -->
+    <div id="belge-cari-filtreler" style="display:none;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding:10px 12px;background:color-mix(in srgb,var(--gold) 7%,var(--bg));border:1px solid color-mix(in srgb,var(--gold) 25%,var(--border));border-radius:8px;">
+      <span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;align-self:center;margin-right:4px;">💰 Cari Filtre:</span>
+      <button id="bcf-all"      class="btn btn-outline btn-sm" onclick="window.belgeCariFlt='all';belgeArama()"      style="font-size:11px;">🗂️ Tümü</button>
+      <button id="bcf-borclu"   class="btn btn-outline btn-sm" onclick="window.belgeCariFlt='borclu';belgeArama()"   style="font-size:11px;color:var(--danger);border-color:var(--danger);">🔴 Borçlular</button>
+      <button id="bcf-alacakli" class="btn btn-outline btn-sm" onclick="window.belgeCariFlt='alacakli';belgeArama()" style="font-size:11px;color:var(--success);border-color:var(--success);">🟢 Alacaklılar</button>
+      <button id="bcf-ikisi"    class="btn btn-outline btn-sm" onclick="window.belgeCariFlt='ikisi';belgeArama()"    style="font-size:11px;color:var(--info);border-color:var(--info);">🔵 Borçlu &amp; Alacaklılar</button>
     </div>
     <!-- Sonuçlar -->
     <div id="belge-srch-sonuc">
@@ -14499,7 +14508,35 @@ function topluYazdir(){
 // BELGE & AKILLI ARAMA MODÜLÜ
 // ══════════════════════════════════════════════════════
 function renderBelgeArama(){ /* sayfa yüklenince hazır */ }
-function belgeSrchTemizle(){sv('belge-srch-input','');sv('belge-srch-tur','');sv('belge-srch-t1','');sv('belge-srch-t2','');belgeArama();}
+function belgeSrchTemizle(){
+  sv('belge-srch-input','');sv('belge-srch-tur','');sv('belge-srch-t1','');sv('belge-srch-t2','');
+  window.belgeCariFlt='all';
+  belgeAramaTurDegis();
+  belgeArama();
+}
+
+// Kategori değişince cari filtre butonlarını göster/gizle
+function belgeAramaTurDegis(){
+  const tur=gv('belge-srch-tur')||'';
+  const cariPanel=byId('belge-cari-filtreler');
+  if(cariPanel) cariPanel.style.display=(tur==='cari')?'flex':'none';
+  belgeArama();
+}
+
+// Cari filtre butonlarını vurgula
+function _belgeCariFltVurgula(){
+  const flt=window.belgeCariFlt||'all';
+  ['all','borclu','alacakli','ikisi'].forEach(f=>{
+    const btn=byId('bcf-'+f);
+    if(!btn)return;
+    const ak=(flt===f);
+    btn.style.opacity=ak?'1':'0.5';
+    btn.style.fontWeight=ak?'800':'400';
+    btn.style.outline=ak?'2px solid currentColor':'none';
+    btn.style.outlineOffset=ak?'2px':'0';
+    btn.style.transform=ak?'scale(1.05)':'scale(1)';
+  });
+}
 
 function belgeAramaTiklandi(idx){
   const s=(window._belgeAramaSonuclar||[])[idx];
@@ -14579,8 +14616,10 @@ function belgeAramaTiklandi(idx){
     case 'belge':
       detayIptal(d.id);
       break;
+    case 'cari':
+      openMusteriDetay(d.id);
+      break;
     case 'iskonto':{
-      const mIsk=getMusteri(d.musteriId);
       const iskBody=`
         <div style="padding:0 2px;">
           <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">İskonto Kayıt Bilgileri</div>
@@ -14695,6 +14734,41 @@ function belgeArama(){
     });
   }
 
+  // ── Cari Hesap araması ─────────────────────────────────
+  if(tur==='cari'){
+    _belgeCariFltVurgula();
+    const cariFlt=window.belgeCariFlt||'all';
+    // Müşteri bazında bakiye hesapla
+    (DB.musteriler||[]).forEach(m=>{
+      const cs=(DB.cariler||[]).filter(c=>c.musteriId===m.id);
+      if(!cs.length&&!q)return; // boş kayıt + arama yoksa atla
+      const borc  =cs.reduce((s,c)=>s+(parseFloat(c.borc)||0),0);
+      const alacak=cs.reduce((s,c)=>s+(parseFloat(c.alacak)||0),0);
+      const bakiye=borc-alacak;
+      // Cari filtre uygula
+      if(cariFlt==='borclu'   &&bakiye<=0)return;
+      if(cariFlt==='alacakli' &&bakiye>=0)return;
+      if(cariFlt==='ikisi'    &&!(borc>0&&alacak>0))return;
+      // Metin araması
+      const hay=m.ad+' '+(m.tc||'')+' '+(m.tel||'');
+      if(q&&!hay.toLowerCase().includes(q)){
+        // İçindeki cari kayıtlarında ara
+        const csHit=cs.some(c=>((c.polNo||'')+' '+(c.sirket||'')+' '+(c.plaka||'')+' '+(c.aciklama||'')).toLowerCase().includes(q));
+        if(!csHit)return;
+      }
+      const durumIkon=bakiye>0?'🔴':bakiye<0?'🟢':'⚪';
+      const durumRenk=bakiye>0?'var(--danger)':bakiye<0?'var(--success)':'var(--muted)';
+      sonuclar.push({
+        tur:'cari',ikon:'💰',renk:durumRenk,
+        baslik:m.ad,
+        alt:durumIkon+' Borç: ₺'+fmt(borc)+' · Alacak: ₺'+fmt(alacak)+' · Bakiye: ₺'+fmt(Math.abs(bakiye))+(bakiye>0?' (Borçlu)':bakiye<0?' (Alacaklı)':' (Sıfır)'),
+        tarih:'',data:{...m,borc,alacak,bakiye,cs},musteri:m
+      });
+    });
+    // Bakiyeye göre sırala: önce borçlular
+    sonuclar.sort((a,b)=>Math.abs(b.data.bakiye)-Math.abs(a.data.bakiye));
+  }
+
   // Belge içeriği arama
   if((!tur||tur==='belge')&&q){
     (DB.iptaller||[]).forEach(ii=>{
@@ -14724,7 +14798,7 @@ function belgeArama(){
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
           <div style="font-size:10px;color:var(--muted);">${fmtD(s.tarih)||''}</div>
           <div style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:color-mix(in srgb,${s.renk} 12%,transparent);color:${s.renk};">${
-            {police:'POLİÇE',musteri:'MÜŞTERİ',iptal:'İPTAL',teklif:'TEKLİF',not:'NOT',iletisim:'İLETİŞİM',belge:'BELGE',iskonto:'İSKONTO'}[s.tur]||s.tur.toUpperCase()
+            {police:'POLİÇE',musteri:'MÜŞTERİ',iptal:'İPTAL',teklif:'TEKLİF',not:'NOT',iletisim:'İLETİŞİM',belge:'BELGE',iskonto:'İSKONTO',cari:'CARİ HESAP'}[s.tur]||s.tur.toUpperCase()
           }</div>
         </div>
       </div>`).join('')
