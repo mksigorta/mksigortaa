@@ -2482,8 +2482,25 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <button class="btn btn-info btn-sm" onclick="exportTableCSV('tbl-cari-liste2','cari-liste')">📊 Excel</button>
       </div>
     </div>
-    <div class="search-bar">
+    <div class="search-bar" style="flex-wrap:wrap;gap:6px;">
       <input type="text" placeholder="🔍 Müşteri ara..." id="srch-cari-liste" oninput="renderCariListe()">
+      <select id="srch-cari-liste-tip" onchange="renderCariListe()" style="min-width:140px;">
+        <option value="">Tüm İşlem Tipleri</option>
+        <option value="borc">🔴 Borç</option>
+        <option value="alacak">🟢 Alacak</option>
+        <option value="iade">🔵 İade</option>
+        <option value="odeme">🟠 MK→Müşteri Ödeme</option>
+        <option value="iskonto">🏷️ İskonto</option>
+      </select>
+      <select id="srch-cari-liste-yontem" onchange="renderCariListe()" style="min-width:140px;">
+        <option value="">Tüm Ödeme Yöntemleri</option>
+        <option value="nakit">💵 Nakit</option>
+        <option value="havale">🏦 Havale/EFT</option>
+        <option value="kredi">💳 Kredi Kartı</option>
+        <option value="cek">📄 Çek</option>
+        <option value="iskonto">🏷️ İskonto</option>
+        <option value="diger">🔄 Diğer</option>
+      </select>
       <button class="btn btn-outline btn-sm" id="clf-all"      onclick="window.cariFilter='all';renderCariListe()" title="Tüm carileri göster">🗂️ Tümü</button>
       <button class="btn btn-warning btn-sm" id="clf-borclu"   onclick="window.cariFilter='borclu';renderCariListe()" title="Sadece borçluları göster (bakiye > 0)">🔴 Borçlular</button>
       <button class="btn btn-success btn-sm" id="clf-alacakli" onclick="window.cariFilter='alacakli';renderCariListe()" title="Sadece alacaklıları göster (bakiye < 0)">🟢 Alacaklılar</button>
@@ -2515,6 +2532,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <option value="bekliyor">Bekliyor</option>
         <option value="tahsil-edildi">Tahsil Edildi</option>
         <option value="gecikti">Gecikti</option>
+        <option value="iskonto">🏷️ İskonto Uygulandı</option>
         <option value="mk-iade-odendi">💚 MK İade Ödendi</option>
         <option value="iptal">İptal</option>
       </select>
@@ -2668,9 +2686,21 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <option value="alacak">Alacak (Müşteriden)</option>
           <option value="iade">İade (İptalden)</option>
           <option value="odeme">Ödeme (MK→Müşteri)</option>
+          <option value="iskonto">🏷️ İskonto (MK Cebinden Küsürat Karşılama)</option>
         </select>
       </div>
       <div class="fg"><label>Tutar (₺)</label><input type="number" id="th-tutar" placeholder="0.00" oninput="thTutarDegisti()"></div>
+
+      <!-- İSKONTO BİLGİ KUTUSU -->
+      <div id="th-iskonto-kutu" class="fg" style="grid-column:1/-1;display:none;">
+        <div style="background:color-mix(in srgb,var(--gold) 10%,transparent);border:1px solid var(--gold);border-radius:10px;padding:12px 16px;">
+          <div style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">🏷️ İskonto Nedir?</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6;">
+            Müşteri poliçe tutarının tamamını ödemeyip küsürat bıraktığında, kalan tutar <strong>MK Sigorta cebinden karşılanır</strong> ve hesaba <strong style="color:var(--success);">ALACAK</strong> olarak eklenerek hesap sıfırlanır.<br>
+            <span style="font-size:11px;color:var(--muted);">Örnek: Brüt tutar ₺15.150,80 – Müşteri ₺15.000,00 ödedi → Kalan ₺150,80 iskonto olarak alacak girilir.</span>
+          </div>
+        </div>
+      </div>
       <div class="fg"><label>Ödeme Yöntemi</label>
         <select id="th-odeme-yontemi">
           <option value="">-- Seçin --</option>
@@ -2678,6 +2708,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <option value="havale">🏦 Havale / EFT</option>
           <option value="kredi">💳 Kredi Kartı</option>
           <option value="cek">📄 Çek</option>
+          <option value="iskonto">🏷️ İskonto (MK Cebinden)</option>
           <option value="diger">🔄 Diğer</option>
         </select>
       </div>
@@ -2687,6 +2718,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <option value="tahsil-edildi">✅ Tahsil Edildi</option>
           <option value="kismi">🔶 Kısmi Ödeme</option>
           <option value="gecikti">🔴 Gecikti</option>
+          <option value="iskonto">🏷️ İskonto Uygulandı</option>
           <option value="mk-iade-odendi">💚 MK Müşteriye İade Ödemesi Yapıldı</option>
           <option value="iptal">❌ İptal</option>
         </select>
@@ -2721,6 +2753,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <option value="tahsil-edildi">✅ Tahsil Edildi</option>
         <option value="kismi">🔶 Kısmi</option>
         <option value="gecikti">🔴 Gecikti</option>
+        <option value="iskonto">🏷️ İskonto Uygulandı</option>
         <option value="mk-iade-odendi">💚 MK İade Ödendi</option>
         <option value="iptal">❌ İptal</option>
       </select>
@@ -2730,6 +2763,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <option value="havale">🏦 Havale/EFT</option>
         <option value="kredi">💳 Kredi Kartı</option>
         <option value="cek">📄 Çek</option>
+        <option value="iskonto">🏷️ İskonto</option>
         <option value="diger">🔄 Diğer</option>
       </select>
       <input type="date" id="th-t1" onchange="renderTahsilat()">
@@ -3620,6 +3654,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <option value="not">📝 Notlar</option>
         <option value="iletisim">📞 İletişim</option>
         <option value="belge">📎 Belgeler (Dosyalar)</option>
+        <option value="iskonto">🏷️ İskonto Kayıtları</option>
       </select>
       <input type="date" id="belge-srch-t1" onchange="belgeArama()" style="font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);" title="Başlangıç tarihi">
       <input type="date" id="belge-srch-t2" onchange="belgeArama()" style="font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);" title="Bitiş tarihi">
@@ -7562,12 +7597,14 @@ function thIptalIadeSecildi(){
 function thTipDegisti(){
   const tip=gv('th-tip');
   const kutu=byId('th-mk-kalan-kutu'); if(!kutu)return;
+  const iskontoKutu=byId('th-iskonto-kutu');
   if(tip==='odeme' && gv('th-iptal-iade')){
     kutu.style.display='block';
     thTutarDegisti();
   } else {
     kutu.style.display='none';
   }
+  if(iskontoKutu) iskontoKutu.style.display=(tip==='iskonto')?'block':'none';
 }
 
 // Tutar girilince kalan hesapla
@@ -7608,6 +7645,7 @@ function saveTahsilat(){
   else if(tip==='alacak') { borc=0; alacak=tutar; }
   else if(tip==='iade')   { borc=0; alacak=tutar; }
   else if(tip==='odeme')  { borc=tutar; alacak=0; }
+  else if(tip==='iskonto'){ borc=0; alacak=tutar; } // İskonto → MK cebinden küsürat → hesaba ALACAK girer
   const eid=window._editTahsilatId||null;
   // Plaka: form alanından ya da iptal/iade seçiminden gelen değer
   const plaka=gv('th-plaka')||(window._thPlakaSec||'');
@@ -7615,7 +7653,8 @@ function saveTahsilat(){
     'borc':'Poliçe Brüt Borç',
     'alacak':'Müşteriden Tahsilat',
     'iade':'İptal İadesi (Alacak)',
-    'odeme':'MK Sigorta → Müşteri Ödeme'
+    'odeme':'MK Sigorta → Müşteri Ödeme',
+    'iskonto':'İskonto – MK Cebinden Küsürat Karşılama'
   }[tip]||'Tahsilat');
   const obj={
     id:eid||uid(),musteriId:mid,
@@ -7650,6 +7689,7 @@ function resetTahsilatForm(){
   const iptalSel=byId('th-iptal-iade'); if(iptalSel)iptalSel.innerHTML='<option value="">-- İptal / İade Seçin (İsteğe Bağlı) --</option>';
   const bilgi=byId('th-iptal-bilgi'); if(bilgi)bilgi.style.display='none';
   const kutu=byId('th-mk-kalan-kutu'); if(kutu)kutu.style.display='none';
+  const iskontoKutu=byId('th-iskonto-kutu'); if(iskontoKutu)iskontoKutu.style.display='none';
   window._thMkIade=0;
   window._thPlakaSec='';
   window._editTahsilatId=null;
@@ -7660,11 +7700,11 @@ function renderTahsilat(){
   const t1=gv('th-t1');const t2=gv('th-t2');
   const fDurum=gv('srch-th-durum');
   const fYontem=gv('srch-th-yontemi');
-  const DURUM_LABEL={'bekliyor':'⏳ Bekliyor','tahsil-edildi':'✅ Tahsil Edildi','kismi':'🔶 Kısmi','gecikti':'🔴 Gecikti','mk-iade-odendi':'💚 MK İade Ödendi','iptal':'❌ İptal'};
-  const DURUM_CLR={'bekliyor':'var(--warning)','tahsil-edildi':'var(--success)','kismi':'var(--info)','gecikti':'var(--danger)','mk-iade-odendi':'var(--success)','iptal':'var(--muted)'};
-  const YONTEM_LABEL={'nakit':'💵 Nakit','havale':'🏦 Havale','kredi':'💳 Kredi','cek':'📄 Çek','diger':'🔄 Diğer'};
-  const TIP_LABEL={'borc':'🔴 Borç (Brüt)','alacak':'🟢 Alacak (Müşteri)','iade':'🔵 İptal İadesi','odeme':'🟠 MK→Müşteri Ödeme'};
-  const TIP_CLR={'borc':'var(--danger)','alacak':'var(--success)','iade':'var(--info)','odeme':'var(--warning)'};
+  const DURUM_LABEL={'bekliyor':'⏳ Bekliyor','tahsil-edildi':'✅ Tahsil Edildi','kismi':'🔶 Kısmi','gecikti':'🔴 Gecikti','iskonto':'🏷️ İskonto','mk-iade-odendi':'💚 MK İade Ödendi','iptal':'❌ İptal'};
+  const DURUM_CLR={'bekliyor':'var(--warning)','tahsil-edildi':'var(--success)','kismi':'var(--info)','gecikti':'var(--danger)','iskonto':'var(--gold)','mk-iade-odendi':'var(--success)','iptal':'var(--muted)'};
+  const YONTEM_LABEL={'nakit':'💵 Nakit','havale':'🏦 Havale','kredi':'💳 Kredi','cek':'📄 Çek','iskonto':'🏷️ İskonto','diger':'🔄 Diğer'};
+  const TIP_LABEL={'borc':'🔴 Borç (Brüt)','alacak':'🟢 Alacak (Müşteri)','iade':'🔵 İptal İadesi','odeme':'🟠 MK→Müşteri Ödeme','iskonto':'🏷️ İskonto (MK Cebinden)'};
+  const TIP_CLR={'borc':'var(--danger)','alacak':'var(--success)','iade':'var(--info)','odeme':'var(--warning)','iskonto':'var(--gold)'};
   let list=DB.tahsilatlar.filter(t=>{
     const m=getMusteri(t.musteriId);
     if(srch&&!(m&&m.ad.toLowerCase().includes(srch))&&!(t.polNo||'').toLowerCase().includes(srch)&&!(t.iban||'').toLowerCase().includes(srch))return false;
@@ -14539,6 +14579,33 @@ function belgeAramaTiklandi(idx){
     case 'belge':
       detayIptal(d.id);
       break;
+    case 'iskonto':{
+      const mIsk=getMusteri(d.musteriId);
+      const iskBody=`
+        <div style="padding:0 2px;">
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">İskonto Kayıt Bilgileri</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Tarih</span>
+            <span style="font-size:13px;font-weight:500;">${fmtD(d.tarih)||'-'}</span>
+          </div>
+          ${mIsk?`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Müşteri</span>
+            <span style="font-size:13px;font-weight:700;color:var(--info);cursor:pointer;" onclick="openMusteriDetay('${mIsk.id}')">${mIsk.ad}</span>
+          </div>`:''}
+          ${d.polNo?`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Poliçe No</span>
+            <span style="font-size:13px;font-weight:600;">${d.polNo}</span>
+          </div>`:''}
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">İskonto Tutarı</span>
+            <span style="font-size:15px;font-weight:800;color:var(--gold);">₺${fmt(d.alacak||d.iskontoTutar||0)}</span>
+          </div>
+          ${d.aciklama||d.notlar?`<div style="margin-top:10px;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px;font-size:13px;line-height:1.7;white-space:pre-wrap;color:var(--text);">${d.aciklama||d.notlar}</div>`:''}
+        </div>`;
+      openDrawer('🏷️ İskonto Detayı', iskBody,
+        `<button class="btn btn-outline btn-sm" onclick="closeDrawer()">Kapat</button>`);
+      break;
+    }
     default:
       toast('Bu kayıt türü için detay görüntüleme mevcut değil.','');
   }
@@ -14604,6 +14671,30 @@ function belgeArama(){
         sonuclar.push({tur:'iletisim',ikon:'📞',renk:'var(--accent)',baslik:(m?m.ad:'?')+' — '+(x.konu||''),alt:x.kanal+' · '+fmtD(d),tarih:d,data:x,musteri:m});
     });
   }
+  // İskonto arama — DB.cariler ve DB.tahsilatlar içinde tip==='iskonto' olanlar
+  if(!tur||tur==='iskonto'){
+    (DB.cariler||[]).forEach(c=>{
+      if(c.tip!=='iskonto')return;
+      const m=getMusteri(c.musteriId);
+      const hay=(m?m.ad+' ':'')+( c.polNo||'')+' '+(c.sirket||'')+' '+(c.plaka||'')+' '+(c.aciklama||'')+'iskonto';
+      if((!q||hay.toLowerCase().includes(q))&&inDate(c.tarih))
+        sonuclar.push({tur:'iskonto',ikon:'🏷️',renk:'var(--gold)',
+          baslik:(m?m.ad:'?')+' — İskonto'+(c.polNo?' · '+c.polNo:''),
+          alt:'₺'+fmt(c.alacak||0)+(c.sirket?' · '+c.sirket:'')+(c.aciklama?' · '+c.aciklama.substring(0,50):''),
+          tarih:c.tarih,data:c,musteri:m,_dataType:'cari'});
+    });
+    (DB.tahsilatlar||[]).forEach(t=>{
+      if(t.durum!=='iskonto'&&t.yontem!=='iskonto')return;
+      const m=getMusteri(t.musteriId);
+      const hay=(m?m.ad+' ':'')+( t.polNo||'')+' '+(t.notlar||'')+' '+(t.aciklama||'')+'iskonto';
+      if((!q||hay.toLowerCase().includes(q))&&inDate(t.tarih))
+        sonuclar.push({tur:'iskonto',ikon:'🏷️',renk:'var(--gold)',
+          baslik:(m?m.ad:'?')+' — İskonto Tahsilat'+(t.polNo?' · '+t.polNo:''),
+          alt:'₺'+fmt(t.iskontoTutar||t.alacak||0)+(t.notlar?' · '+t.notlar.substring(0,50):''),
+          tarih:t.tarih,data:t,musteri:m,_dataType:'tahsilat'});
+    });
+  }
+
   // Belge içeriği arama
   if((!tur||tur==='belge')&&q){
     (DB.iptaller||[]).forEach(ii=>{
@@ -14633,7 +14724,7 @@ function belgeArama(){
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
           <div style="font-size:10px;color:var(--muted);">${fmtD(s.tarih)||''}</div>
           <div style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:color-mix(in srgb,${s.renk} 12%,transparent);color:${s.renk};">${
-            {police:'POLİÇE',musteri:'MÜŞTERİ',iptal:'İPTAL',teklif:'TEKLİF',not:'NOT',iletisim:'İLETİŞİM',belge:'BELGE'}[s.tur]||s.tur.toUpperCase()
+            {police:'POLİÇE',musteri:'MÜŞTERİ',iptal:'İPTAL',teklif:'TEKLİF',not:'NOT',iletisim:'İLETİŞİM',belge:'BELGE',iskonto:'İSKONTO'}[s.tur]||s.tur.toUpperCase()
           }</div>
         </div>
       </div>`).join('')
@@ -15298,6 +15389,8 @@ function renderCariListe(){
   const el=byId('cari-liste-icerik');
   if(!el) return;
   const srch=(gv('srch-cari-liste')||'').toLowerCase();
+  const filterTip=gv('srch-cari-liste-tip')||'';
+  const filterYontem=gv('srch-cari-liste-yontem')||'';
   const filter=window.cariFilter||'all';
   // Aktif buton vurgula
   const btnStyles={
@@ -15316,18 +15409,48 @@ function renderCariListe(){
     btn.style.outlineOffset=isActive?'2px':'0';
     btn.style.transform=isActive?'scale(1.05)':'scale(1)';
   });
+
+  const TIP_LABEL={'borc':'🔴 Borç','alacak':'🟢 Alacak','iade':'🔵 İade','odeme':'🟠 MK→Müşteri','iskonto':'🏷️ İskonto','diger':'Diğer'};
+  const YONTEM_LABEL={'nakit':'💵 Nakit','havale':'🏦 Havale','kredi':'💳 Kredi','cek':'📄 Çek','iskonto':'🏷️ İskonto','diger':'🔄 Diğer'};
+
+  // Tahsilat kayıtlarını da birleştirerek cari hareketi listesi oluştur
   let list=(DB.musteriler||[]).map(m=>{
     const cs=DB.cariler.filter(c=>c.musteriId===m.id);
-    const borc  =cs.reduce((s,c)=>s+(parseFloat(c.borc)||0),0);
-    const alacak=cs.reduce((s,c)=>s+(parseFloat(c.alacak)||0),0);
-    return {...m,borc,alacak,bakiye:borc-alacak};
+    // İşlem tipi ve ödeme yöntemi bilgilerini tahsilatlardan eşleştir
+    const tahsilatlar=(DB.tahsilatlar||[]).filter(t=>t.musteriId===m.id);
+    // Cari kayıtları için tip ve yöntem bilgisi
+    const csWithMeta=cs.map(c=>{
+      const th=tahsilatlar.find(t=>t.id===c.id.replace('_c',''));
+      return {...c, tip:th?th.tip:'', odemeyontemi:th?th.odemeyontemi:''};
+    });
+    // Tip filtresi uygula
+    const filteredCs = (filterTip||filterYontem) ? csWithMeta.filter(c=>{
+      if(filterTip && c.tip!==filterTip) return false;
+      if(filterYontem && c.odemeyontemi!==filterYontem) return false;
+      return true;
+    }) : csWithMeta;
+    const borc  =filteredCs.reduce((s,c)=>s+(parseFloat(c.borc)||0),0);
+    const alacak=filteredCs.reduce((s,c)=>s+(parseFloat(c.alacak)||0),0);
+    // İskonto: tip==='iskonto' olan cari alacak kayıtlarının toplamı
+    const iskonto=filteredCs.reduce((s,c)=>c.tip==='iskonto'?s+(parseFloat(c.alacak)||0):s,0);
+    // İşlem tipleri özeti
+    const tipSayac={};
+    const yontemSayac={};
+    filteredCs.forEach(c=>{
+      if(c.tip){tipSayac[c.tip]=(tipSayac[c.tip]||0)+1;}
+      if(c.odemeyontemi){yontemSayac[c.odemeyontemi]=(yontemSayac[c.odemeyontemi]||0)+1;}
+    });
+    return {...m,borc,alacak,iskonto,bakiye:borc-alacak,tipSayac,yontemSayac,filteredCount:filteredCs.length,totalCount:cs.length};
   }).filter(m=>{
     if(srch&&!m.ad.toLowerCase().includes(srch))return false;
     if(filter==='borclu'   &&m.bakiye<=0)return false;
     if(filter==='alacakli' &&m.bakiye>=0)return false;
     if(filter==='ikisi'    &&!(m.borc>0&&m.alacak>0))return false;
+    // Filtre varsa sıfır bakiyeli kayıtları gizle
+    if((filterTip||filterYontem)&&m.filteredCount===0)return false;
     return true;
   });
+
   if(!list.length){
     el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:12px;">Kayıt bulunamadı.</div>';
     return;
@@ -15335,22 +15458,32 @@ function renderCariListe(){
   el.innerHTML=`<div style="overflow-x:auto;"><table id="tbl-cari-liste2" style="width:100%;border-collapse:collapse;font-size:12px;">
     <thead><tr style="background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;">
       <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Müşteri</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">İşlem Tipi</th>
+      <th style="padding:7px 10px;border-bottom:1px solid var(--border);">Ödeme Yöntemi</th>
       <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Toplam Borç</th>
       <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Toplam Alacak</th>
-      <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Bakiye</th>
+      <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);color:var(--gold);">🏷️ İskonto</th>
+      <th style="padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);">Kalan Bakiye</th>
       <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">Durum</th>
       <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);">İşlem</th>
     </tr></thead>
     <tbody>${list.map((m,i)=>{
       const bg=i%2?'background:var(--bg);':'';
       const dur=m.bakiye>0?{lbl:'Borçlu',c:'var(--danger)'}:m.bakiye<0?{lbl:'Alacaklı',c:'var(--success)'}:{lbl:'Sıfır',c:'var(--muted)'};
+      const tipBadges=Object.entries(m.tipSayac).map(([k,v])=>`<span style="display:inline-block;margin:1px 2px;padding:2px 6px;border-radius:8px;font-size:9px;font-weight:700;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--text);">${TIP_LABEL[k]||k}<span style="opacity:.6;margin-left:2px;">${v}</span></span>`).join('');
+      const yontemBadges=Object.entries(m.yontemSayac).map(([k,v])=>`<span style="display:inline-block;margin:1px 2px;padding:2px 6px;border-radius:8px;font-size:9px;font-weight:700;background:color-mix(in srgb,var(--info) 10%,transparent);color:var(--text);">${YONTEM_LABEL[k]||k}<span style="opacity:.6;margin-left:2px;">${v}</span></span>`).join('');
       return `<tr style="${bg}cursor:pointer;"
           onclick="openMusteriDetay('${m.id}')"
           onmouseover="this.style.background='color-mix(in srgb,var(--accent) 5%,transparent)'"
           onmouseout="this.style.background='${i%2?'var(--bg)':''}'">
-        <td style="padding:7px 10px;font-weight:600;"><span style="color:var(--info);margin-right:4px;">●</span>${m.ad}</td>
+        <td style="padding:7px 10px;font-weight:600;"><span style="color:var(--info);margin-right:4px;">●</span>${m.ad}
+          <div style="font-size:10px;color:var(--muted);">${m.filteredCount} işlem${m.filteredCount!==m.totalCount?' / toplam '+m.totalCount:''}</div>
+        </td>
+        <td style="padding:7px 10px;">${tipBadges||'<span style="color:var(--muted);font-size:10px;">—</span>'}</td>
+        <td style="padding:7px 10px;">${yontemBadges||'<span style="color:var(--muted);font-size:10px;">—</span>'}</td>
         <td style="padding:7px 10px;text-align:right;color:var(--danger);font-weight:700;">₺${fmt(m.borc)}</td>
         <td style="padding:7px 10px;text-align:right;color:var(--success);font-weight:700;">₺${fmt(m.alacak)}</td>
+        <td style="padding:7px 10px;text-align:right;font-weight:700;color:var(--gold);">${m.iskonto>0?'₺'+fmt(m.iskonto):'<span style="color:var(--muted);font-size:11px;">—</span>'}</td>
         <td style="padding:7px 10px;text-align:right;font-weight:800;color:${dur.c};">₺${fmt(Math.abs(m.bakiye))}</td>
         <td style="padding:7px 10px;text-align:center;">
           <span style="padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;background:color-mix(in srgb,${dur.c} 12%,transparent);color:${dur.c};">${dur.lbl}</span>
@@ -15362,9 +15495,10 @@ function renderCariListe(){
       </tr>`;
     }).join('')}</tbody>
     <tfoot><tr style="border-top:2px solid var(--border);background:color-mix(in srgb,var(--accent) 5%,transparent);">
-      <td style="padding:8px 10px;font-weight:700;">TOPLAM</td>
+      <td colspan="3" style="padding:8px 10px;font-weight:700;">TOPLAM (${list.length} müşteri)</td>
       <td style="padding:8px 10px;text-align:right;font-weight:800;color:var(--danger);">₺${fmt(list.reduce((s,m)=>s+m.borc,0))}</td>
       <td style="padding:8px 10px;text-align:right;font-weight:800;color:var(--success);">₺${fmt(list.reduce((s,m)=>s+m.alacak,0))}</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:800;color:var(--gold);">₺${fmt(list.reduce((s,m)=>s+m.iskonto,0))}</td>
       <td style="padding:8px 10px;text-align:right;font-weight:800;">₺${fmt(Math.abs(list.reduce((s,m)=>s+m.bakiye,0)))}</td>
       <td colspan="2"></td>
     </tr></tfoot>
@@ -15407,6 +15541,7 @@ function renderTahsilatListe(){
     'tahsil-edildi': {lbl:'✅ Tahsil',             c:'var(--success)'},
     'gecikti':       {lbl:'⚠️ Gecikti',           c:'var(--danger)'},
     'kismi':         {lbl:'🔸 Kısmi',             c:'var(--info)'},
+    'iskonto':       {lbl:'🏷️ İskonto',           c:'var(--gold)'},
     'mk-iade-odendi':{lbl:'💚 MK İade Ödendi',    c:'var(--success)'},
     'iptal':         {lbl:'❌ İptal',              c:'var(--muted)'},
   };
