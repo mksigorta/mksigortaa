@@ -2468,6 +2468,10 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div><div style="font-size:14px;font-weight:800;">Tahsilat Listesi</div><div style="font-size:11px;color:var(--muted);margin-top:3px;">Tüm tahsilatlar</div></div>
       <div id="hub-tahsilat-stat" style="font-size:10px;color:var(--info);font-weight:700;"></div>
     </div>
+    <div onclick="cariKartGorunumAc()" style="cursor:pointer;background:var(--card);border:2px solid var(--gold);border-radius:14px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:all .2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+      <div style="width:50px;height:50px;border-radius:12px;background:color-mix(in srgb,var(--gold) 15%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;">🗂️</div>
+      <div><div style="font-size:14px;font-weight:800;">Cari Kart Görünümü</div><div style="font-size:11px;color:var(--muted);margin-top:3px;">Kart listesi &amp; hareketler</div></div>
+    </div>
   </div>
   <!-- Özet -->
   <div class="card">
@@ -2483,8 +2487,9 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
   <div class="card">
     <div class="card-header">
       <div class="card-title">💰 Cari Listesi</div>
-      <div style="display:flex;gap:7px;">
+      <div style="display:flex;gap:7px;flex-wrap:wrap;">
         <button class="btn btn-success btn-sm" onclick="showPage('cari')">➕ Cari Ekle</button>
+        <button class="btn btn-primary btn-sm" onclick="cariKartGorunumAc()" title="Cari2 tarzı kart listesi ve hareket analizi">🗂️ Cari Kart Görünümü</button>
         <button class="btn btn-info btn-sm" onclick="exportTableCSV('tbl-cari-liste2','cari-liste')">📊 Excel</button>
       </div>
     </div>
@@ -2608,6 +2613,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <div class="card-header">
       <div class="card-title">💰 Cari Müşteri</div>
       <div style="display:flex;gap:7px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="cariKartGorunumAc()" title="Cari Kart Listesi ve Hareket Analizi">🗂️ Cari Kart Görünümü</button>
         <button class="btn btn-info btn-sm" onclick="exportTableCSV('tbl-cari','cari')">📊 Excel</button>
         <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ Yazdır</button>
       </div>
@@ -5105,7 +5111,7 @@ async function getStorageInfo(){
   return {usageKB:(totalBytes/1024).toFixed(1), quotaMB:'~5120', pct:((totalBytes/1024)/5120*100).toFixed(2)};
 }
 
-let DB={musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]};
+let DB={musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[],ckKartlar:[],ckKategoriler:['Acente','Toptancı','Müşteri','Diğer']};
 window.cariFilter='all';
 let takipTabFilter='all';
 
@@ -16466,6 +16472,731 @@ document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(syncMobileView, 2
   <div id="hizli-modal-body" style="padding:18px 20px;max-height:70vh;overflow-y:auto;"></div>
   <div id="hizli-modal-footer" style="padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--topbar-bg);"></div>
 </div>
+
+<!-- ══════════════════════════════════════════
+     CARİ KART GÖRÜNÜMÜ - TAM EKRAN MODAL
+══════════════════════════════════════════ -->
+<style>
+#ck-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;backdrop-filter:blur(4px);}
+#ck-modal{display:none;position:fixed;inset:0;z-index:3001;display:none;flex-direction:column;background:var(--bg);}
+#ck-modal.active{display:flex;}
+#ck-header{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--topbar-bg);border-bottom:1px solid var(--topbar-border);flex-wrap:wrap;}
+#ck-header .ck-title{font-size:15px;font-weight:800;color:var(--text);font-family:'Space Grotesk',sans-serif;flex:1;min-width:0;}
+#ck-body{flex:1;overflow-y:auto;padding:16px 18px;}
+/* ---- Cari Kart Listesi ---- */
+.ck-topbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.ck-cat-select{padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text);font-size:12px;font-weight:600;}
+.ck-tbl-wrap{overflow-x:auto;}
+.ck-tbl{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.ck-tbl thead tr{background:var(--bg);}
+.ck-tbl th{padding:8px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:1px solid var(--border);}
+.ck-tbl td{padding:8px 12px;border-bottom:1px solid var(--border);}
+.ck-tbl tbody tr:hover{background:color-mix(in srgb,var(--accent) 5%,transparent);cursor:pointer;}
+.ck-statusbar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:var(--topbar-bg);border-top:1px solid var(--topbar-border);font-size:12px;font-weight:700;flex-wrap:wrap;gap:6px;}
+/* ---- Hareket Detay ---- */
+#ck-detay-screen{display:none;flex-direction:column;gap:0;}
+#ck-detay-screen.active{display:flex;}
+.ck-detay-header{background:var(--topbar-bg);border-bottom:1px solid var(--border);padding:10px 14px;}
+.ck-detay-name{font-size:18px;font-weight:800;color:var(--text);text-align:center;border-bottom:2px solid var(--accent);padding-bottom:8px;margin-bottom:10px;font-family:'Space Grotesk',sans-serif;}
+.ck-detay-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.ck-detay-btn{padding:8px 4px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text);font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s;}
+.ck-detay-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);}
+.ck-detay-btn.borc{color:var(--danger);border-color:var(--danger);}
+.ck-detay-btn.alacak{color:var(--success);border-color:var(--success);}
+.ck-detay-btn.blue{color:var(--info);border-color:var(--info);}
+.ck-detay-btn.orange{color:var(--warning);border-color:var(--warning);}
+.ck-detay-tbl-wrap{overflow-x:auto;flex:1;}
+.ck-detay-statusbar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:var(--topbar-bg);border-top:1px solid var(--border);font-size:12px;font-weight:700;flex-wrap:wrap;gap:6px;}
+#ck-detay-musteri-bilgi span{display:inline-flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:2px 10px;font-size:10px;font-weight:600;color:var(--muted);}
+/* Kategori modal */
+#ck-cat-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:4000;justify-content:center;align-items:center;}
+#ck-cat-modal.active{display:flex;}
+/* İşlem modal */
+#ck-trans-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:4000;justify-content:center;align-items:center;}
+#ck-trans-modal.active{display:flex;}
+/* Cari ekle modal */
+#ck-cust-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:4000;justify-content:center;align-items:center;}
+#ck-cust-modal.active{display:flex;}
+.ck-mw{background:var(--card);border-radius:14px;width:min(400px,95vw);box-shadow:var(--shadow-lg);border:1px solid var(--border);overflow:hidden;}
+.ck-mw-head{background:var(--topbar-bg);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--text);}
+.ck-mw-body{padding:16px;background:var(--bg);display:flex;flex-direction:column;gap:12px;}
+.ck-inp{padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text);font-size:12px;width:100%;outline:none;}
+.ck-inp:focus{border-color:var(--accent);}
+.ck-label{font-size:11px;font-weight:700;color:var(--text);display:block;margin-bottom:3px;}
+.ck-mw-foot{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--topbar-bg);}
+</style>
+
+<div id="ck-overlay" onclick="cariKartGorunumKapat()"></div>
+<div id="ck-modal">
+  <!-- HEADER -->
+  <div id="ck-header">
+    <div class="ck-title">🗂️ Cari Kart Görünümü</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn btn-success btn-sm" onclick="ckYeniCariAc()">➕ Yeni Cari Ekle</button>
+      <button class="btn btn-outline btn-sm" onclick="ckKategoriYonetAc()">📁 Kategoriler</button>
+      <button class="btn btn-primary btn-sm" onclick="cariKartGorunumKapat()">✕ Kapat</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div id="ck-body">
+    <!-- LİSTE EKRANI -->
+    <div id="ck-liste-screen">
+      <div class="ck-topbar">
+        <select id="ck-cat-filter" class="ck-cat-select" onchange="ckRenderListe()">
+          <option value="">Tüm Kategoriler</option>
+        </select>
+        <input type="text" id="ck-srch" class="ck-inp" style="width:200px;" placeholder="🔍 Müşteri ara..." oninput="ckRenderListe()">
+        <button class="btn btn-outline btn-sm" onclick="window.ckFilter='all';ckRenderListe()">🗂️ Tümü</button>
+        <button class="btn btn-warning btn-sm" onclick="window.ckFilter='borclu';ckRenderListe()">🔴 Borçlular</button>
+        <button class="btn btn-success btn-sm" onclick="window.ckFilter='alacakli';ckRenderListe()">🟢 Alacaklılar</button>
+      </div>
+      <div class="ck-tbl-wrap">
+        <table class="ck-tbl">
+          <thead><tr>
+            <th>Cari Kod</th>
+            <th>Müşteri Adı</th>
+            <th>Kategori</th>
+            <th style="text-align:right;">Toplam Borç</th>
+            <th style="text-align:right;">Toplam Alacak</th>
+            <th style="text-align:right;">Bakiye (₺)</th>
+            <th style="text-align:right;">Durum</th>
+            <th style="text-align:center;">İşlemler</th>
+          </tr></thead>
+          <tbody id="ck-liste-tbody"></tbody>
+        </table>
+      </div>
+      <div class="ck-statusbar">
+        <div id="ck-count-lbl">Kayıtlı Cari: 0</div>
+        <div id="ck-genel-bakiye" style="color:var(--accent);">Genel Bakiye: ₺0.00</div>
+      </div>
+    </div>
+
+    <!-- DETAY EKRANI -->
+    <div id="ck-detay-screen">
+      <div class="ck-detay-header">
+        <div class="ck-detay-name" id="ck-detay-musteri-adi">MÜŞTERİ</div>
+        <!-- Müşteri bilgi bandı -->
+        <div id="ck-detay-musteri-bilgi" style="display:none;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:8px;font-size:11px;font-weight:600;color:var(--muted);"></div>
+        <div class="ck-detay-actions">
+          <button class="ck-detay-btn borc" onclick="ckTransAc('Borç Dekontu','borc')">📤 Borç Ekle</button>
+          <button class="ck-detay-btn alacak" onclick="ckTransAc('Tahsilat','alacak')">📥 Tahsilat Yap</button>
+          <button class="ck-detay-btn blue" onclick="ckTransAc('Alacak Dekontu','alacak')">📋 Alacak Ekle</button>
+          <button class="ck-detay-btn orange" onclick="ckTransAc('Ödeme','borc')">💸 Ödeme Yap</button>
+        </div>
+      </div>
+      <div class="ck-detay-tbl-wrap">
+        <table class="ck-tbl" style="border-radius:0;">
+          <thead><tr>
+            <th>Tarih</th>
+            <th>İşlem Türü</th>
+            <th>Açıklama</th>
+            <th>Poliçe No</th>
+            <th>Şirket / Plaka</th>
+            <th style="text-align:right;color:var(--danger);">Borç ₺</th>
+            <th style="text-align:right;color:var(--success);">Alacak ₺</th>
+            <th style="text-align:center;">İşlemler</th>
+          </tr></thead>
+          <tbody id="ck-detay-tbody"></tbody>
+        </table>
+      </div>
+      <div class="ck-detay-statusbar">
+        <div id="ck-detay-borc" style="color:var(--danger);">T. Borç: ₺0.00</div>
+        <div id="ck-detay-alacak" style="color:var(--success);">T. Alacak: ₺0.00</div>
+        <div id="ck-detay-kalan" style="background:var(--accent);color:#fff;padding:4px 14px;border-radius:20px;">Bakiye: ₺0.00</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KATEGORİ YÖNETİM MODAL -->
+<div id="ck-cat-modal">
+  <div class="ck-mw">
+    <div class="ck-mw-head">📁 Kategori Yönetimi <button onclick="ckCatModalKapat()" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted);">✕</button></div>
+    <div class="ck-mw-body">
+      <div style="display:flex;gap:6px;">
+        <input type="text" id="ck-new-cat" class="ck-inp" placeholder="Yeni kategori adı...">
+        <button class="btn btn-success btn-sm" onclick="ckKategoriEkle()">Ekle</button>
+      </div>
+      <div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);">
+        <table style="width:100%;border-collapse:collapse;" id="ck-cat-list-tbl"></table>
+      </div>
+    </div>
+    <div class="ck-mw-foot">
+      <button class="btn btn-outline btn-sm" onclick="ckCatModalKapat()">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- YENİ CARİ EKLE MODAL -->
+<div id="ck-cust-modal">
+  <div class="ck-mw">
+    <div class="ck-mw-head"><span id="ck-cust-modal-title">Yeni Cari Kart</span> <button onclick="document.getElementById('ck-cust-modal').classList.remove('active')" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted);">✕</button></div>
+    <div class="ck-mw-body">
+      <input type="hidden" id="ck-edit-mid">
+      <div>
+        <label class="ck-label">Müşteri Seç *</label>
+        <div style="position:relative;">
+          <input type="text" id="ck-musteri-search" class="ck-inp" placeholder="🔍 Müşteri ara..."
+            oninput="mkSearch('ck-musteri',this.value)" onfocus="mkSearch('ck-musteri',this.value)">
+          <input type="hidden" id="ck-musteri">
+          <div id="ck-musteri-dd" style="display:none;position:absolute;z-index:500;width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-height:200px;overflow-y:auto;margin-top:2px;"></div>
+        </div>
+      </div>
+      <div>
+        <label class="ck-label">Kategori</label>
+        <select id="ck-cust-cat" class="ck-inp"></select>
+      </div>
+      <div>
+        <label class="ck-label">Not / Açıklama</label>
+        <input type="text" id="ck-cust-not" class="ck-inp" placeholder="İsteğe bağlı...">
+      </div>
+    </div>
+    <div class="ck-mw-foot">
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('ck-cust-modal').classList.remove('active')">İptal</button>
+      <button class="btn btn-success btn-sm" onclick="ckCustKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- HAREKET GİRİŞ MODAL -->
+<div id="ck-trans-modal">
+  <div class="ck-mw">
+    <div class="ck-mw-head"><span id="ck-trans-title">İşlem</span> <button onclick="document.getElementById('ck-trans-modal').classList.remove('active')" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted);">✕</button></div>
+    <div class="ck-mw-body">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;">
+        <div>
+          <label class="ck-label">Tarih</label>
+          <input type="date" id="ck-trans-tarih" class="ck-inp">
+        </div>
+        <div>
+          <label class="ck-label">Tür</label>
+          <select id="ck-trans-tur" class="ck-inp">
+            <option value="borc">📤 Borç</option>
+            <option value="alacak">📥 Alacak</option>
+            <option value="iade">🔵 İade</option>
+            <option value="diger">🔄 Diğer</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="ck-label">Açıklama</label>
+        <input type="text" id="ck-trans-aciklama" class="ck-inp" placeholder="Açıklama...">
+      </div>
+      <div>
+        <label class="ck-label">Tutar (₺)</label>
+        <input type="number" id="ck-trans-tutar" class="ck-inp" step="0.01" placeholder="0.00" style="font-size:18px;font-weight:800;text-align:right;">
+      </div>
+    </div>
+    <div class="ck-mw-foot">
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('ck-trans-modal').classList.remove('active')">Vazgeç</button>
+      <button class="btn btn-success btn-sm" onclick="ckTransKaydet()">💾 İşlemi Onayla</button>
+    </div>
+  </div>
+</div>
+
+<!-- HAREKET DÜZENLEME MODAL -->
+<div id="ck-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:4100;justify-content:center;align-items:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div class="ck-mw" style="max-width:480px;width:95%;">
+    <div class="ck-mw-head" style="background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 70%,#000));color:#fff;">
+      ✏️ Hareketi Düzenle
+      <button onclick="document.getElementById('ck-edit-modal').style.display='none'" style="background:rgba(255,255,255,.2);border:none;cursor:pointer;font-size:15px;color:#fff;border-radius:6px;padding:2px 8px;">✕</button>
+    </div>
+    <div class="ck-mw-body" style="display:flex;flex-direction:column;gap:10px;">
+      <input type="hidden" id="ck-edit-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label class="ck-label">Tarih</label>
+          <input type="date" id="ck-edit-tarih" class="ck-inp">
+        </div>
+        <div>
+          <label class="ck-label">İşlem Türü</label>
+          <select id="ck-edit-tur" class="ck-inp">
+            <option value="borc">📤 Borç</option>
+            <option value="alacak">📥 Alacak</option>
+            <option value="iade">🔵 İade</option>
+            <option value="diger">🔄 Diğer</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="ck-label">Açıklama</label>
+        <input type="text" id="ck-edit-aciklama" class="ck-inp" placeholder="Açıklama...">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label class="ck-label">Tutar (₺)</label>
+          <input type="number" id="ck-edit-tutar" class="ck-inp" step="0.01" placeholder="0.00" style="font-size:16px;font-weight:800;text-align:right;">
+        </div>
+        <div>
+          <label class="ck-label">Poliçe No</label>
+          <input type="text" id="ck-edit-polNo" class="ck-inp" placeholder="Poliçe No...">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label class="ck-label">Şirket</label>
+          <input type="text" id="ck-edit-sirket" class="ck-inp" placeholder="Sigorta şirketi...">
+        </div>
+        <div>
+          <label class="ck-label">Plaka</label>
+          <input type="text" id="ck-edit-plaka" class="ck-inp" placeholder="Plaka...">
+        </div>
+      </div>
+    </div>
+    <div class="ck-mw-foot">
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('ck-edit-modal').style.display='none'">Vazgeç</button>
+      <button class="btn btn-success btn-sm" onclick="ckHareketKaydet()">💾 Değişiklikleri Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//   CARİ KART GÖRÜNÜMÜ – JS ENTEGRASYonu
+// ══════════════════════════════════════════
+window.ckFilter = 'all';
+window._ckActiveMid = null; // aktif müşteri id
+
+// ── Kategoriler (DB'de saklı veya localStorage fallback) ──────────
+function ckGetKategoriler(){
+  if(!DB.ckKategoriler) DB.ckKategoriler = ['Acente','Toptancı','Müşteri','Diğer'];
+  return DB.ckKategoriler;
+}
+function ckSetKategoriler(list){ DB.ckKategoriler=list; saveDB(); }
+
+// ── Cari Kart Kayıtları (DB'de saklı) ────────────────────────────
+// DB.ckKartlar: [{id, musteriId, kategori, not, olusturma}]
+function ckGetKartlar(){
+  if(!DB.ckKartlar) DB.ckKartlar=[];
+  return DB.ckKartlar;
+}
+
+// ── Açma / Kapatma ───────────────────────────────────────────────
+function cariKartGorunumAc(){
+  const overlay = byId('ck-overlay');
+  const modal   = byId('ck-modal');
+  if(overlay) overlay.style.display='block';
+  if(modal)   modal.classList.add('active');
+  ckGuncelleKatDropdown();
+  ckRenderListe();
+  ckListeGoster();
+}
+function cariKartGorunumKapat(){
+  const overlay = byId('ck-overlay');
+  const modal   = byId('ck-modal');
+  if(overlay) overlay.style.display='none';
+  if(modal)   modal.classList.remove('active');
+}
+
+// ── Ekran geçişleri ───────────────────────────────────────────────
+function ckListeGoster(){
+  byId('ck-liste-screen').style.display='block';
+  byId('ck-detay-screen').classList.remove('active');
+  const hdr = byId('ck-header');
+  // Geri butonunu kaldır
+  const geri = hdr.querySelector('.ck-geri-btn');
+  if(geri) geri.remove();
+  // Başlığı sıfırla
+  byId('ck-modal').querySelector('.ck-title').textContent='🗂️ Cari Kart Görünümü';
+}
+function ckDetayGoster(musteriId){
+  window._ckActiveMid = musteriId;
+  const m = getMusteri(musteriId);
+  byId('ck-liste-screen').style.display='none';
+  byId('ck-detay-screen').classList.add('active');
+  byId('ck-detay-musteri-adi').textContent = m ? m.ad.toUpperCase() : '—';
+
+  // ── Müşteri bilgi kartını doldur ──
+  const infoEl = byId('ck-detay-musteri-bilgi');
+  if(infoEl && m){
+    const tip = m.tip||'bireysel';
+    const tcOrVn = (tip==='kurumsal'||tip==='kobi')
+      ? (m.vergino ? '🏢 VN: '+m.vergino : '')
+      : (m.tc      ? '🪪 TC: '+m.tc      : '');
+    infoEl.innerHTML =
+      (tcOrVn ? `<span>${tcOrVn}</span>` : '') +
+      (m.dogum ? `<span>🎂 ${fmtD(m.dogum)}</span>` : '') +
+      (m.tel   ? `<span>📞 ${m.tel}</span>` : '') +
+      (m.sehir ? `<span>📍 ${m.sehir}</span>` : '') +
+      (m.aciklama ? `<span title="${m.aciklama}">💬 ${m.aciklama.substring(0,40)}${m.aciklama.length>40?'…':''}</span>` : '');
+    infoEl.style.display = infoEl.innerHTML ? 'flex' : 'none';
+  } else if(infoEl){
+    infoEl.style.display='none';
+  }
+
+  // Başlığa geri butonu ekle
+  byId('ck-modal').querySelector('.ck-title').textContent='📋 Hareket Analizi';
+  const hdr = byId('ck-header');
+  if(!hdr.querySelector('.ck-geri-btn')){
+    const btn = document.createElement('button');
+    btn.className='btn btn-outline btn-sm ck-geri-btn';
+    btn.textContent='← Listeye Dön';
+    btn.onclick=()=>{ ckListeGoster(); ckRenderListe(); };
+    hdr.insertBefore(btn, hdr.querySelector('div:last-child'));
+  }
+  ckRenderDetay();
+}
+
+// ── Kategori Dropdown Güncelle ────────────────────────────────────
+function ckGuncelleKatDropdown(){
+  const cats = ckGetKategoriler();
+  ['ck-cat-filter','ck-cust-cat'].forEach(id=>{
+    const el = byId(id);
+    if(!el) return;
+    const cur = el.value;
+    if(id==='ck-cat-filter'){
+      el.innerHTML = '<option value="">Tüm Kategoriler</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+    } else {
+      el.innerHTML = cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+    }
+    el.value = cur;
+  });
+}
+
+// ── Liste Render ──────────────────────────────────────────────────
+function ckRenderListe(){
+  const srch    = (gv('ck-srch')||'').toLowerCase();
+  const catFilt = gv('ck-cat-filter')||'';
+  const filter  = window.ckFilter||'all';
+  const kartlar = ckGetKartlar();
+
+  // Müşteri bazında hesapla
+  const musMap = {};
+  DB.musteriler.forEach(m=>{
+    const kart = kartlar.find(k=>k.musteriId===m.id);
+    const cs   = DB.cariler.filter(c=>c.musteriId===m.id);
+    const borc = cs.reduce((s,c)=>s+(parseFloat(c.borc)||0),0);
+    const alacak=cs.reduce((s,c)=>s+(parseFloat(c.alacak)||0),0);
+    const bakiye= borc - alacak;
+    musMap[m.id]={m, kart, borc, alacak, bakiye, cariSayisi:cs.length};
+  });
+
+  let liste = Object.values(musMap).filter(x=>{
+    // En az 1 cari hareketi olanları veya kartı olanları göster
+    if(x.cariSayisi===0 && !x.kart) return false;
+    if(srch && !x.m.ad.toLowerCase().includes(srch)) return false;
+    if(catFilt && (!x.kart || x.kart.kategori!==catFilt)) return false;
+    if(filter==='borclu'    && x.bakiye<=0) return false;
+    if(filter==='alacakli'  && x.bakiye>=0) return false;
+    return true;
+  });
+
+  const tbody = byId('ck-liste-tbody');
+  if(!liste.length){
+    tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px;font-size:13px;">Kayıt bulunamadı. <span style="color:var(--accent);cursor:pointer;" onclick="ckYeniCariAc()">➕ Yeni ekle →</span></td></tr>`;
+    byId('ck-count-lbl').textContent='Kayıtlı Cari: 0';
+    byId('ck-genel-bakiye').textContent='Genel Bakiye: ₺0.00';
+    return;
+  }
+
+  let genelBakiye=0;
+  tbody.innerHTML = liste.map((x,i)=>{
+    genelBakiye += x.bakiye;
+    const kod  = x.kart ? (x.kart.kod||('C'+(i+101))) : ('C'+(i+101));
+    const kat  = x.kart ? (x.kart.kategori||'—') : '—';
+    const dur  = x.bakiye>0
+      ?`<span style="background:#fee2e2;color:#991b1b;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;">Borçlu</span>`
+      :x.bakiye<0
+      ?`<span style="background:#dcfce7;color:#166534;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;">Alacaklı</span>`
+      :`<span style="background:var(--bg);color:var(--muted);font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;">Sıfır</span>`;
+    const bColor = x.bakiye>0?'var(--danger)':x.bakiye<0?'var(--success)':'var(--muted)';
+    return `<tr onclick="ckDetayGoster('${x.m.id}')" title="Hareketleri görmek için tıklayın">
+      <td style="font-family:monospace;color:var(--accent);font-weight:700;">${kod}</td>
+      <td style="font-weight:700;">${x.m.ad}</td>
+      <td style="color:var(--muted);font-size:11px;">${kat}</td>
+      <td style="text-align:right;color:var(--danger);font-weight:700;">₺${fmt(x.borc)}</td>
+      <td style="text-align:right;color:var(--success);font-weight:700;">₺${fmt(x.alacak)}</td>
+      <td style="text-align:right;font-weight:800;color:${bColor};">₺${fmt(Math.abs(x.bakiye))}</td>
+      <td style="text-align:right;">${dur}</td>
+      <td style="text-align:center;" onclick="event.stopPropagation()">
+        <button class="btn-act btn-act-primary" onclick="ckDetayGoster('${x.m.id}')">📋 Detay</button>
+        <button class="btn-act btn-act-success" onclick="ckTransAcMusteri('${x.m.id}','Borç Dekontu','borc')">📤</button>
+        <button class="btn-act btn-act-info" onclick="ckTransAcMusteri('${x.m.id}','Tahsilat','alacak')">📥</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  byId('ck-count-lbl').textContent=`Kayıtlı Cari: ${liste.length}`;
+  byId('ck-genel-bakiye').textContent=`Genel Bakiye: ₺${fmt(Math.abs(genelBakiye))} ${genelBakiye>0?'(Borç)':genelBakiye<0?'(Alacak)':''}`;
+}
+
+// ── Detay Render ──────────────────────────────────────────────────
+function ckRenderDetay(){
+  const mid  = window._ckActiveMid;
+  // Mevcut cari kayıtları (manuel + tahsilat + iptal otomatik)
+  const cs   = DB.cariler.filter(c=>c.musteriId===mid).sort((a,b)=>(a.tarih||'').localeCompare(b.tarih||''));
+  // Tahsilatlardan ek bilgi çek
+  const ths  = (DB.tahsilatlar||[]).filter(t=>t.musteriId===mid);
+  // İptal kayıtları – cari kayıt olarak göster
+  const ipts = (DB.iptaller||[]).filter(ii=>ii.musteriId===mid);
+  // İptal ödemeleri (tahsilat tip=odeme, iptalIade bağlantılı)
+  const iptalOdThs = (DB.tahsilatlar||[]).filter(t=>t.musteriId===mid && (t.tip==='odeme'||t.iptalIadeId));
+  const TUR_LABEL={'borc':'📤 Borç','alacak':'📥 Alacak','iade':'🔵 İade','odeme':'💸 Ödeme','iskonto':'🏷️ İskonto','diger':'🔄 Diğer'};
+
+  let tBorc=0, tAlacak=0;
+  const tbody = byId('ck-detay-tbody');
+
+  // ─── Satır üret: cari kayıtları ─────────────────────────────────
+  let satirlar = cs.map(c=>{
+    const th = ths.find(t=>t.id===c.id.replace('_c',''));
+    const tur = TUR_LABEL[th?th.tip:c.borcTur] || (c.borc>0?'📤 Borç':'📥 Alacak');
+    const b = parseFloat(c.borc)||0;
+    const a = parseFloat(c.alacak)||0;
+    tBorc   += b;
+    tAlacak += a;
+    return `<tr>
+      <td style="font-size:11px;white-space:nowrap;">${fmtD(c.tarih)||'-'}</td>
+      <td style="font-size:11px;color:var(--info);">${tur}</td>
+      <td style="font-size:11px;color:var(--muted);">${c.aciklama||th?.aciklama||'-'}</td>
+      <td style="font-size:11px;font-family:monospace;">${c.polNo||'-'}</td>
+      <td style="font-size:11px;">${c.sirket||'-'}${c.plaka?' / '+c.plaka:''}</td>
+      <td style="text-align:right;color:var(--danger);font-weight:700;font-family:monospace;">${b?'₺'+fmt(b):''}</td>
+      <td style="text-align:right;color:var(--success);font-weight:700;font-family:monospace;">${a?'₺'+fmt(a):''}</td>
+      <td style="text-align:center;white-space:nowrap;">
+        <button onclick="ckHareketDuzenleAc('${c.id}')" title="Düzenle" style="background:none;border:none;cursor:pointer;color:var(--accent);font-size:14px;margin-right:2px;">✏️</button>
+        <button onclick="ckHareketSil('${c.id}')" title="Sil" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:14px;">🗑️</button>
+      </td>
+    </tr>`;
+  });
+
+  // ─── İptal kayıtlarını ekle (cari tablosunda zaten _cariId ile eklendi, ama yoksa manuel ekle) ──
+  ipts.forEach(ii=>{
+    // Zaten _cariId varsa DB.cariler'de mevcut, yinelemeyiz
+    if(ii._cariId && cs.find(c=>c.id===ii._cariId)) return;
+    // Gerçek iade (müşteriye ödenmesi gereken) – eğer _cariId yoksa göster
+    const gIade = parseFloat(ii.gercekIade)||0;
+    const mkIade= parseFloat(ii.mkIade)||0;
+    if(gIade>0 && !ii._cariId){
+      tAlacak += gIade;
+      satirlar.push(`<tr style="background:color-mix(in srgb,var(--warning) 6%,transparent);">
+        <td style="font-size:11px;white-space:nowrap;">${fmtD(ii.iptaltarihi)||'-'}</td>
+        <td style="font-size:11px;color:var(--warning);">🔄 İptal İadesi</td>
+        <td style="font-size:11px;color:var(--muted);">İptal – ${ii.polNo||'-'}${ii.sebep?' ('+ii.sebep+')':''}</td>
+        <td style="font-size:11px;font-family:monospace;">${ii.polNo||'-'}</td>
+        <td style="font-size:11px;">${ii.sirket||'-'}${ii.plaka?' / '+ii.plaka:''}</td>
+        <td style="text-align:right;color:var(--danger);font-weight:700;font-family:monospace;"></td>
+        <td style="text-align:right;color:var(--success);font-weight:700;font-family:monospace;">₺${fmt(gIade)}</td>
+        <td style="text-align:center;color:var(--muted);font-size:10px;">—</td>
+      </tr>`);
+    }
+    if(mkIade>0 && !ii._cariId){
+      tAlacak += mkIade;
+      satirlar.push(`<tr style="background:color-mix(in srgb,var(--warning) 6%,transparent);">
+        <td style="font-size:11px;white-space:nowrap;">${fmtD(ii.iptaltarihi)||'-'}</td>
+        <td style="font-size:11px;color:var(--warning);">💛 MK İade</td>
+        <td style="font-size:11px;color:var(--muted);">MK İptal İadesi – ${ii.polNo||'-'}</td>
+        <td style="font-size:11px;font-family:monospace;">${ii.polNo||'-'}</td>
+        <td style="font-size:11px;">${ii.sirket||'-'}${ii.plaka?' / '+ii.plaka:''}</td>
+        <td style="text-align:right;color:var(--danger);font-weight:700;font-family:monospace;"></td>
+        <td style="text-align:right;color:var(--success);font-weight:700;font-family:monospace;">₺${fmt(mkIade)}</td>
+        <td style="text-align:center;color:var(--muted);font-size:10px;">—</td>
+      </tr>`);
+    }
+  });
+
+  // ─── İptal Ödemelerini ekle (tahsilat tip=odeme veya iptalIadeId olanlar, cari'de yoksa) ──
+  iptalOdThs.forEach(t=>{
+    // Zaten cari'de kayıtlıysa atla
+    if(cs.find(c=>c.id===t.id || c.id===t.id+'_c')) return;
+    const tutar = parseFloat(t.tutar)||0;
+    if(!tutar) return;
+    tBorc += tutar;
+    satirlar.push(`<tr style="background:color-mix(in srgb,var(--danger) 5%,transparent);">
+      <td style="font-size:11px;white-space:nowrap;">${fmtD(t.tarih||t.olusturma)||'-'}</td>
+      <td style="font-size:11px;color:var(--danger);">💸 İptal Ödemesi</td>
+      <td style="font-size:11px;color:var(--muted);">${t.aciklama||'İptal Ödemesi'}</td>
+      <td style="font-size:11px;font-family:monospace;">${t.polNo||'-'}</td>
+      <td style="font-size:11px;">${t.sirket||'-'}</td>
+      <td style="text-align:right;color:var(--danger);font-weight:700;font-family:monospace;">₺${fmt(tutar)}</td>
+      <td style="text-align:right;color:var(--success);font-weight:700;font-family:monospace;"></td>
+      <td style="text-align:center;color:var(--muted);font-size:10px;">—</td>
+    </tr>`);
+  });
+
+  if(!satirlar.length){
+    tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px;">Henüz hareket yok. Yukarıdan işlem ekleyin.</td></tr>`;
+  } else {
+    tbody.innerHTML = satirlar.join('');
+  }
+
+  byId('ck-detay-borc').textContent  = `T. Borç: ₺${fmt(tBorc)}`;
+  byId('ck-detay-alacak').textContent= `T. Alacak: ₺${fmt(tAlacak)}`;
+  const net = tBorc - tAlacak;
+  byId('ck-detay-kalan').textContent = `Bakiye: ₺${fmt(Math.abs(net))} ${net>0?'(BORÇLU)':net<0?'(ALACAKLI)':'(SIFIR)'}`;
+}
+
+// ── Hareket Düzenle ───────────────────────────────────────────────
+function ckHareketDuzenleAc(id){
+  const c = DB.cariler.find(x=>x.id===id);
+  if(!c){ toast('Hareket bulunamadı','error'); return; }
+  byId('ck-edit-id').value = id;
+  byId('ck-edit-tarih').value = c.tarih || new Date().toISOString().slice(0,10);
+  byId('ck-edit-tur').value = c.borcTur || 'borc';
+  byId('ck-edit-aciklama').value = c.aciklama || '';
+  const tutar = c.borc > 0 ? c.borc : c.alacak;
+  byId('ck-edit-tutar').value = tutar || '';
+  byId('ck-edit-polNo').value = c.polNo || '';
+  byId('ck-edit-sirket').value = c.sirket || '';
+  byId('ck-edit-plaka').value = c.plaka || '';
+  byId('ck-edit-modal').style.display = 'flex';
+}
+function ckHareketKaydet(){
+  const id = byId('ck-edit-id').value;
+  const idx = DB.cariler.findIndex(x=>x.id===id);
+  if(idx===-1){ toast('Hareket bulunamadı','error'); return; }
+  const tutar = parseFloat(byId('ck-edit-tutar').value)||0;
+  if(!tutar){ toast('Tutar giriniz','error'); return; }
+  const tur = byId('ck-edit-tur').value;
+  const isBorc = (tur==='borc'||tur==='diger');
+  DB.cariler[idx] = {
+    ...DB.cariler[idx],
+    tarih    : byId('ck-edit-tarih').value,
+    borcTur  : tur,
+    aciklama : byId('ck-edit-aciklama').value,
+    borc     : isBorc ? tutar : 0,
+    alacak   : !isBorc ? tutar : 0,
+    polNo    : byId('ck-edit-polNo').value,
+    sirket   : byId('ck-edit-sirket').value,
+    plaka    : byId('ck-edit-plaka').value,
+  };
+  saveDB();
+  byId('ck-edit-modal').style.display = 'none';
+  ckRenderDetay();
+  if(typeof renderCari==='function') renderCari();
+  if(typeof renderCariListe==='function') renderCariListe();
+  if(typeof updateStats==='function') updateStats();
+  toast('Hareket güncellendi','success');
+}
+
+// ── Hareket Sil ───────────────────────────────────────────────────
+function ckHareketSil(id){
+  if(!confirm('Bu hareketi silmek istediğinize emin misiniz?')) return;
+  DB.cariler = DB.cariler.filter(c=>c.id!==id);
+  saveDB();
+  ckRenderDetay();
+  toast('Hareket silindi','error');
+}
+
+// ── Yeni Hareket Modal ────────────────────────────────────────────
+function ckTransAc(label, tur){
+  byId('ck-trans-title').textContent = label;
+  byId('ck-trans-tarih').value = new Date().toISOString().slice(0,10);
+  byId('ck-trans-tur').value   = tur;
+  byId('ck-trans-aciklama').value = label;
+  byId('ck-trans-tutar').value= '';
+  byId('ck-trans-modal').classList.add('active');
+}
+function ckTransAcMusteri(mid, label, tur){
+  window._ckActiveMid = mid;
+  ckDetayGoster(mid);
+  setTimeout(()=>ckTransAc(label, tur), 50);
+}
+function ckTransKaydet(){
+  const mid    = window._ckActiveMid;
+  if(!mid){ toast('Müşteri seçilmedi','error'); return; }
+  const tutar  = parseFloat(byId('ck-trans-tutar').value)||0;
+  if(!tutar){ toast('Tutar giriniz','error'); return; }
+  const tur    = gv('ck-trans-tur');
+  const tarih  = gv('ck-trans-tarih');
+  const aciklama = gv('ck-trans-aciklama');
+  const isBorc = (tur==='borc'||tur==='diger');
+  const obj = {
+    id: 'ck_'+Date.now(),
+    musteriId: mid,
+    policeId : '',
+    tarih,
+    borcTur  : tur,
+    borc     : isBorc ? tutar : 0,
+    alacak   : !isBorc ? tutar : 0,
+    aciklama,
+    polNo:'', sirket:'', plaka:''
+  };
+  DB.cariler.push(obj);
+  saveDB();
+  document.getElementById('ck-trans-modal').classList.remove('active');
+  ckRenderDetay();
+  // Ana listeleri de güncelle
+  if(typeof renderCari==='function') renderCari();
+  if(typeof renderCariListe==='function') renderCariListe();
+  if(typeof updateStats==='function') updateStats();
+  toast('Hareket kaydedildi','success');
+}
+
+// ── Yeni Cari Kart ────────────────────────────────────────────────
+function ckYeniCariAc(){
+  byId('ck-cust-modal-title').textContent = 'Yeni Cari Kart';
+  byId('ck-edit-mid').value='';
+  byId('ck-musteri-search').value='';
+  byId('ck-musteri').value='';
+  byId('ck-cust-not').value='';
+  ckGuncelleKatDropdown();
+  byId('ck-cust-modal').classList.add('active');
+}
+function ckCustKaydet(){
+  const mid = gv('ck-musteri');
+  if(!mid){ toast('Müşteri seçiniz','error'); return; }
+  const kartlar = ckGetKartlar();
+  const kat  = gv('ck-cust-cat');
+  const not  = gv('ck-cust-not');
+  const mevcut = kartlar.findIndex(k=>k.musteriId===mid);
+  if(mevcut>-1){
+    kartlar[mevcut].kategori=kat;
+    kartlar[mevcut].not=not;
+  } else {
+    kartlar.push({id:'ckk_'+Date.now(), musteriId:mid, kod:'C'+(kartlar.length+101), kategori:kat, not, olusturma:new Date().toISOString()});
+  }
+  DB.ckKartlar=kartlar;
+  saveDB();
+  byId('ck-cust-modal').classList.remove('active');
+  ckGuncelleKatDropdown();
+  ckRenderListe();
+  toast('Cari kart kaydedildi','success');
+}
+
+// ── Kategori Yönetimi ─────────────────────────────────────────────
+function ckKategoriYonetAc(){
+  ckRenderCatList();
+  byId('ck-cat-modal').classList.add('active');
+}
+function ckCatModalKapat(){ byId('ck-cat-modal').classList.remove('active'); }
+function ckRenderCatList(){
+  const cats = ckGetKategoriler();
+  byId('ck-cat-list-tbl').innerHTML = cats.map((c,i)=>`
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:8px 12px;font-weight:600;">${c}</td>
+      <td style="text-align:right;padding:6px;">
+        <button onclick="ckKategoriSil(${i})" style="background:none;border:none;cursor:pointer;color:var(--danger);font-weight:700;padding:2px 8px;">✕</button>
+      </td>
+    </tr>`).join('');
+}
+function ckKategoriEkle(){
+  const val = (byId('ck-new-cat').value||'').trim();
+  if(!val) return;
+  const cats = ckGetKategoriler();
+  if(!cats.includes(val)){ cats.push(val); ckSetKategoriler(cats); }
+  byId('ck-new-cat').value='';
+  ckRenderCatList();
+  ckGuncelleKatDropdown();
+}
+function ckKategoriSil(i){
+  if(!confirm('Kategoriyi silmek istiyor musunuz?')) return;
+  const cats = ckGetKategoriler();
+  cats.splice(i,1);
+  ckSetKategoriler(cats);
+  ckRenderCatList();
+  ckGuncelleKatDropdown();
+}
+
+// Klavye kısayolları detay ekranı için
+document.addEventListener('keydown', e=>{
+  const detay = byId('ck-detay-screen');
+  if(!detay || !detay.classList.contains('active')) return;
+  const map = {F5:['Borç Dekontu','borc'], F6:['Tahsilat','alacak'], F7:['Alacak Dekontu','alacak'], F8:['Ödeme','borc']};
+  if(map[e.key]){ e.preventDefault(); ckTransAc(...map[e.key]); }
+  if(e.key==='Escape'){ ckListeGoster(); ckRenderListe(); }
+});
+</script>
 
 <!-- KASA TAM EKRAN MODAL -->
 <div id="kasa-fullscreen-overlay" onclick="kasaTamEkranKapat()"></div>
