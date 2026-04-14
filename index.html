@@ -1533,6 +1533,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     </div>
     <div class="search-bar">
       <input type="text" placeholder="🔍 Ad, TC, Telefon..." id="srch-m" oninput="_dRenderMusteriler()">
+      <button class="btn btn-outline btn-sm" id="btn-musteri-az" onclick="musteriSort('az')" title="A'dan Z'ye sırala">🔤 A→Z</button>
+      <button class="btn btn-outline btn-sm" id="btn-musteri-za" onclick="musteriSort('za')" title="Z'den A'ya sırala">🔤 Z→A</button>
     </div>
     <div class="table-wrap">
       <table id="tbl-musteriler">
@@ -1707,6 +1709,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </select>
       <input type="date" id="srch-pt-t1" onchange="renderPtEkstraListe()">
       <input type="date" id="srch-pt-t2" onchange="renderPtEkstraListe()">
+      <button class="btn btn-outline btn-sm" id="btn-ekstra-az" onclick="ekstraSort('az')" title="A'dan Z'ye sırala">🔤 A→Z</button>
+      <button class="btn btn-outline btn-sm" id="btn-ekstra-za" onclick="ekstraSort('za')" title="Z'den A'ya sırala">🔤 Z→A</button>
     </div>
     <div id="pt-ekstra-liste-icerik">
       <div style="color:var(--muted);font-size:12px;padding:10px;">Ekstra kayıt bulunamadı</div>
@@ -2415,6 +2419,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </select>
       <input type="date" id="takip-t1" onchange="renderTakip()">
       <input type="date" id="takip-t2" onchange="renderTakip()">
+      <button class="btn btn-outline btn-sm" id="btn-takip-az" onclick="takipSort('az')" title="A'dan Z'ye sırala">🔤 A→Z</button>
+      <button class="btn btn-outline btn-sm" id="btn-takip-za" onclick="takipSort('za')" title="Z'den A'ya sırala">🔤 Z→A</button>
     </div>
     <div class="ftabs">
       <div class="ftab active" onclick="takipTab(this,'all')">Tümü</div>
@@ -2505,6 +2511,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <button class="btn btn-warning btn-sm" id="clf-borclu"   onclick="window.cariFilter='borclu';renderCariListe()" title="Sadece borçluları göster (bakiye > 0)">🔴 Borçlular</button>
       <button class="btn btn-success btn-sm" id="clf-alacakli" onclick="window.cariFilter='alacakli';renderCariListe()" title="Sadece alacaklıları göster (bakiye < 0)">🟢 Alacaklılar</button>
       <button class="btn btn-info    btn-sm" id="clf-ikisi"    onclick="window.cariFilter='ikisi';renderCariListe()" title="Hem borcu hem alacağı olan müşterileri göster">🔵 Borçlu &amp; Alacaklılar</button>
+      <button class="btn btn-outline btn-sm" id="btn-cari-az" onclick="cariListeSort('az')" title="A'dan Z'ye sırala">🔤 A→Z</button>
+      <button class="btn btn-outline btn-sm" id="btn-cari-za" onclick="cariListeSort('za')" title="Z'den A'ya sırala">🔤 Z→A</button>
     </div>
     <div id="cari-liste-icerik">
       <div style="color:var(--muted);font-size:12px;padding:10px;">Yükleniyor...</div>
@@ -2881,6 +2889,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       </select>
       <input type="date" id="acente-srch-t1" onchange="renderAcente()" title="Başlangıç tarihi">
       <input type="date" id="acente-srch-t2" onchange="renderAcente()" title="Bitiş tarihi">
+      <button class="btn btn-outline btn-sm" id="btn-acente-az" onclick="acenteSort('az')" title="A'dan Z'ye sırala">🔤 A→Z</button>
+      <button class="btn btn-outline btn-sm" id="btn-acente-za" onclick="acenteSort('za')" title="Z'den A'ya sırala">🔤 Z→A</button>
       <button class="btn btn-outline btn-sm" onclick="acenteFiltreSifirla()">🔄 Sıfırla</button>
     </div>
     <div class="table-wrap">
@@ -3283,6 +3293,11 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <button class="btn btn-danger btn-sm" onclick="exportIptalPDF()">📄 PDF</button>
         <button class="btn btn-outline btn-sm" onclick="printIptalListesi()">🖨️ Yazdır</button>
       </div>
+    </div>
+    <div class="search-bar" style="flex-wrap:wrap;gap:6px;">
+      <input type="text" id="srch-iptal" placeholder="🔍 Müşteri, Poliçe No, Plaka..." oninput="renderIptal()" style="min-width:200px;">
+      <button class="btn btn-outline btn-sm" id="btn-iptal-az" onclick="iptalSort('az')" title="A'dan Z'ye sırala">🔤 A→Z</button>
+      <button class="btn btn-outline btn-sm" id="btn-iptal-za" onclick="iptalSort('za')" title="Z'den A'ya sırala">🔤 Z→A</button>
     </div>
     <div class="table-wrap">
       <table id="tbl-iptal">
@@ -7019,6 +7034,71 @@ function printPoliceListesi(){
 
 let plSortDir='az';
 function plSort(d){plSortDir=d;DB.policeler.sort((a,b)=>{const ma=getMusteri(a.musteriId);const mb=getMusteri(b.musteriId);const r=(ma?ma.ad:'').localeCompare(mb?mb.ad:'');return d==='az'?r:-r;});renderPoliceListesi();}
+
+// ── Sıralama yardımcısı: aktif butonu vurgula ──────────────────
+function _hlSortBtn(azId,zaId,dir){
+  const az=byId(azId),za=byId(zaId);
+  if(!az||!za)return;
+  [az,za].forEach(b=>{b.style.fontWeight='400';b.style.outline='none';b.style.opacity='0.7';});
+  const active=dir==='az'?az:za;
+  active.style.fontWeight='800';active.style.opacity='1';
+  active.style.outline='2px solid var(--accent)';active.style.outlineOffset='2px';
+}
+
+// ── Müşteri Listesi sıralama ───────────────────────────────────
+let mSortDir='';
+function musteriSort(d){
+  mSortDir=d;
+  DB.musteriler.sort((a,b)=>{const r=a.ad.localeCompare(b.ad,'tr');return d==='az'?r:-r;});
+  _hlSortBtn('btn-musteri-az','btn-musteri-za',d);
+  renderMusteriler();
+}
+
+// ── Poliçe Takip sıralama ─────────────────────────────────────
+let takipSortDir='';
+function takipSort(d){
+  takipSortDir=d;
+  DB.policeler.sort((a,b)=>{const ma=getMusteri(a.musteriId);const mb=getMusteri(b.musteriId);const r=(ma?ma.ad:'').localeCompare(mb?mb.ad:'','tr');return d==='az'?r:-r;});
+  _hlSortBtn('btn-takip-az','btn-takip-za',d);
+  renderTakip();
+}
+
+// ── Ekstra Takip sıralama ─────────────────────────────────────
+let ekstraSortDir='';
+function ekstraSort(d){
+  ekstraSortDir=d;
+  DB.ptExtras.sort((a,b)=>{const ma=getMusteri(a.musteriId);const mb=getMusteri(b.musteriId);const r=(ma?ma.ad:'').localeCompare(mb?mb.ad:'','tr');return d==='az'?r:-r;});
+  _hlSortBtn('btn-ekstra-az','btn-ekstra-za',d);
+  renderPtEkstraListe();
+}
+
+// ── Cari Listesi sıralama ─────────────────────────────────────
+let cariListeSortDir='';
+function cariListeSort(d){
+  cariListeSortDir=d;
+  _hlSortBtn('btn-cari-az','btn-cari-za',d);
+  window._cariListeSortOverride=d;
+  renderCariListe();
+}
+
+// ── İptal & İade sıralama ─────────────────────────────────────
+let iptalSortDir='';
+function iptalSort(d){
+  iptalSortDir=d;
+  DB.iptaller.sort((a,b)=>{const ma=getMusteri(a.musteriId);const mb=getMusteri(b.musteriId);const r=(ma?ma.ad:'').localeCompare(mb?mb.ad:'','tr');return d==='az'?r:-r;});
+  _hlSortBtn('btn-iptal-az','btn-iptal-za',d);
+  renderIptal();
+}
+
+// ── Acente Listesi sıralama ───────────────────────────────────
+let acenteSortDir='';
+function acenteSort(d){
+  acenteSortDir=d;
+  DB.acenteler.sort((a,b)=>{const r=a.ad.localeCompare(b.ad,'tr');return d==='az'?r:-r;});
+  _hlSortBtn('btn-acente-az','btn-acente-za',d);
+  renderAcente();
+}
+
 function editPolice(id){
   const p=getPolice(id);if(!p)return;
   populateSelects();
@@ -8955,8 +9035,18 @@ function resetIptalForm(){
 }
 function renderIptal(){
   const tb=byId('tbody-iptal');
-  if(!DB.iptaller.length){tb.innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';return;}
-  tb.innerHTML=DB.iptaller.map((ii,_idx)=>{
+  const srchVal=(byId('srch-iptal')?byId('srch-iptal').value.toLowerCase():'');
+  let iptList=DB.iptaller;
+  if(srchVal){
+    iptList=iptList.filter(ii=>{
+      const m=getMusteri(ii.musteriId);
+      return (m&&m.ad.toLowerCase().includes(srchVal))||
+             (ii.polNo&&ii.polNo.toLowerCase().includes(srchVal))||
+             (ii.plaka&&ii.plaka.toLowerCase().includes(srchVal));
+    });
+  }
+  if(!iptList.length){tb.innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';return;}
+  tb.innerHTML=iptList.map((ii,_idx)=>{
     const m=getMusteri(ii.musteriId);
     const docs=ii.docs||{};
     const hasDocs=docs.senet||docs.pdf;
@@ -15524,6 +15614,11 @@ function renderCariListe(){
     if((filterTip||filterYontem)&&m.filteredCount===0)return false;
     return true;
   });
+
+  // A→Z / Z→A sıralama uygula
+  const _csd=window._cariListeSortOverride||'';
+  if(_csd==='az') list.sort((a,b)=>a.ad.localeCompare(b.ad,'tr'));
+  else if(_csd==='za') list.sort((a,b)=>b.ad.localeCompare(a.ad,'tr'));
 
   if(!list.length){
     el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:12px;">Kayıt bulunamadı.</div>';
