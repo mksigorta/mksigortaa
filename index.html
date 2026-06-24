@@ -280,16 +280,29 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
 nav{padding:4px 10px;flex:1;}
 nav a{
-  display:flex;align-items:center;gap:9px;padding:8px 10px;
+  display:flex;align-items:center;gap:0;padding:0;
   color:var(--sidebar-text);text-decoration:none;
   font-size:12.5px;font-weight:500;cursor:pointer;
   border-radius:8px;margin-bottom:1px;
-  transition:all .15s;
+  transition:all .15s;min-height:34px;
 }
 nav a:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9);}
 nav a.active{background:var(--sidebar-active);color:#fff;}
 nav a.active .ico{opacity:1;}
-nav a .ico{font-size:15px;width:18px;text-align:center;flex-shrink:0;opacity:.7;}
+nav a .ico{
+  font-size:15px;
+  width:38px;
+  min-width:38px;
+  height:34px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;opacity:.7;
+  line-height:1;
+}
+nav a .nav-label{
+  flex:1;
+  padding:8px 10px 8px 0;
+  line-height:1.2;
+}
 nav a:hover .ico,.active .ico{opacity:1;}
 .nav-sec{padding:14px 10px 4px;font-size:9px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:1.5px;text-transform:uppercase;}
 .nav-bottom{padding:14px 10px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0;}
@@ -1171,56 +1184,56 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
   </div>
   <nav>
     <!-- 1. Ana Sayfa -->
-    <a onclick="showPage('dashboard')" id="nav-dashboard"><span class="ico">🏠</span>Ana Sayfa</a>
-    <a onclick="showPage('toplu-islem')" id="nav-toplu-islem"><span class="ico">☑️</span>Toplu İşlemler</a>
-    <a onclick="showPage('belge-arama')" id="nav-belge-arama"><span class="ico">🔍</span>Belge &amp; Akıllı Arama</a>
+    <a onclick="showPage('dashboard')" id="nav-dashboard"><span class="ico">🏠</span><span class="nav-label">Ana Sayfa</span></a>
+    <a onclick="showPage('toplu-islem')" id="nav-toplu-islem"><span class="ico">☑️</span><span class="nav-label">Toplu İşlemler</span></a>
+    <a onclick="showPage('belge-arama')" id="nav-belge-arama"><span class="ico">🔍</span><span class="nav-label">Belge &amp; Akıllı Arama</span></a>
     <!-- 2. Müşteriler -->
     <div class="nav-sec">Müşteriler</div>
-    <a onclick="showPage('musteriler');setTimeout(()=>openModal('modal-musteri'),100)" id="nav-musteri-ekle"><span class="ico">👤</span>Müşteri Ekle</a>
-    <a onclick="showPage('musteriler')" id="nav-musteriler"><span class="ico">📋</span>Müşteri Liste</a>
+    <a onclick="showPage('musteriler');setTimeout(()=>openModal('modal-musteri'),100)" id="nav-musteri-ekle"><span class="ico">👤</span><span class="nav-label">Müşteri Ekle</span></a>
+    <a onclick="showPage('musteriler')" id="nav-musteriler"><span class="ico">📋</span><span class="nav-label">Müşteri Liste</span></a>
     <!-- 3. Acenteler -->
     <div class="nav-sec">Acenteler</div>
-    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('ekle'),100)" id="nav-acente-ekle"><span class="ico">🏢</span>Acente Ekle</a>
-    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('liste'),100)" id="nav-acente-liste"><span class="ico">📋</span>Acente Liste</a>
-    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('tahsilat-ekle'),100)" id="nav-acente-tahsilat"><span class="ico">💵</span>Acente Tahsilat</a>
-    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('tahsilat-liste'),100)" id="nav-acente-tahsilat-liste"><span class="ico">📊</span>Acente Tahsilat Liste</a>
+    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('ekle'),100)" id="nav-acente-ekle"><span class="ico">🏢</span><span class="nav-label">Acente Ekle</span></a>
+    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('liste'),100)" id="nav-acente-liste"><span class="ico">📋</span><span class="nav-label">Acente Liste</span></a>
+    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('tahsilat-ekle'),100)" id="nav-acente-tahsilat"><span class="ico">💵</span><span class="nav-label">Acente Tahsilat</span></a>
+    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('tahsilat-liste'),100)" id="nav-acente-tahsilat-liste"><span class="ico">📊</span><span class="nav-label">Acente Tahsilat Liste</span></a>
     <!-- 4. Poliçeler -->
     <div class="nav-sec">Poliçeler</div>
-    <a onclick="showPage('police-ekle')" id="nav-police-ekle"><span class="ico">➕</span>Poliçe Ekle</a>
-    <a onclick="showPage('police-listesi')" id="nav-police-listesi"><span class="ico">📋</span>Poliçe Liste</a>
-    <a onclick="showPage('police-takip')" id="nav-police-takip"><span class="ico">🔍</span>Poliçe Takip</a>
-    <a onclick="showPage('pt-ekstra-ekle')" id="nav-pt-ekstra-ekle"><span class="ico">📌</span>Ekstra Kayıt Ekle</a>
-    <a onclick="showPage('pt-ekstra-liste')" id="nav-pt-ekstra-liste"><span class="ico">📋</span>Ekstra Takip Kayıtları</a>
+    <a onclick="showPage('police-ekle')" id="nav-police-ekle"><span class="ico">➕</span><span class="nav-label">Poliçe Ekle</span></a>
+    <a onclick="showPage('police-listesi')" id="nav-police-listesi"><span class="ico">📋</span><span class="nav-label">Poliçe Liste</span></a>
+    <a onclick="showPage('police-takip')" id="nav-police-takip"><span class="ico">🔍</span><span class="nav-label">Poliçe Takip</span></a>
+    <a onclick="showPage('pt-ekstra-ekle')" id="nav-pt-ekstra-ekle"><span class="ico">📌</span><span class="nav-label">Ekstra Kayıt Ekle</span></a>
+    <a onclick="showPage('pt-ekstra-liste')" id="nav-pt-ekstra-liste"><span class="ico">📋</span><span class="nav-label">Ekstra Takip Kayıtları</span></a>
     <!-- 5. Cariler -->
     <div class="nav-sec">Cariler</div>
-    <a onclick="showPage('cari')" id="nav-cari"><span class="ico">💰</span>Cari Ekle</a>
-    <a onclick="showPage('cari-liste')" id="nav-cari-liste"><span class="ico">📋</span>Cari Listesi</a>
-    <a onclick="showPage('tahsilat')" id="nav-tahsilat"><span class="ico">💳</span>Tahsilat</a>
-    <a onclick="showPage('tahsilat-liste')" id="nav-tahsilat-liste"><span class="ico">📊</span>Tahsilat Listesi</a>
+    <a onclick="showPage('cari')" id="nav-cari"><span class="ico">💰</span><span class="nav-label">Cari Ekle</span></a>
+    <a onclick="showPage('cari-liste')" id="nav-cari-liste"><span class="ico">📋</span><span class="nav-label">Cari Listesi</span></a>
+    <a onclick="showPage('tahsilat')" id="nav-tahsilat"><span class="ico">💳</span><span class="nav-label">Tahsilat</span></a>
+    <a onclick="showPage('tahsilat-liste')" id="nav-tahsilat-liste"><span class="ico">📊</span><span class="nav-label">Tahsilat Listesi</span></a>
     <!-- 6. İptal ve İadeler -->
     <div class="nav-sec">İptal ve İadeler</div>
-    <a onclick="showPage('iptal-ekle')" id="nav-iptal-ekle"><span class="ico">🔄</span>İptal &amp; İade Ekle</a>
-    <a onclick="showPage('iptal-liste')" id="nav-iptal-liste"><span class="ico">📋</span>İptal &amp; İade Liste</a>
-    <a onclick="showPage('iptal-hesap')" id="nav-iptal-hesap"><span class="ico">🧮</span>İptal Hesaplama</a>
+    <a onclick="showPage('iptal-ekle')" id="nav-iptal-ekle"><span class="ico">🔄</span><span class="nav-label">İptal &amp; İade Ekle</span></a>
+    <a onclick="showPage('iptal-liste')" id="nav-iptal-liste"><span class="ico">📋</span><span class="nav-label">İptal &amp; İade Liste</span></a>
+    <a onclick="showPage('iptal-hesap')" id="nav-iptal-hesap"><span class="ico">🧮</span><span class="nav-label">İptal Hesaplama</span></a>
     <!-- 7. Teklifler -->
     <div class="nav-sec">Teklifler</div>
-    <a onclick="showPage('teklif')" id="nav-teklif"><span class="ico">📄</span>Teklif Oluştur</a>
-    <a onclick="showPage('teklif');setTimeout(()=>{const el=byId('teklif-listesi');if(el)el.scrollIntoView({behavior:'smooth'});},300)" id="nav-teklif-liste"><span class="ico">📋</span>Teklif Liste</a>
-    <a onclick="showPage('iletisim')" id="nav-iletisim"><span class="ico">📞</span>İletişim Geçmişi</a>
-    <a onclick="showPage('toplu-islem')" id="nav-toplu-islem2" style="display:none;"><span class="ico">☑️</span>Toplu İşlemler</a>
-    <a onclick="showPage('not-defteri')" id="nav-not-defteri"><span class="ico">📝</span>Not Defteri</a>
-    <a onclick="showPage('whatsapp')" id="nav-whatsapp"><span class="ico">💬</span>WhatsApp</a>
+    <a onclick="showPage('teklif')" id="nav-teklif"><span class="ico">📄</span><span class="nav-label">Teklif Oluştur</span></a>
+    <a onclick="showPage('teklif');setTimeout(()=>{const el=byId('teklif-listesi');if(el)el.scrollIntoView({behavior:'smooth'});},300)" id="nav-teklif-liste"><span class="ico">📋</span><span class="nav-label">Teklif Liste</span></a>
+    <a onclick="showPage('iletisim')" id="nav-iletisim"><span class="ico">📞</span><span class="nav-label">İletişim Geçmişi</span></a>
+    <a onclick="showPage('toplu-islem')" id="nav-toplu-islem2" style="display:none;"><span class="ico">☑️</span><span class="nav-label">Toplu İşlemler</span></a>
+    <a onclick="showPage('not-defteri')" id="nav-not-defteri"><span class="ico">📝</span><span class="nav-label">Not Defteri</span></a>
+    <a onclick="showPage('whatsapp')" id="nav-whatsapp"><span class="ico">💬</span><span class="nav-label">WhatsApp</span></a>
     <!-- 8. MKöçe Kasa -->
     <div class="nav-sec">MKöçe Kasa</div>
-    <a onclick="showPage('kasa')" id="nav-kasa"><span class="ico">🏦</span>MKöçe Kasa</a>
-    <a onclick="showPage('kasa-pol')" id="nav-kasa-pol"><span class="ico">📋</span>Acente Komisyon</a>
-    <a onclick="showPage('kasa-ipt')" id="nav-kasa-ipt"><span class="ico">🔄</span>MKöçe İptal Kazanç</a>
-    <a onclick="showPage('kasa-acb')" id="nav-kasa-acb"><span class="ico">🏢</span>Acente Bana Kalan</a>
-    <a onclick="showPage('kasa-gen')" id="nav-kasa-gen"><span class="ico">🏆</span>Toplam Kazanç</a>
+    <a onclick="showPage('kasa')" id="nav-kasa"><span class="ico">🏦</span><span class="nav-label">MKöçe Kasa</span></a>
+    <a onclick="showPage('kasa-pol')" id="nav-kasa-pol"><span class="ico">📋</span><span class="nav-label">Acente Komisyon</span></a>
+    <a onclick="showPage('kasa-ipt')" id="nav-kasa-ipt"><span class="ico">🔄</span><span class="nav-label">MKöçe İptal Kazanç</span></a>
+    <a onclick="showPage('kasa-acb')" id="nav-kasa-acb"><span class="ico">🏢</span><span class="nav-label">Acente Bana Kalan</span></a>
+    <a onclick="showPage('kasa-gen')" id="nav-kasa-gen"><span class="ico">🏆</span><span class="nav-label">Toplam Kazanç</span></a>
     <!-- Sistem -->
     <div class="nav-sec">Sistem</div>
-    <a onclick="showPage('ayarlar')" id="nav-ayarlar"><span class="ico">⚙️</span>Ayarlar</a>
-    <a onclick="doLogout()"><span class="ico">🚪</span>Çıkış Yap</a>
+    <a onclick="showPage('ayarlar')" id="nav-ayarlar"><span class="ico">⚙️</span><span class="nav-label">Ayarlar</span></a>
+    <a onclick="doLogout()"><span class="ico">🚪</span><span class="nav-label">Çıkış Yap</span></a>
   </nav>
   <div class="nav-bottom">
     <div class="nav-theme-label">Tema Seç</div>
@@ -1830,25 +1843,25 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- 11. ŞİRKET -->
       <div class="fg" data-field-key="sirket">
         <label>Şirket</label>
-        <input type="text" id="pe-sirket" placeholder="Sigorta şirketi">
+        <input type="text" id="pe-sirket" placeholder="Sigorta şirketi" oninput="peAutoFillAciklama()">
       </div>
 
       <!-- 12. PLAKA -->
       <div class="fg" data-field-key="plaka">
         <label>Plaka</label>
-        <input type="text" id="pe-plaka" placeholder="34 ABC 123">
+        <input type="text" id="pe-plaka" placeholder="34 ABC 123" oninput="peAutoFillAciklama()">
       </div>
 
       <!-- 13. RUHSAT / BELGE SERİ NO -->
       <div class="fg" data-field-key="ruhsat">
         <label>Ruhsat / Belge Seri No</label>
-        <input type="text" id="pe-ruhsat">
+        <input type="text" id="pe-ruhsat" oninput="peAutoFillAciklama()">
       </div>
 
       <!-- 14. ARAÇ CİNSİ -->
       <div class="fg" data-field-key="araccins">
         <label>Araç Cinsi</label>
-        <select id="pe-arac-cinsi">
+        <select id="pe-arac-cinsi" onchange="peAutoFillAciklama()">
           <option value="">-- Seçin --</option>
           <option>OTOMOBİL</option><option>MOTORSİKLET</option><option>KAMYONET</option>
           <option>TRAKTÖR</option><option>MİNİBÜS</option><option>OTOBÜS</option>
@@ -1859,13 +1872,13 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- 15. ARAÇ MARKASI -->
       <div class="fg" data-field-key="aracmarka">
         <label>Araç Markası</label>
-        <input type="text" id="pe-arac-marka" placeholder="Örn: Toyota, Ford, BMW...">
+        <input type="text" id="pe-arac-marka" placeholder="Örn: Toyota, Ford, BMW..." oninput="peAutoFillAciklama()">
       </div>
 
       <!-- 16. MODEL YILI -->
       <div class="fg" data-field-key="modelyili">
         <label>Model Yılı</label>
-        <input type="text" id="pe-model-yili" placeholder="Örn: 2022" maxlength="4" oninput="this.value=this.value.replace(/\D/g,'')">
+        <input type="text" id="pe-model-yili" placeholder="Örn: 2022" maxlength="4" oninput="this.value=this.value.replace(/\D/g,'');peAutoFillAciklama()">
       </div>
 
       <!-- 17. NET TUTAR -->
@@ -1883,7 +1896,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- 19. ACENTE KOMİSYON ORANI -->
       <div class="fg" data-field-key="oran">
         <label>Acente Komisyon Oranı (%) <small style="color:var(--muted);">(otomatik, değiştirilebilir)</small></label>
-        <input type="number" id="pe-oran" placeholder="0" oninput="peCalc()">
+        <input type="number" id="pe-oran" placeholder="0" oninput="peCalc();peAutoFillAciklama()">
       </div>
 
       <!-- 20. ACENTE KOMİSYONU OTOMATİK -->
@@ -1972,7 +1985,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- 23. KİMİN KARTI GİRDİ -->
       <div class="fg" data-field-key="kiminkarti">
         <label>Kimin Kartı Girdi</label>
-        <input type="text" id="pe-kimin-karti" placeholder="Kart sahibinin adı">
+        <input type="text" id="pe-kimin-karti" placeholder="Kart sahibinin adı" oninput="peAutoFillAciklama()">
       </div>
 
       <!-- 24. AÇIKLAMA -->
@@ -5380,14 +5393,56 @@ function saveMusteri(){
   if(!ad&&!gv('m-unvan').trim()){toast('Ad Soyad zorunludur!','error');return;}
   if(isKurumsal&&!gv('m-vergino').trim()){toast('Kurumsal müşteri için Vergi Numarası zorunludur!','error');return;}
   const eid=gv('m-edit-id');
+  const tcVal=gv('m-tc').trim();
+  const telVal=gv('m-tel').trim();
+  const unvanVal=gv('m-unvan').trim();
+  const vergiVal=gv('m-vergino').trim();
+  const adVal=isKurumsal&&unvanVal?unvanVal:ad;
+
+  // Mükerrer müşteri kontrolü (sadece yeni kayıtta)
+  if(!eid){
+    let dupMsg='';
+    const dup=DB.musteriler.find(m=>{
+      if(isKurumsal){
+        // Kurumsal: vergi no eşleşmesi
+        if(vergiVal&&m.vergino&&m.vergino===vergiVal) return true;
+        // veya aynı unvan
+        if(adVal&&m.ad&&m.ad.toLowerCase()===adVal.toLowerCase()) return true;
+      } else {
+        // Bireysel: TC eşleşmesi
+        if(tcVal&&m.tc&&m.tc===tcVal) return true;
+        // veya aynı ad + tel
+        if(adVal&&telVal&&m.ad&&m.tel&&
+           m.ad.toLowerCase()===adVal.toLowerCase()&&
+           m.tel.replace(/\D/g,'')===telVal.replace(/\D/g,'')) return true;
+      }
+      return false;
+    });
+    if(dup){
+      if(isKurumsal){
+        dupMsg=vergiVal&&dup.vergino===vergiVal
+          ?`Bu vergi numarasıyla kayıtlı müşteri mevcut: <b>${dup.ad}</b>`
+          :`Aynı unvanlı müşteri mevcut: <b>${dup.ad}</b>`;
+      } else {
+        dupMsg=tcVal&&dup.tc===tcVal
+          ?`Bu TC kimlik numarasıyla kayıtlı müşteri mevcut: <b>${dup.ad}</b>`
+          :`Aynı ad ve telefon numarasıyla kayıtlı müşteri mevcut: <b>${dup.ad}</b>`;
+      }
+      // Uyarı göster ve kullanıcıdan onay iste
+      if(!confirm(`⚠️ Mükerrer Kayıt Uyarısı\n\n${dupMsg.replace(/<\/?b>/g,'')}\n\nYine de kaydetmek istiyor musunuz?`)){
+        return;
+      }
+    }
+  }
+
   const obj={
     id:eid||uid(),
     tip,
-    ad: isKurumsal&&gv('m-unvan').trim() ? gv('m-unvan').trim() : ad,
+    ad:adVal,
     yetkili: ad,
-    tel:gv('m-tel'),sehir:gv('m-sehir'),
-    tc:gv('m-tc'),dogum:gv('m-dogum'),
-    vergino:gv('m-vergino'),vergidairesi:gv('m-vergidairesi'),
+    tel:telVal,sehir:gv('m-sehir'),
+    tc:tcVal,dogum:gv('m-dogum'),
+    vergino:vergiVal,vergidairesi:gv('m-vergidairesi'),
     sektor:gv('m-sektor'),
     iban:gv('m-iban'),aciklama:gv('m-aciklama'),
     tarih:new Date().toISOString().substr(0,10)
@@ -6256,7 +6311,7 @@ document.addEventListener('click',function(e){
 });
 
 function peSetIslemTur(btn,val){
-  sv('pe-islemtur',val);
+  sv('pe-islemtur',val);peAutoFillAciklama();
   document.querySelectorAll('.pe-islem-btn').forEach(function(b){
     b.classList.remove('btn-accent','btn-primary');b.classList.add('btn-outline');
   });
@@ -6439,14 +6494,13 @@ function peAcenteAutoOran(){
   if(!acenteId) return;
   const a = getAcente(acenteId);
   // Acente kaydında oran varsa doldur, yoksa dokunma
-  if(a && a.oran){ sv('pe-oran', a.oran); peCalc(); }
+  if(a && a.oran){ sv('pe-oran', a.oran); peCalc(); } peAutoFillAciklama();
 }
 function peAutoFillMusteri(){
   const m=getMusteri(gv('pe-musteri'));
   if(m){
     sv('pe-tc',m.tc||'');
     sv('pe-vergino',m.vergino||'');
-    // Kurumsal/KOBİ ise poltur otomatik — butonu da aktif et
     let tip = m.tip==='kurumsal'?'Kurumsal': m.tip==='kobi'?'Kobi':'Bireysel';
     sv('pe-poltur', tip);
     document.querySelectorAll('.pe-poltur-btn').forEach(b=>{
@@ -6457,6 +6511,40 @@ function peAutoFillMusteri(){
       }
     });
   }
+  peAutoFillAciklama();
+}
+
+function peAutoFillAciklama(){
+  const m    = getMusteri(gv('pe-musteri'));
+  const a    = getAcente(gv('pe-acente'));
+  const ad   = m ? m.ad : '';
+  const tc   = (gv('pe-tc')||'').trim() || (m ? m.tc||'' : '');
+  const dogum= m ? (m.dogum ? fmtD(m.dogum) : '') : '';
+  const plaka= (gv('pe-plaka')||'').trim().toUpperCase();
+  const belge= (gv('pe-ruhsat')||'').trim();
+  const cinsi= (gv('pe-arac-cinsi')||'').trim();
+  const marka= (gv('pe-arac-marka')||'').trim();
+  const model= (gv('pe-model-yili')||'').trim();
+  const islem= (gv('pe-islemtur')||'').trim();
+  const sirket=(gv('pe-sirket')||'').trim();
+  const oran  =(gv('pe-oran')||'').trim();
+  const kimin =(gv('pe-kimin-karti')||'').trim();
+
+  const satirlar=[];
+  if(ad)     satirlar.push('Ad Soyad          : '+ad);
+  if(tc)     satirlar.push('TC                : '+tc);
+  if(dogum)  satirlar.push('Dogum Tarihi      : '+dogum);
+  if(plaka)  satirlar.push('Plaka             : '+plaka);
+  if(belge)  satirlar.push('Belge Seri No     : '+belge);
+  if(cinsi)  satirlar.push('Arac Cinsi        : '+cinsi);
+  if(marka)  satirlar.push('Arac Markasi      : '+marka);
+  if(model)  satirlar.push('Model Yili        : '+model);
+  if(islem)  satirlar.push('Islem Turu        : '+islem);
+  const acenteStr=[a?a.ad:'', oran?'%'+oran:'', sirket].filter(Boolean).join(' / ');
+  if(acenteStr) satirlar.push('Acente/Oran/Sirket: '+acenteStr);
+  if(kimin)  satirlar.push('Kimin Karti       : '+kimin);
+
+  if(satirlar.length) sv('pe-aciklama', satirlar.join('\n'));
 }
 function peToggle(){
   const val=gv('pe-odemedurum');
