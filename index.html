@@ -4823,6 +4823,22 @@ alter table mk_settings disable row level security;</pre>
     <div style="padding:18px;">
       <input type="hidden" id="m-edit-id">
 
+      <!-- MÜŞTERİ ARAMA -->
+      <div id="m-arama-blok" style="margin-bottom:16px;padding:12px 14px;background:color-mix(in srgb,var(--accent) 7%,var(--bg));border:1px solid color-mix(in srgb,var(--accent) 20%,var(--border));border-radius:10px;">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🔍 Mevcut Müşteri Ara</div>
+        <div style="position:relative;">
+          <input type="text" id="m-arama-input" placeholder="Ad, TC, telefon veya vergi no ile ara..."
+            oninput="mAramaFilter()"
+            autocomplete="off"
+            style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:12.5px;background:var(--card);color:var(--text);outline:none;box-sizing:border-box;">
+          <div id="m-arama-dropdown" style="display:none;position:absolute;z-index:500;width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);max-height:220px;overflow-y:auto;margin-top:3px;"></div>
+        </div>
+        <div id="m-arama-secili" style="display:none;margin-top:8px;padding:8px 11px;background:color-mix(in srgb,var(--success) 10%,var(--card));border:1px solid color-mix(in srgb,var(--success) 25%,var(--border));border-radius:7px;font-size:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <span id="m-arama-secili-text" style="font-weight:600;color:var(--text);"></span>
+          <button type="button" onclick="mAramaSifirla()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;line-height:1;padding:0 2px;">✕</button>
+        </div>
+      </div>
+
       <!-- MÜŞTERİ TİPİ SEÇİCİ -->
       <div style="margin-bottom:16px;">
         <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px;">Müşteri Tipi *</label>
@@ -5457,6 +5473,66 @@ function resetMusteriForm(){
   ['m-edit-id','m-ad','m-tel','m-sehir','m-tc','m-dogum','m-vergino','m-vergidairesi','m-unvan','m-yetkili','m-iban','m-aciklama'].forEach(id=>sv(id,''));
   byId('modal-musteri-title').textContent='👤 Müşteri Ekle';
   mTipSec('bireysel');
+  mAramaSifirla();
+}
+function mAramaFilter(){
+  const q=(gv('m-arama-input')||'').trim().toLowerCase();
+  const dd=byId('m-arama-dropdown');
+  if(!q){dd.style.display='none';dd.innerHTML='';return;}
+  const hits=DB.musteriler.filter(m=>{
+    return m.ad.toLowerCase().includes(q)
+      ||(m.tc&&m.tc.includes(q))
+      ||(m.tel&&m.tel.replace(/\D/g,'').includes(q.replace(/\D/g,'')))
+      ||(m.vergino&&m.vergino.includes(q));
+  }).slice(0,12);
+  if(!hits.length){
+    dd.innerHTML='<div style="padding:10px 14px;font-size:12px;color:var(--muted);">Sonuç bulunamadı</div>';
+    dd.style.display='block';return;
+  }
+  const tipEmoji={bireysel:'👤',kurumsal:'🏢',kobi:'🏪'};
+  dd.innerHTML=hits.map(m=>`
+    <div onclick="mAramaSec('${m.id}')" style="padding:9px 13px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;"
+      onmouseover="this.style.background='color-mix(in srgb,var(--accent) 8%,var(--card))'"
+      onmouseout="this.style.background=''">
+      <div style="font-size:12.5px;font-weight:600;color:var(--text);">${tipEmoji[m.tip]||'👤'} ${m.ad}</div>
+      <div style="font-size:10.5px;color:var(--muted);margin-top:2px;">
+        ${m.tc?'TC: '+m.tc:''}${m.tc&&m.tel?' · ':''}${m.tel?'📞 '+m.tel:''}${m.vergino?' · VN: '+m.vergino:''}${m.sehir?' · 📍'+m.sehir:''}
+      </div>
+    </div>`).join('');
+  dd.style.display='block';
+}
+function mAramaSec(id){
+  const m=DB.musteriler.find(x=>x.id===id);
+  if(!m)return;
+  byId('m-arama-dropdown').style.display='none';
+  sv('m-arama-input','');
+  const secili=byId('m-arama-secili');
+  byId('m-arama-secili-text').textContent=m.ad+(m.tc?' · TC: '+m.tc:'')+(m.tel?' · '+m.tel:'');
+  secili.style.display='flex';
+  // Formu doldur (düzenleme moduna al)
+  sv('m-edit-id',m.id);
+  byId('modal-musteri-title').textContent='✏️ Müşteri Düzenle';
+  mTipSec(m.tip||'bireysel');
+  sv('m-ad',m.yetkili||m.ad||'');
+  sv('m-tel',m.tel||'');
+  const sehirEl=byId('m-sehir');
+  if(sehirEl&&m.sehir){
+    for(let i=0;i<sehirEl.options.length;i++){
+      if(sehirEl.options[i].value===m.sehir){sehirEl.selectedIndex=i;break;}
+    }
+  }
+  sv('m-tc',m.tc||'');sv('m-dogum',m.dogum||'');
+  sv('m-vergino',m.vergino||'');sv('m-vergidairesi',m.vergidairesi||'');
+  sv('m-unvan',(m.tip==='kurumsal'||m.tip==='kobi')?m.ad:'');
+  sv('m-yetkili',m.yetkili||'');
+  sv('m-iban',m.iban||'');sv('m-aciklama',m.aciklama||'');
+}
+function mAramaSifirla(){
+  sv('m-arama-input','');
+  const dd=byId('m-arama-dropdown');
+  if(dd){dd.style.display='none';dd.innerHTML='';}
+  const s=byId('m-arama-secili');
+  if(s)s.style.display='none';
 }
 function renderMusteriler(){
   const srch=gv('srch-m').toLowerCase();
@@ -6022,6 +6098,10 @@ document.addEventListener('click',function(e){
       if(other&&!other.contains(e.target)) dd.style.display='none';
     }
   });
+  // Müşteri modal arama dropdown
+  const mdd=byId('m-arama-dropdown');
+  const minp=byId('m-arama-input');
+  if(mdd&&minp&&!mdd.contains(e.target)&&!minp.contains(e.target)) mdd.style.display='none';
 });
 
 // ══════════════════════════════════════════════════
