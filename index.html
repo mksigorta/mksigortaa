@@ -2912,13 +2912,10 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <button class="btn btn-outline btn-sm" id="btn-acente-za" onclick="acenteSort('za')" title="Z'den A'ya sırala">🔤 Z→A</button>
       <button class="btn btn-outline btn-sm" onclick="acenteFiltreSifirla()">🔄 Sıfırla</button>
     </div>
-    <div class="table-wrap">
-      <table id="tbl-acente">
-        <thead><tr><th>#</th><th>Acente / Telefon / Tarih / Açıklama</th><th>Müşteri / Net Tutar / Brüt Tutar</th><th>Borç / Alacak / Kalan</th><th>İşlem</th></tr></thead>
-        <tbody id="tbody-acente"></tbody>
-        <tfoot id="tfoot-acente"></tfoot>
-      </table>
-    </div>
+    <div id="acente-kart-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:4px 0;"></div>
+    <div id="acente-footer-bar" style="margin-top:12px;padding:12px 16px;background:var(--grad-1);border-radius:10px;display:none;"></div>
+    <!-- hidden compat elements -->
+    <table style="display:none"><tbody id="tbody-acente"></tbody><tfoot id="tfoot-acente"></tfoot></table>
   </div>
   </div><!-- /acente-tab-liste -->
 
@@ -5335,6 +5332,258 @@ function openFP(title,html,actions){
   byId('fullpage-overlay').scrollTop=0;
 }
 function closeFP(){byId('fullpage-overlay').classList.remove('open');}
+
+// ═══════════════════════════════════════════
+//  CARİ YÖNETİM — tam ekran detay sayfası
+// ═══════════════════════════════════════════
+function openCariYonetim(musteriId){
+  const m=getMusteri(musteriId);
+  if(!m){toast('Müşteri bulunamadı','error');return;}
+  window._cyMusteriId=musteriId;
+  _renderCariYonetim();
+}
+
+function _renderCariYonetim(){
+  const musteriId=window._cyMusteriId;
+  const m=getMusteri(musteriId);if(!m)return;
+  const cariler=DB.cariler.filter(c=>c.musteriId===musteriId);
+  const topB=cariler.reduce((s,c)=>s+(parseFloat(c.borc)||0),0);
+  const topA=cariler.reduce((s,c)=>s+(parseFloat(c.alacak)||0),0);
+  const bakiye=topB-topA;
+  const bakDur=bakiye>0?{lbl:'Borç',c:'var(--danger)'}:bakiye<0?{lbl:'Alacak',c:'var(--success)'}:{lbl:'Sıfır',c:'var(--muted)'};
+
+  // Filtre
+  const srch=(window._cySrch||'').toLowerCase();
+  const filTur=window._cyFilTur||'';
+  let rows=cariler.filter(c=>{
+    if(srch&&!(c.aciklama||'').toLowerCase().includes(srch)&&!(c.polNo||'').toLowerCase().includes(srch)&&!(c.plaka||'').toLowerCase().includes(srch))return false;
+    if(filTur==='borc'&&!(c.borc>0))return false;
+    if(filTur==='alacak'&&!(c.alacak>0))return false;
+    return true;
+  }).sort((a,b)=>(a.tarih||'')>(b.tarih||'')?-1:1);
+
+  // Hareket bakiye hesapla (kronolojik)
+  const sortedAsc=cariler.slice().sort((a,b)=>(a.tarih||'')>(b.tarih||'')?1:-1);
+  const bakiyeMap={};let run=0;
+  sortedAsc.forEach(c=>{run+=((parseFloat(c.borc)||0)-(parseFloat(c.alacak)||0));bakiyeMap[c.id]=run;});
+
+  const TIP_LABEL={'borc':'Borç','alacak':'Alacak','iade':'İade','odeme':'MK→Müşteri','iskonto':'İskonto','diger':'Diğer'};
+  const TIP_CLR={'borc':'var(--danger)','alacak':'var(--success)','iade':'var(--info)','odeme':'var(--warning)','iskonto':'var(--gold)','diger':'var(--muted)'};
+
+  const harRows=rows.map(c=>{
+    const tip=c.tip||'diger';
+    const isBorc=c.borc>0;
+    const aciklamaKisa=(c.aciklama||'').length>80?(c.aciklama||'').substr(0,80)+'…':(c.aciklama||'—');
+    const runB=bakiyeMap[c.id]||0;
+    return `<tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:10px 12px;font-size:12px;color:var(--muted);white-space:nowrap;">${fmtD(c.tarih)||'—'}<br><span style="font-size:10px;">${(c.tarih||'').substr(11,5)||''}</span></td>
+      <td style="padding:10px 12px;">
+        <span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;background:color-mix(in srgb,${TIP_CLR[tip]||'var(--muted)'} 14%,transparent);color:${TIP_CLR[tip]||'var(--muted)'};">${TIP_LABEL[tip]||tip}</span>
+        ${c.polNo?'<div style="font-size:10px;color:var(--accent);margin-top:2px;">📋 '+c.polNo+'</div>':''}
+      </td>
+      <td style="padding:10px 12px;font-size:12px;color:var(--text);max-width:280px;">${aciklamaKisa}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:700;color:var(--danger);">${isBorc?'₺'+fmt(c.borc):'—'}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:700;color:var(--success);">${!isBorc&&c.alacak>0?'₺'+fmt(c.alacak):'—'}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:800;color:${runB>0?'var(--danger)':runB<0?'var(--success)':'var(--muted)'};">₺${fmt(Math.abs(runB))}<br><span style="font-size:9px;opacity:.6;">${runB>0?'Borç':runB<0?'Alacak':'Sıfır'}</span></td>
+      <td style="padding:8px 10px;text-align:center;">
+        <button onclick="cyDuzenle('${c.id}')" style="border:none;background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;margin-right:3px;">✏️</button>
+        <button onclick="cySil('${c.id}')" style="border:none;background:color-mix(in srgb,var(--danger) 15%,transparent);color:var(--danger);border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  const html=`
+  <!-- BAŞLIK BANNER -->
+  <div style="background:var(--grad-1);border-radius:14px;padding:18px 22px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <div style="font-size:18px;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;">${m.ad}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px;">
+        ${m.tip?'Kategori: '+(m.tip.charAt(0).toUpperCase()+m.tip.slice(1))+' Carisi':''} 
+        ${m.tel?'&nbsp;📞 '+m.tel:''}
+      </div>
+    </div>
+    <button onclick="openMusteriDetay('${musteriId}')" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;">✏️ Düzenle</button>
+  </div>
+
+  <!-- ÖZET KUTULAR -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center;box-shadow:var(--shadow);">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">TOPLAM BORÇ</div>
+      <div style="font-size:22px;font-weight:900;color:var(--danger);font-family:'Space Grotesk',sans-serif;">₺${fmt(topB)}</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center;box-shadow:var(--shadow);">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">TOPLAM ALACAK</div>
+      <div style="font-size:22px;font-weight:900;color:var(--success);font-family:'Space Grotesk',sans-serif;">₺${fmt(topA)}</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center;box-shadow:var(--shadow);">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">BAKİYE</div>
+      <div style="font-size:22px;font-weight:900;color:${bakDur.c};font-family:'Space Grotesk',sans-serif;">₺${fmt(Math.abs(bakiye))}</div>
+      <div style="font-size:10px;color:${bakDur.c};font-weight:700;margin-top:3px;">${bakDur.lbl}</div>
+    </div>
+  </div>
+
+  <!-- İŞLEM BUTONLARI -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;">
+    <button onclick="cyHareketEkle('borc')" style="background:color-mix(in srgb,var(--danger) 10%,var(--card));border:1px solid color-mix(in srgb,var(--danger) 25%,var(--border));border-radius:12px;padding:16px 8px;cursor:pointer;text-align:center;transition:all .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div style="font-size:22px;margin-bottom:5px;">🏦</div>
+      <div style="font-size:11px;font-weight:700;color:var(--danger);">Borç Ekle</div>
+    </button>
+    <button onclick="cyHareketEkle('alacak')" style="background:color-mix(in srgb,var(--success) 10%,var(--card));border:1px solid color-mix(in srgb,var(--success) 25%,var(--border));border-radius:12px;padding:16px 8px;cursor:pointer;text-align:center;transition:all .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div style="font-size:22px;margin-bottom:5px;">🏦</div>
+      <div style="font-size:11px;font-weight:700;color:var(--success);">Tahsilat Ekle</div>
+    </button>
+    <button onclick="cyHareketEkle('iade')" style="background:color-mix(in srgb,var(--info) 10%,var(--card));border:1px solid color-mix(in srgb,var(--info) 25%,var(--border));border-radius:12px;padding:16px 8px;cursor:pointer;text-align:center;transition:all .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div style="font-size:22px;margin-bottom:5px;">📋</div>
+      <div style="font-size:11px;font-weight:700;color:var(--info);">Alacak Gir</div>
+    </button>
+    <button onclick="cyHareketEkle('odeme')" style="background:color-mix(in srgb,var(--gold) 10%,var(--card));border:1px solid color-mix(in srgb,var(--gold) 25%,var(--border));border-radius:12px;padding:16px 8px;cursor:pointer;text-align:center;transition:all .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div style="font-size:22px;margin-bottom:5px;">🎫</div>
+      <div style="font-size:11px;font-weight:700;color:var(--gold);">Ödeme Yap</div>
+    </button>
+  </div>
+
+  <!-- HAREKETLER -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);">
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div style="font-size:13px;font-weight:700;color:var(--text);">Hareketler</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;">
+        <input type="text" placeholder="🔍 Hareket ara..." value="${window._cySrch||''}" oninput="window._cySrch=this.value;_renderCariYonetim()" style="padding:5px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);color:var(--text);outline:none;min-width:160px;">
+        <select onchange="window._cyFilTur=this.value;_renderCariYonetim()" style="padding:5px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);color:var(--text);">
+          <option value="" ${!filTur?'selected':''}>Tüm</option>
+          <option value="borc" ${filTur==='borc'?'selected':''}>Borç</option>
+          <option value="alacak" ${filTur==='alacak'?'selected':''}>Alacak</option>
+        </select>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead><tr style="background:var(--bg);">
+          <th style="padding:9px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">TARİH</th>
+          <th style="padding:9px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">TÜR</th>
+          <th style="padding:9px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">AÇIKLAMA</th>
+          <th style="padding:9px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">BORÇ</th>
+          <th style="padding:9px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">ALACAK</th>
+          <th style="padding:9px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">BAKİYE</th>
+          <th style="padding:9px 12px;text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">İŞLEM</th>
+        </tr></thead>
+        <tbody>${harRows||'<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted);">Henüz hareket yok</td></tr>'}</tbody>
+        <tfoot><tr style="background:var(--bg);border-top:2px solid var(--border);">
+          <td colspan="3" style="padding:10px 12px;font-weight:700;font-size:12px;">Toplam (${rows.length} hareket)</td>
+          <td style="padding:10px 12px;text-align:right;font-weight:800;color:var(--danger);">₺${fmt(topB)}</td>
+          <td style="padding:10px 12px;text-align:right;font-weight:800;color:var(--success);">₺${fmt(topA)}</td>
+          <td style="padding:10px 12px;text-align:right;font-weight:800;color:${bakDur.c};">₺${fmt(Math.abs(bakiye))} ${bakDur.lbl}</td>
+          <td></td>
+        </tr></tfoot>
+      </table>
+    </div>
+  </div>`;
+
+  openFP('💰 Cari Yönetim — '+m.ad, html);
+}
+
+function cyHareketEkle(tip){
+  const musteriId=window._cyMusteriId;
+  const m=getMusteri(musteriId);if(!m)return;
+  const tipLabel={'borc':'Borç Ekle','alacak':'Tahsilat Ekle','iade':'Alacak Gir','odeme':'Ödeme Yap'};
+  const tipClr={'borc':'var(--danger)','alacak':'var(--success)','iade':'var(--info)','odeme':'var(--gold)'};
+  const today=new Date().toISOString().substr(0,10);
+  hizliModalAc(`${tipLabel[tip]||'Hareket Ekle'} — ${m.ad}`,
+    `<div class="form-grid">
+      <div class="fg"><label>Tarih</label><input type="date" id="cy-tarih" value="${today}"></div>
+      <div class="fg"><label>Tutar (₺)</label><input type="number" id="cy-tutar" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="fg"><label>Poliçe No</label><input type="text" id="cy-polno" placeholder="Opsiyonel"></div>
+      <div class="fg"><label>Şirket</label><input type="text" id="cy-sirket" placeholder="Opsiyonel"></div>
+      <div class="fg"><label>Plaka</label><input type="text" id="cy-plaka" placeholder="Opsiyonel"></div>
+      <div class="fg" style="grid-column:1/-1"><label>Açıklama</label><textarea id="cy-aciklama" placeholder="Açıklama..." style="resize:vertical;"></textarea></div>
+    </div>`,
+    `<button class="btn btn-outline" onclick="hizliModalKapat()">İptal</button>
+     <button class="btn btn-success" style="background:${tipClr[tip]||'var(--accent)'};border-color:${tipClr[tip]||'var(--accent)'};" onclick="cySaveHareket('${musteriId}','${tip}')">💾 Kaydet</button>`
+  );
+  setTimeout(()=>{const t=byId('cy-tutar');if(t)t.focus();},100);
+}
+
+function cySaveHareket(musteriId,tip){
+  const tutar=parseFloat((byId('cy-tutar')||{}).value)||0;
+  if(!tutar){toast('Tutar giriniz!','error');return;}
+  const isBorc=(tip==='borc'||tip==='diger');
+  const isAlacak=(tip==='alacak'||tip==='iade'||tip==='odeme');
+  const obj={
+    id:uid(),musteriId,policeId:'',
+    tarih:(byId('cy-tarih')||{}).value||new Date().toISOString().substr(0,10),
+    polNo:(byId('cy-polno')||{}).value||'',
+    sirket:(byId('cy-sirket')||{}).value||'',
+    plaka:(byId('cy-plaka')||{}).value||'',
+    borc:isBorc?tutar:0,
+    alacak:isAlacak?tutar:0,
+    tip,aciklama:(byId('cy-aciklama')||{}).value||''
+  };
+  DB.cariler.push(obj);
+  saveDB();updateStats();
+  if(typeof renderCari==='function') renderCari();
+  if(typeof renderCariListe==='function') renderCariListe();
+  hizliModalKapat();
+  toast('Hareket eklendi','success');
+  window._cySrch='';window._cyFilTur='';
+  _renderCariYonetim();
+}
+
+function cyDuzenle(cariId){
+  const c=DB.cariler.find(x=>x.id===cariId);if(!c)return;
+  const tip=c.tip||'borc';
+  const tutar=c.borc||c.alacak||0;
+  hizliModalAc('✏️ Hareket Düzenle',
+    `<div class="form-grid">
+      <div class="fg"><label>Tarih</label><input type="date" id="cy-tarih" value="${c.tarih||''}"></div>
+      <div class="fg"><label>Tutar (₺)</label><input type="number" id="cy-tutar" value="${tutar}" min="0" step="0.01"></div>
+      <div class="fg"><label>Tür</label>
+        <select id="cy-tip">
+          <option value="borc" ${tip==='borc'?'selected':''}>Borç</option>
+          <option value="alacak" ${tip==='alacak'?'selected':''}>Alacak/Tahsilat</option>
+          <option value="iade" ${tip==='iade'?'selected':''}>İade</option>
+          <option value="odeme" ${tip==='odeme'?'selected':''}>Ödeme</option>
+          <option value="diger" ${tip==='diger'?'selected':''}>Diğer</option>
+        </select>
+      </div>
+      <div class="fg"><label>Poliçe No</label><input type="text" id="cy-polno" value="${c.polNo||''}"></div>
+      <div class="fg"><label>Şirket</label><input type="text" id="cy-sirket" value="${(c.sirket||'').replace(/"/g,'&quot;')}"></div>
+      <div class="fg"><label>Plaka</label><input type="text" id="cy-plaka" value="${c.plaka||''}"></div>
+      <div class="fg" style="grid-column:1/-1"><label>Açıklama</label><textarea id="cy-aciklama" style="resize:vertical;">${c.aciklama||''}</textarea></div>
+    </div>`,
+    `<button class="btn btn-outline" onclick="hizliModalKapat()">İptal</button>
+     <button class="btn btn-warning" onclick="cySaveGuncelle('${cariId}','${c.musteriId}')">✅ Güncelle</button>`
+  );
+}
+
+function cySaveGuncelle(cariId, musteriId){
+  const c=DB.cariler.find(x=>x.id===cariId);if(!c)return;
+  const tutar=parseFloat((byId('cy-tutar')||{}).value)||0;
+  const tip=(byId('cy-tip')||{}).value||c.tip||'borc';
+  const isBorc=(tip==='borc'||tip==='diger');
+  c.tarih=(byId('cy-tarih')||{}).value||c.tarih;
+  c.borc=isBorc?tutar:0;
+  c.alacak=!isBorc?tutar:0;
+  c.tip=tip;
+  c.polNo=(byId('cy-polno')||{}).value||'';
+  c.sirket=(byId('cy-sirket')||{}).value||'';
+  c.plaka=(byId('cy-plaka')||{}).value||'';
+  c.aciklama=(byId('cy-aciklama')||{}).value||'';
+  saveDB();updateStats();
+  if(typeof renderCari==='function') renderCari();
+  if(typeof renderCariListe==='function') renderCariListe();
+  hizliModalKapat();
+  toast('Hareket güncellendi','success');
+  _renderCariYonetim();
+}
+
+function cySil(cariId){
+  if(!confirm('Bu hareket silinsin mi?'))return;
+  DB.cariler=DB.cariler.filter(c=>c.id!==cariId);
+  saveDB();updateStats();
+  if(typeof renderCari==='function') renderCari();
+  if(typeof renderCariListe==='function') renderCariListe();
+  toast('Hareket silindi','error');
+  _renderCariYonetim();
+}
 
 // ── DRAWER (Sağdan açılan panel) ──
 function openDrawer(title, bodyHtml, footerHtml){
@@ -8345,12 +8594,14 @@ function renderAcente(){
   if(srchAy)  list=list.filter(function(a){ return a.tarih&&(a.tarih||'').slice(5,7)===srchAy; });
   if(srchT1)  list=list.filter(function(a){ return a.tarih&&a.tarih>=srchT1; });
   if(srchT2)  list=list.filter(function(a){ return a.tarih&&a.tarih<=srchT2; });
+  const grid=byId('acente-kart-grid');
+  const footerBar=byId('acente-footer-bar');
   if(!list.length){
-    tb.innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>';
-    if(tf) tf.innerHTML='';
+    if(grid) grid.innerHTML='<div style="color:var(--muted);font-size:12px;padding:18px;grid-column:1/-1;text-align:center;">Kayıt bulunamadı</div>';
+    if(footerBar) footerBar.style.display='none';
   } else {
     let totNet=0,totBrut=0,totK=0,totA=0,totAcIade=0,totMus=0;
-    let rows='';
+    let cards='';
     list.forEach(function(a){
       const ps=DB.policeler.filter(p=>p.acenteId===a.id);
       const topNet=ps.reduce((s,p)=>s+(parseFloat(p.net)||0),0);
@@ -8359,79 +8610,72 @@ function renderAcente(){
       const topA=DB.atList.filter(t=>t.acenteId===a.id&&t.tip!=='iade').reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
       const topAcIade=DB.iptaller.filter(ii=>ii.acenteId===a.id).reduce((s,ii)=>s+(parseFloat(ii.acIade)||0),0);
       const musteriSayisi=new Set(ps.map(p=>p.musteriId).filter(Boolean)).size;
+      const kalan=topK-topAcIade-topA;
       totNet+=topNet; totBrut+=topBrut; totK+=topK; totA+=topA; totAcIade+=topAcIade; totMus+=musteriSayisi;
-      const rowId='acente-detail-'+a.id;
-      // Poliçe listesi (accordion içeriği)
-      let policeRows='';
-      if(ps.length){
-        policeRows=ps.slice(0,20).map(p=>{
-          const m=getMusteri(p.musteriId);
-          return '<tr style="background:color-mix(in srgb,var(--info) 4%,transparent);font-size:11px;">'
-            +'<td colspan="2" style="padding-left:28px;">📋 '+( p.polNo||'-')+'</td>'
-            +'<td>'+(m?m.ad:'-')+'</td>'
-            +'<td>'+( p.sirket||'-')+'</td>'
-            +'<td style="color:var(--text);">₺'+fmt(p.net)+'</td>'
-            +'<td style="color:var(--accent);">₺'+fmt(p.brut)+'</td>'
-            +'<td style="color:var(--warning);">₺'+fmt(p.ackomisyon)+'</td>'
-            +'<td colspan="3" style="color:var(--muted);">'+fmtD(p.baslama)+' – '+fmtD(p.bitis)+'</td>'
-            +'</tr>';
-        }).join('');
-        if(ps.length>20) policeRows+='<tr><td colspan="10" style="text-align:center;font-size:11px;color:var(--muted);padding:6px;">...ve '+(ps.length-20)+' poliçe daha</td></tr>';
-      } else {
-        policeRows='<tr><td colspan="10" style="text-align:center;font-size:11px;color:var(--muted);padding:8px;">Bu acenteye ait poliçe bulunamadı</td></tr>';
-      }
-      const _aIdx = list.indexOf(a)+1;
-      rows+=`<tr style="cursor:pointer;" onclick="toggleAcenteRow('${a.id}')" title="Detayları göster/gizle">
-        <td style="color:var(--muted);font-size:11px;text-align:center;">${_aIdx}</td>
-        <td>
-          <b style="color:var(--info);">${a.ad}</b>
-          <span style="font-size:10px;color:var(--muted);margin-left:4px;" id="acente-arrow-${a.id}">▼</span>
-          ${a.tel?`<div style="font-size:11px;margin-top:2px;">📞 ${a.tel}</div>`:''}
-          ${a.tarih?`<div style="font-size:10px;color:var(--muted);">📅 ${fmtD(a.tarih)}</div>`:''}
-          ${a.aciklama?`<div style="font-size:10px;color:var(--muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a.aciklama}</div>`:''}
-        </td>
-        <td>
-          <div><span style="font-weight:700;color:var(--info);">${musteriSayisi}</span> <span style="font-size:10px;color:var(--muted);">müşteri</span></div>
-          <div style="font-size:11px;margin-top:2px;">Net: <b>₺${fmt(topNet)}</b></div>
-          <div style="font-size:11px;color:var(--accent);">Brüt: <b>₺${fmt(topBrut)}</b></div>
-        </td>
-        <td>
-          <div style="font-size:11px;color:var(--warning);">Borç: <b>₺${fmt(topK)}</b></div>
-          <div style="font-size:11px;color:var(--success);margin-top:2px;">Alacak: <b>₺${fmt(topA)}</b></div>
-          <div style="font-size:11px;font-weight:800;color:${(topK-topAcIade-topA)>0?'var(--danger)':'var(--success)'};margin-top:2px;">Kalan: ₺${fmt(topK-topAcIade-topA)}</div>
-        </td>
-        <td style="display:flex;gap:4px;flex-wrap:wrap;" onclick="event.stopPropagation()">
-          <button class="btn-act btn-act-success" onclick='openAcenteDetay("${a.id}")'>👁️ Detay</button>
-          <button class="btn-act btn-act-wa" onclick='waAcente&&waAcente("${a.id}")'>💬 WA</button>
-          <button class="btn-act btn-act-primary" onclick='editAcente("${a.id}")'>✏️ Düzenle</button>
-          <button class="btn-act btn-act-danger" onclick='delAcente("${a.id}")'>🗑️ Sil</button>
-        </td>
-      </tr>
-      <tr id="${rowId}" style="display:none;">
-        <td colspan="11" style="padding:0;">
-          <div style="padding:8px 12px;background:color-mix(in srgb,var(--info) 3%,transparent);border-top:1px solid var(--border);border-bottom:2px solid var(--info);">
-            <div style="font-size:10px;font-weight:700;color:var(--info);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">📋 POLİÇELER (${ps.length})</div>
-            <table style="width:100%;border-collapse:collapse;">
-              <thead><tr style="font-size:10px;color:var(--muted);">
-                <th style="padding:4px 8px;text-align:left;">Poliçe No</th><th style="padding:4px;text-align:left;">–</th>
-                <th style="padding:4px;text-align:left;">Müşteri</th><th style="padding:4px;text-align:left;">Şirket</th>
-                <th style="padding:4px;text-align:left;">Net</th><th style="padding:4px;text-align:left;">Brüt</th>
-                <th style="padding:4px;text-align:left;">Kom.</th><th colspan="3" style="padding:4px;text-align:left;">Dönem</th>
-              </tr></thead>
-              <tbody>${policeRows}</tbody>
-            </table>
+      const kalanClr=kalan>0?'var(--danger)':kalan<0?'var(--success)':'var(--muted)';
+      const initials=a.ad.split(' ').map(w=>w[0]||'').slice(0,2).join('').toUpperCase();
+      const avatarColors=['#6366f1','#f59e0b','#10b981','#ef4444','#3b82f6','#8b5cf6','#ec4899'];
+      const avClr=avatarColors[(a.ad.charCodeAt(0)||0)%avatarColors.length];
+      cards+=`<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:box-shadow .15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow)'">
+        <div style="background:var(--grad-1);padding:14px 16px;display:flex;align-items:center;gap:12px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:${avClr};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;">${initials}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.ad}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;">${a.tel?'📞 '+a.tel:''}${a.tarih?' · 📅 '+fmtD(a.tarih):''}</div>
           </div>
-        </td>
-      </tr>`;
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
+          <div style="padding:10px 12px;text-align:center;border-right:1px solid var(--border);">
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Poliçe</div>
+            <div style="font-size:18px;font-weight:800;color:var(--info);">${ps.length}</div>
+          </div>
+          <div style="padding:10px 12px;text-align:center;border-right:1px solid var(--border);">
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Müşteri</div>
+            <div style="font-size:18px;font-weight:800;color:var(--accent);">${musteriSayisi}</div>
+          </div>
+          <div style="padding:10px 12px;text-align:center;">
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Kalan</div>
+            <div style="font-size:14px;font-weight:800;color:${kalanClr};">₺${fmt(kalan)}</div>
+          </div>
+        </div>
+        <div style="padding:12px 14px;flex:1;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+            <span style="font-size:11px;color:var(--muted);">Net Tutar</span>
+            <span style="font-size:12px;font-weight:700;color:var(--text);">₺${fmt(topNet)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+            <span style="font-size:11px;color:var(--muted);">Brüt Tutar</span>
+            <span style="font-size:12px;font-weight:700;color:var(--accent);">₺${fmt(topBrut)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+            <span style="font-size:11px;color:var(--muted);">Komisyon</span>
+            <span style="font-size:12px;font-weight:700;color:var(--warning);">₺${fmt(topK)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);">
+            <span style="font-size:11px;color:var(--muted);">Tahsilat</span>
+            <span style="font-size:12px;font-weight:700;color:var(--success);">₺${fmt(topA)}</span>
+          </div>
+        </div>
+        <div style="padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:6px;">
+          <button onclick='openAcenteDetay("${a.id}")' style="flex:1;padding:7px;border:none;background:color-mix(in srgb,var(--info) 12%,transparent);color:var(--info);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;">👁️ Detay</button>
+          <button onclick='editAcente("${a.id}")' style="flex:1;padding:7px;border:none;background:color-mix(in srgb,var(--warning) 12%,transparent);color:var(--warning);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;">✏️ Düzenle</button>
+          <button onclick='waAcente&&waAcente("${a.id}")' style="padding:7px 10px;border:none;background:color-mix(in srgb,var(--success) 12%,transparent);color:var(--success);border-radius:8px;font-size:11px;cursor:pointer;">💬</button>
+          <button onclick='delAcente("${a.id}")' style="padding:7px 10px;border:none;background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border-radius:8px;font-size:11px;cursor:pointer;">🗑️</button>
+        </div>
+      </div>`;
     });
-    tb.innerHTML=rows;
-    // TFOOT — toplamlar
-    if(tf) tf.innerHTML=`<tr style="background:var(--grad-1);">
-      <td colspan="2" style="text-align:right;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);padding:9px 12px;">TOPLAM (${list.length} acente)</td>
-      <td style="font-weight:800;color:#fff;padding:9px 12px;">${totMus} müşteri<br><span style="font-size:10px;opacity:.8;">Net: ₺${fmt(totNet)} · Brüt: ₺${fmt(totBrut)}</span></td>
-      <td style="font-weight:800;color:#fde68a;padding:9px 12px;">Borç: ₺${fmt(totK)}<br><span style="color:#6ee7b7;font-size:10px;">Alacak: ₺${fmt(totA)}</span></td>
-      <td style="padding:9px 12px;"></td>
-    </tr>`;
+    if(grid) grid.innerHTML=cards;
+    if(footerBar){
+      footerBar.style.display='block';
+      footerBar.innerHTML=`<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7);">TOPLAM (${list.length} acente)</span>
+        <span style="font-size:12px;font-weight:700;color:#fff;">👥 ${totMus} müşteri</span>
+        <span style="font-size:12px;font-weight:700;color:#a5f3fc;">Net: ₺${fmt(totNet)}</span>
+        <span style="font-size:12px;font-weight:700;color:#fbbf24;">Brüt: ₺${fmt(totBrut)}</span>
+        <span style="font-size:12px;font-weight:700;color:#fde68a;">Kom: ₺${fmt(totK)}</span>
+        <span style="font-size:12px;font-weight:700;color:#6ee7b7;">Tahsilat: ₺${fmt(totA)}</span>
+      </div>`;
+    }
   }
   // at dropdown
   const atSel=byId('at-acente');
@@ -15816,7 +16060,7 @@ function renderCariListe(){
       const tipBadges=Object.entries(m.tipSayac).map(([k,v])=>`<span style="display:inline-block;margin:1px 2px;padding:2px 6px;border-radius:8px;font-size:9px;font-weight:700;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--text);">${TIP_LABEL[k]||k}<span style="opacity:.6;margin-left:2px;">${v}</span></span>`).join('');
       const yontemBadges=Object.entries(m.yontemSayac).map(([k,v])=>`<span style="display:inline-block;margin:1px 2px;padding:2px 6px;border-radius:8px;font-size:9px;font-weight:700;background:color-mix(in srgb,var(--info) 10%,transparent);color:var(--text);">${YONTEM_LABEL[k]||k}<span style="opacity:.6;margin-left:2px;">${v}</span></span>`).join('');
       return `<tr style="${bg}cursor:pointer;"
-          onclick="openMusteriDetay('${m.id}')"
+          onclick="openCariYonetim('${m.id}')"
           onmouseover="this.style.background='color-mix(in srgb,var(--accent) 5%,transparent)'"
           onmouseout="this.style.background='${i%2?'var(--bg)':''}'">
         <td style="padding:7px 10px;font-weight:600;"><span style="color:var(--info);margin-right:4px;">●</span>${m.ad}
@@ -15833,7 +16077,7 @@ function renderCariListe(){
         </td>
         <td style="padding:7px 10px;text-align:center;" onclick="event.stopPropagation()">
           <button onclick="showPage('cari')" style="border:none;background:color-mix(in srgb,var(--success) 15%,transparent);color:var(--success);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:2px;">➕</button>
-          <button onclick="openMusteriDetay('${m.id}')" style="border:none;background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">🔎</button>
+          <button onclick="openCariYonetim('${m.id}')" style="border:none;background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">🔎</button>
         </td>
       </tr>`;
     }).join('')}</tbody>
