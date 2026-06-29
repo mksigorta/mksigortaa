@@ -17099,6 +17099,52 @@ document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(syncMobileView, 2
         <label class="ck-label">Tutar (₺)</label>
         <input type="number" id="ck-trans-tutar" class="ck-inp" step="0.01" placeholder="0.00" style="font-size:18px;font-weight:800;text-align:right;">
       </div>
+      <!-- Poliçe detay alanları -->
+      <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px;">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">📋 Poliçe Bilgileri</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div>
+            <label class="ck-label">Poliçe No</label>
+            <input type="text" id="ck-trans-polNo" class="ck-inp" placeholder="Poliçe No...">
+          </div>
+          <div>
+            <label class="ck-label">Poliçe Türü</label>
+            <select id="ck-trans-policeTur" class="ck-inp">
+              <option value="">— Seçiniz —</option>
+              <option value="Trafik">🚗 Trafik</option>
+              <option value="Kasko">🛡️ Kasko</option>
+              <option value="Konut">🏠 Konut</option>
+              <option value="İMM">🏗️ İMM</option>
+              <option value="TSS">⚕️ TSS</option>
+              <option value="Sağlık">💊 Sağlık</option>
+              <option value="Hayat">❤️ Hayat</option>
+              <option value="Yangın">🔥 Yangın</option>
+              <option value="Nakliyat">📦 Nakliyat</option>
+              <option value="Diğer">🔄 Diğer</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+          <div>
+            <label class="ck-label">Şirket</label>
+            <input type="text" id="ck-trans-sirket" class="ck-inp" placeholder="Sigorta şirketi...">
+          </div>
+          <div>
+            <label class="ck-label">Plaka</label>
+            <input type="text" id="ck-trans-plaka" class="ck-inp" placeholder="34 ABC 123">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+          <div>
+            <label class="ck-label">Müşteri (Poliçe Sahibi)</label>
+            <input type="text" id="ck-trans-musteriAd" class="ck-inp" placeholder="Ad Soyad...">
+          </div>
+          <div>
+            <label class="ck-label">Acente</label>
+            <input type="text" id="ck-trans-acente" class="ck-inp" placeholder="Acente adı...">
+          </div>
+        </div>
+      </div>
     </div>
     <div class="ck-mw-foot">
       <button class="btn btn-outline btn-sm" onclick="document.getElementById('ck-trans-modal').classList.remove('active')">Vazgeç</button>
@@ -17154,6 +17200,32 @@ document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(syncMobileView, 2
           <label class="ck-label">Plaka</label>
           <input type="text" id="ck-edit-plaka" class="ck-inp" placeholder="Plaka...">
         </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label class="ck-label">Poliçe Türü</label>
+          <select id="ck-edit-policeTur" class="ck-inp">
+            <option value="">— Seçiniz —</option>
+            <option value="Trafik">🚗 Trafik</option>
+            <option value="Kasko">🛡️ Kasko</option>
+            <option value="Konut">🏠 Konut</option>
+            <option value="İMM">🏗️ İMM</option>
+            <option value="TSS">⚕️ TSS</option>
+            <option value="Sağlık">💊 Sağlık</option>
+            <option value="Hayat">❤️ Hayat</option>
+            <option value="Yangın">🔥 Yangın</option>
+            <option value="Nakliyat">📦 Nakliyat</option>
+            <option value="Diğer">🔄 Diğer</option>
+          </select>
+        </div>
+        <div>
+          <label class="ck-label">Acente</label>
+          <input type="text" id="ck-edit-acente" class="ck-inp" placeholder="Acente adı...">
+        </div>
+      </div>
+      <div>
+        <label class="ck-label">Müşteri (Poliçe Sahibi)</label>
+        <input type="text" id="ck-edit-musteriAd" class="ck-inp" placeholder="Ad Soyad...">
       </div>
     </div>
     <div class="ck-mw-foot">
@@ -17285,8 +17357,7 @@ function ckRenderListe(){
   });
 
   let liste = Object.values(musMap).filter(x=>{
-    // En az 1 cari hareketi olanları veya kartı olanları göster
-    if(x.cariSayisi===0 && !x.kart) return false;
+    // Tüm kayıtlı müşterileri göster
     if(srch && !x.m.ad.toLowerCase().includes(srch)) return false;
     if(catFilt && (!x.kart || x.kart.kategori!==catFilt)) return false;
     if(filter==='borclu'    && x.bakiye<=0) return false;
@@ -17296,8 +17367,8 @@ function ckRenderListe(){
 
   const tbody = byId('ck-liste-tbody');
   if(!liste.length){
-    tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px;font-size:13px;">Kayıt bulunamadı. <span style="color:var(--accent);cursor:pointer;" onclick="ckYeniCariAc()">➕ Yeni ekle →</span></td></tr>`;
-    byId('ck-count-lbl').textContent='Kayıtlı Cari: 0';
+    tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px;font-size:13px;">Müşteri bulunamadı. <span style="color:var(--accent);cursor:pointer;" onclick="ckYeniCariAc()">➕ Yeni ekle →</span></td></tr>`;
+    byId('ck-count-lbl').textContent='Toplam Müşteri: 0';
     byId('ck-genel-bakiye').textContent='Genel Bakiye: ₺0.00';
     return;
   }
@@ -17329,7 +17400,7 @@ function ckRenderListe(){
     </tr>`;
   }).join('');
 
-  byId('ck-count-lbl').textContent=`Kayıtlı Cari: ${liste.length}`;
+  byId('ck-count-lbl').textContent=`Toplam Müşteri: ${liste.length}`;
   byId('ck-genel-bakiye').textContent=`Genel Bakiye: ₺${fmt(Math.abs(genelBakiye))} ${genelBakiye>0?'(Borç)':genelBakiye<0?'(Alacak)':''}`;
 }
 
@@ -17349,6 +17420,32 @@ function ckRenderDetay(){
   let tBorc=0, tAlacak=0;
   const tbody = byId('ck-detay-tbody');
 
+  // ─── Açıklama zenginleştirici yardımcı ──────────────────────────
+  function ckBuildAciklama(c, th){
+    // 1. Önce police kayıtlarından bul
+    const pByNo = c.polNo ? (DB.policeler||[]).find(p=>p.polNo===c.polNo) : null;
+    const acenteAd = c.acente || (pByNo && getAcente(pByNo.acenteId)?.ad) || (th && getAcente((DB.policeler||[]).find(p=>p.id===th.policeId)?.acenteId)?.ad) || '';
+    const musteriAd = c.musteriAd || (pByNo && getMusteri(pByNo.musteriId)?.ad) || '';
+    const policeTur = c.policeTur || pByNo?.islemTur || pByNo?.polTur || '';
+    const sirket = c.sirket || pByNo?.sirket || '';
+    const plaka  = c.plaka  || pByNo?.plaka  || '';
+    const polNo  = c.polNo  || '';
+
+    const badges = [];
+    if(polNo)      badges.push(`<span style="background:color-mix(in srgb,var(--info) 14%,transparent);color:var(--info);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;">📋 ${polNo}</span>`);
+    if(policeTur)  badges.push(`<span style="background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;">${policeTur}</span>`);
+    if(sirket)     badges.push(`<span style="background:color-mix(in srgb,var(--gold) 14%,transparent);color:var(--gold);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;">🏦 ${sirket}</span>`);
+    if(plaka)      badges.push(`<span style="background:color-mix(in srgb,var(--success) 14%,transparent);color:var(--success);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;">🚗 ${plaka}</span>`);
+    if(musteriAd)  badges.push(`<span style="background:color-mix(in srgb,var(--muted) 14%,transparent);color:var(--muted);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;">👤 ${musteriAd}</span>`);
+    if(acenteAd)   badges.push(`<span style="background:color-mix(in srgb,var(--warning) 14%,transparent);color:var(--warning);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;">🏢 ${acenteAd}</span>`);
+
+    const aciklamaText = c.aciklama || th?.aciklama || '';
+    return `<div style="display:flex;flex-direction:column;gap:3px;">
+      ${aciklamaText ? `<div style="font-size:11px;color:var(--muted);">${aciklamaText}</div>` : ''}
+      ${badges.length ? `<div style="display:flex;flex-wrap:wrap;gap:3px;">${badges.join('')}</div>` : ''}
+    </div>`;
+  }
+
   // ─── Satır üret: cari kayıtları ─────────────────────────────────
   let satirlar = cs.map(c=>{
     const th = ths.find(t=>t.id===c.id.replace('_c',''));
@@ -17360,7 +17457,7 @@ function ckRenderDetay(){
     return `<tr>
       <td style="font-size:11px;white-space:nowrap;">${fmtD(c.tarih)||'-'}</td>
       <td style="font-size:11px;color:var(--info);">${tur}</td>
-      <td style="font-size:11px;color:var(--muted);">${c.aciklama||th?.aciklama||'-'}</td>
+      <td style="font-size:11px;">${ckBuildAciklama(c, th)}</td>
       <td style="font-size:11px;font-family:monospace;">${c.polNo||'-'}</td>
       <td style="font-size:11px;">${c.sirket||'-'}${c.plaka?' / '+c.plaka:''}</td>
       <td style="text-align:right;color:var(--danger);font-weight:700;font-family:monospace;">${b?'₺'+fmt(b):''}</td>
@@ -17451,6 +17548,9 @@ function ckHareketDuzenleAc(id){
   byId('ck-edit-polNo').value = c.polNo || '';
   byId('ck-edit-sirket').value = c.sirket || '';
   byId('ck-edit-plaka').value = c.plaka || '';
+  byId('ck-edit-policeTur').value = c.policeTur || '';
+  byId('ck-edit-acente').value = c.acente || '';
+  byId('ck-edit-musteriAd').value = c.musteriAd || '';
   byId('ck-edit-modal').style.display = 'flex';
 }
 function ckHareketKaydet(){
@@ -17471,6 +17571,9 @@ function ckHareketKaydet(){
     polNo    : byId('ck-edit-polNo').value,
     sirket   : byId('ck-edit-sirket').value,
     plaka    : byId('ck-edit-plaka').value,
+    policeTur: byId('ck-edit-policeTur').value,
+    acente   : byId('ck-edit-acente').value,
+    musteriAd: byId('ck-edit-musteriAd').value,
   };
   saveDB();
   byId('ck-edit-modal').style.display = 'none';
@@ -17497,6 +17600,12 @@ function ckTransAc(label, tur){
   byId('ck-trans-tur').value   = tur;
   byId('ck-trans-aciklama').value = label;
   byId('ck-trans-tutar').value= '';
+  byId('ck-trans-polNo').value = '';
+  byId('ck-trans-policeTur').value = '';
+  byId('ck-trans-sirket').value = '';
+  byId('ck-trans-plaka').value = '';
+  byId('ck-trans-musteriAd').value = '';
+  byId('ck-trans-acente').value = '';
   byId('ck-trans-modal').classList.add('active');
 }
 function ckTransAcMusteri(mid, label, tur){
@@ -17522,7 +17631,12 @@ function ckTransKaydet(){
     borc     : isBorc ? tutar : 0,
     alacak   : !isBorc ? tutar : 0,
     aciklama,
-    polNo:'', sirket:'', plaka:''
+    polNo    : gv('ck-trans-polNo')||'',
+    sirket   : gv('ck-trans-sirket')||'',
+    plaka    : gv('ck-trans-plaka')||'',
+    policeTur: gv('ck-trans-policeTur')||'',
+    musteriAd: gv('ck-trans-musteriAd')||'',
+    acente   : gv('ck-trans-acente')||'',
   };
   DB.cariler.push(obj);
   saveDB();
