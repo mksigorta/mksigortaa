@@ -5370,18 +5370,42 @@ function _renderCariYonetim(){
   const TIP_LABEL={'borc':'Borç','alacak':'Alacak','iade':'İade','odeme':'MK→Müşteri','iskonto':'İskonto','diger':'Diğer'};
   const TIP_CLR={'borc':'var(--danger)','alacak':'var(--success)','iade':'var(--info)','odeme':'var(--warning)','iskonto':'var(--gold)','diger':'var(--muted)'};
 
+  // ─── Açıklama zenginleştirici: poliçe no, şirket, plaka, ad soyad, acente, poliçe türü ───
+  function cyBuildAciklama(c){
+    const pByNo = c.polNo ? (DB.policeler||[]).find(p=>p.polNo===c.polNo) : null;
+    const polNo     = c.polNo || '';
+    const sirket    = c.sirket || (pByNo&&pByNo.sirket) || '';
+    const plaka     = c.plaka  || (pByNo&&pByNo.plaka)  || '';
+    const adSoyad   = (pByNo && getMusteri(pByNo.musteriId)?.ad) || m.ad || '';
+    const acenteAd  = (pByNo && getAcente(pByNo.acenteId)?.ad) || c.acente || '';
+    const policeTur = (pByNo && (pByNo.polTur||pByNo.islemTur)) || c.policeTur || '';
+
+    const badges=[];
+    if(polNo)     badges.push(`<span style="background:color-mix(in srgb,var(--info) 14%,transparent);color:var(--info);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;">📋 ${polNo}</span>`);
+    if(sirket)    badges.push(`<span style="background:color-mix(in srgb,var(--gold) 14%,transparent);color:var(--gold);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;">🏦 ${sirket}</span>`);
+    if(plaka)     badges.push(`<span style="background:color-mix(in srgb,var(--success) 14%,transparent);color:var(--success);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;">🚗 ${plaka}</span>`);
+    if(adSoyad)   badges.push(`<span style="background:color-mix(in srgb,var(--muted) 14%,transparent);color:var(--muted);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;">👤 ${adSoyad}</span>`);
+    if(acenteAd)  badges.push(`<span style="background:color-mix(in srgb,var(--warning) 14%,transparent);color:var(--warning);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;">🏢 ${acenteAd}</span>`);
+    if(policeTur) badges.push(`<span style="background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;">🏷️ ${policeTur}</span>`);
+
+    const aciklamaText=(c.aciklama||'').length>80?(c.aciklama||'').substr(0,80)+'…':(c.aciklama||'');
+    return `<div style="display:flex;flex-direction:column;gap:4px;">
+      ${aciklamaText?`<div>${aciklamaText}</div>`:''}
+      ${badges.length?`<div style="display:flex;flex-wrap:wrap;gap:3px;">${badges.join('')}</div>`:''}
+      ${(!aciklamaText&&!badges.length)?'—':''}
+    </div>`;
+  }
+
   const harRows=rows.map(c=>{
     const tip=c.tip||'diger';
     const isBorc=c.borc>0;
-    const aciklamaKisa=(c.aciklama||'').length>80?(c.aciklama||'').substr(0,80)+'…':(c.aciklama||'—');
     const runB=bakiyeMap[c.id]||0;
     return `<tr style="border-bottom:1px solid var(--border);">
       <td style="padding:10px 12px;font-size:12px;color:var(--muted);white-space:nowrap;">${fmtD(c.tarih)||'—'}<br><span style="font-size:10px;">${(c.tarih||'').substr(11,5)||''}</span></td>
       <td style="padding:10px 12px;">
         <span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;background:color-mix(in srgb,${TIP_CLR[tip]||'var(--muted)'} 14%,transparent);color:${TIP_CLR[tip]||'var(--muted)'};">${TIP_LABEL[tip]||tip}</span>
-        ${c.polNo?'<div style="font-size:10px;color:var(--accent);margin-top:2px;">📋 '+c.polNo+'</div>':''}
       </td>
-      <td style="padding:10px 12px;font-size:12px;color:var(--text);max-width:280px;">${aciklamaKisa}</td>
+      <td style="padding:10px 12px;font-size:12px;color:var(--text);max-width:320px;">${cyBuildAciklama(c)}</td>
       <td style="padding:10px 12px;text-align:right;font-weight:700;color:var(--danger);">${isBorc?'₺'+fmt(c.borc):'—'}</td>
       <td style="padding:10px 12px;text-align:right;font-weight:700;color:var(--success);">${!isBorc&&c.alacak>0?'₺'+fmt(c.alacak):'—'}</td>
       <td style="padding:10px 12px;text-align:right;font-weight:800;color:${runB>0?'var(--danger)':runB<0?'var(--success)':'var(--muted)'};">₺${fmt(Math.abs(runB))}<br><span style="font-size:9px;opacity:.6;">${runB>0?'Borç':runB<0?'Alacak':'Sıfır'}</span></td>
