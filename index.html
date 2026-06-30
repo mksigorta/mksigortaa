@@ -17963,11 +17963,12 @@ const SB2_URL_KEY  = 'sb2_url';
 const SB2_KEY_KEY  = 'sb2_anon_key';
 const SB2_AUTO_KEY = 'sb2_auto_settings';
 const SB2_DEFAULT_URL = 'https://wgqxegfrufndxzaiumgp.supabase.co';
+const SB2_DEFAULT_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndncXhlZ2ZydWZuZHh6YWl1bWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NTI5MjUsImV4cCI6MjA5MTEyODkyNX0.xLS23k0TAT7rEKSa01KYV15CtjFOrJARPfuIMupnp3Q';
 
 function sb2GetConfig(){
   return {
     url: localStorage.getItem(SB2_URL_KEY) || SB2_DEFAULT_URL,
-    key: localStorage.getItem(SB2_KEY_KEY) || ''
+    key: localStorage.getItem(SB2_KEY_KEY) || SB2_DEFAULT_KEY
   };
 }
 
