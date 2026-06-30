@@ -3952,6 +3952,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('menu-sirala')" id="aytab-menu-sirala" style="border-radius:8px;display:none;">↕️ Menü Sırala</button>
     <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('duyuru')"    id="aytab-duyuru"    style="border-radius:8px;">📢 Duyurular</button>
     <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('sayfalar')"  id="aytab-sayfalar"  style="border-radius:8px;">📑 Sayfalar</button>
+    <button class="btn btn-outline btn-sm ayarlar-tab-btn" onclick="showAyarlarTab('yedek2')"    id="aytab-yedek2"    style="border-radius:8px;">☁️ Veri Yedekleme 2</button>
   </div>
 
   <!-- GENEL AYARLAR SEKMESİ -->
@@ -4437,6 +4438,187 @@ alter table mk_settings disable row level security;</pre>
     </div>
 
   </div><!-- /veri tab -->
+
+  <!-- ══════════════════════════════════════════
+       VERİ YEDEKLEMİ 2 — İKİNCİ SUPABASE HESABI
+  ══════════════════════════════════════════ -->
+  <div id="ayarlar-tab-yedek2" style="display:none;">
+
+    <!-- Durum başlık kartı -->
+    <div class="card" style="border:2px solid var(--accent);margin-bottom:16px;">
+      <div class="card-header">
+        <div class="card-title">☁️ Veri Yedekleme 2 — İkinci Supabase Hesabı</div>
+        <div id="sb2-status-badge" style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:#fef3c7;color:#92400e;">Bağlı Değil</div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.7;">
+        Bu sekme <b>ikinci bir Supabase projesine</b> bağlanarak tüm verilerinizin ekstra bir bulut kopyasını tutar.
+        Ana Supabase bağlantınızdan bağımsız çalışır — farklı proje URL'si ve anahtarıyla yapılandırın.
+        <br><b style="color:var(--accent);">Hedef proje:</b> <code>wgqxegfrufndxzaiumgp.supabase.co</code>
+      </p>
+
+      <!-- SQL Kodu -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📋 Supabase SQL Editor'de Çalıştırın (wgqxegfrufndxzaiumgp projesi):</div>
+        <pre id="sb2-sql-pre" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);margin:0;white-space:pre-wrap;line-height:1.6;">-- ════════════════════════════════════════
+-- MK SİGORTA — VERİ YEDEKLEMİ 2
+-- Proje: wgqxegfrufndxzaiumgp.supabase.co
+-- ════════════════════════════════════════
+
+-- 1) Ana veri tablosu (ikincil kopya)
+create table if not exists mk_database (
+  id integer primary key default 1,
+  data jsonb not null default '{}',
+  updated_at timestamptz default now()
+);
+create unique index if not exists mk_database_single on mk_database (id);
+alter table mk_database disable row level security;
+
+-- Otomatik updated_at trigger
+create or replace function mk_set_updated_at()
+returns trigger language plpgsql as $$
+begin new.updated_at = now(); return new; end;
+$$;
+drop trigger if exists mk_database_updated_at on mk_database;
+create trigger mk_database_updated_at
+  before update on mk_database
+  for each row execute procedure mk_set_updated_at();
+
+-- 2) Yedek tablosu (manuel & otomatik yedekler)
+create table if not exists mk_backups (
+  id text primary key,
+  tarih text,
+  saat text,
+  kaynak text default 'yedek2',
+  aciklama text default '',
+  data jsonb not null default '{}',
+  created_at timestamptz default now()
+);
+alter table mk_backups disable row level security;
+
+-- Fazla yedek otomatik temizleme (isteğe bağlı, en fazla 50 yedek)
+create or replace function mk_trim_backups()
+returns trigger language plpgsql as $$
+begin
+  delete from mk_backups
+  where id in (
+    select id from mk_backups
+    order by created_at desc
+    offset 50
+  );
+  return new;
+end;
+$$;
+drop trigger if exists mk_backups_trim on mk_backups;
+create trigger mk_backups_trim
+  after insert on mk_backups
+  for each row execute procedure mk_trim_backups();
+
+-- 3) Ayarlar tablosu
+create table if not exists mk_settings (
+  key text primary key,
+  value text not null default '',
+  updated_at timestamptz default now()
+);
+alter table mk_settings disable row level security;
+
+-- 4) Yedek2 özel log tablosu (senkron geçmişi)
+create table if not exists mk_sync_log (
+  id bigserial primary key,
+  islem text not null,
+  durum text not null,
+  mesaj text default '',
+  kayit_sayisi integer default 0,
+  created_at timestamptz default now()
+);
+alter table mk_sync_log disable row level security;
+
+-- Test verisi ekle (bağlantı doğrulama için)
+insert into mk_database (id, data) values (1, '{"_init": true}')
+on conflict (id) do nothing;
+
+select 'MK Sigorta Yedek2 tabloları başarıyla oluşturuldu ✓' as sonuc;</pre>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-xs" onclick="sb2CopySQL()">📋 SQL Kopyala</button>
+          <button class="btn btn-outline btn-xs" onclick="sb2DownloadSQL()">⬇️ SQL İndir</button>
+        </div>
+      </div>
+
+      <!-- Bağlantı bilgileri -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div class="fg">
+          <label>Supabase Project URL</label>
+          <input type="text" id="sb2-url-input" placeholder="https://wgqxegfrufndxzaiumgp.supabase.co" oninput="sb2InputChange()">
+        </div>
+        <div class="fg">
+          <label>Anon / Public Key</label>
+          <input type="password" id="sb2-key-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6Ikp..." oninput="sb2InputChange()">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+        <button class="btn btn-primary btn-sm" onclick="sb2SaveConfig()">💾 Bağlantıyı Kaydet &amp; Bağlan</button>
+        <button class="btn btn-success btn-sm" onclick="sb2SyncTo()">⬆️ Buluta Yükle (Tüm Veri)</button>
+        <button class="btn btn-info btn-sm" onclick="sb2SyncFrom()">⬇️ Buluttan İndir</button>
+        <button class="btn btn-warning btn-sm" onclick="sb2BackupNow()">💾 Yedek Al (Yedek2)</button>
+        <button class="btn btn-danger btn-sm" onclick="sb2ClearConfig()">🔌 Bağlantıyı Kes</button>
+      </div>
+      <div id="sb2-msg" style="margin-top:6px;font-size:11px;min-height:16px;color:var(--muted);padding:6px 10px;border-radius:6px;"></div>
+    </div>
+
+    <!-- İstatistikler -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Son Senkron</div>
+        <div id="sb2-last-sync" style="font-size:13px;font-weight:800;margin-top:4px;color:var(--text);">—</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Bulut Yedek Sayısı</div>
+        <div id="sb2-backup-count" style="font-size:13px;font-weight:800;margin-top:4px;color:var(--text);">—</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Bağlantı Durumu</div>
+        <div id="sb2-conn-status" style="font-size:13px;font-weight:800;margin-top:4px;color:var(--danger);">Pasif</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Son Yedek (Yedek2)</div>
+        <div id="sb2-last-backup" style="font-size:13px;font-weight:800;margin-top:4px;color:var(--text);">—</div>
+      </div>
+    </div>
+
+    <!-- Yedek listesi -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📋 Yedek2 Bulut Yedekleri</div>
+        <div style="display:flex;gap:7px;">
+          <button class="btn btn-success btn-sm" onclick="sb2BackupNow()">💾 Yedek Al</button>
+          <button class="btn btn-outline btn-sm" onclick="sb2LoadBackupList()">🔄 Yenile</button>
+        </div>
+      </div>
+      <div id="sb2-backup-list" style="min-height:60px;">
+        <div style="color:var(--muted);font-size:12px;padding:10px 0;">Yedekleri görmek için önce bağlanın.</div>
+      </div>
+    </div>
+
+    <!-- Otomatik senkron ayarları -->
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><div class="card-title">⚙️ Otomatik Senkron (Yedek2)</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+        <div class="fg">
+          <label>Otomatik Yedek Aralığı (dakika, 0 = kapalı)</label>
+          <input type="number" id="sb2-auto-interval" min="0" max="1440" value="0" placeholder="0" style="width:100%;">
+        </div>
+        <div class="fg">
+          <label>Değişiklikte Otomatik Senkron</label>
+          <select id="sb2-auto-sync" style="width:100%;">
+            <option value="0">Kapalı</option>
+            <option value="1">Açık (her kayıtta senkronize et)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="sb2SaveAutoSettings()">💾 Otomatik Ayarları Kaydet</button>
+      <div id="sb2-auto-msg" style="font-size:11px;color:var(--muted);margin-top:8px;min-height:14px;"></div>
+    </div>
+
+  </div><!-- /yedek2 tab -->
 
   <!-- POLİÇE AYARLARI SEKMESİ -->
   <div id="ayarlar-tab-police" style="display:none;">
@@ -12031,7 +12213,7 @@ function aracCinsSil(idx){
 // AYARLAR SEKMELERİ
 // ══════════════════════════════════════════════════
 function showAyarlarTab(tab){
-  const ALL_TABS=['genel','veri','police','kullanici','tema','modul','menu-sirala','duyuru','sayfalar'];
+  const ALL_TABS=['genel','veri','police','kullanici','tema','modul','menu-sirala','duyuru','sayfalar','yedek2'];
   ALL_TABS.forEach(function(t){
     const el=byId('ayarlar-tab-'+t);
     const btn=byId('aytab-'+t);
@@ -12062,6 +12244,7 @@ function showAyarlarTab(tab){
       if(warn){ if(parseFloat(info.pct||0)>80){warn.style.display='block';warn.textContent='⚠️ Depolama dolmak üzere!';}else warn.style.display='none'; }
     });
   }
+  if(tab==='yedek2'){ sb2Init(); }
 }
 
 // ══════════════════════════════════════════════════
@@ -17765,5 +17948,387 @@ document.addEventListener('keydown', e=>{
   </div>
   <div id="kasa-fs-body"></div>
 </div>
-</body>
-</html>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// VERİ YEDEKLEMİ 2 — İKİNCİ SUPABASE HESABI
+// Proje: wgqxegfrufndxzaiumgp.supabase.co
+// ══════════════════════════════════════════════════════════════════
+
+let _sb2 = null;
+let _sb2Enabled = false;
+let _sb2AutoTimer = null;
+
+const SB2_URL_KEY  = 'sb2_url';
+const SB2_KEY_KEY  = 'sb2_anon_key';
+const SB2_AUTO_KEY = 'sb2_auto_settings';
+const SB2_DEFAULT_URL = 'https://wgqxegfrufndxzaiumgp.supabase.co';
+
+function sb2GetConfig(){
+  return {
+    url: localStorage.getItem(SB2_URL_KEY) || SB2_DEFAULT_URL,
+    key: localStorage.getItem(SB2_KEY_KEY) || ''
+  };
+}
+
+function sb2Init(){
+  const cfg = sb2GetConfig();
+  // URL input'unu önceden doldur
+  const urlEl = byId('sb2-url-input');
+  const keyEl = byId('sb2-key-input');
+  if(urlEl && !urlEl.value) urlEl.value = cfg.url || SB2_DEFAULT_URL;
+  if(keyEl && !keyEl.value) keyEl.value = cfg.key || '';
+
+  // Otomatik ayarları yükle
+  try{
+    const a = JSON.parse(localStorage.getItem(SB2_AUTO_KEY)||'{}');
+    const intEl = byId('sb2-auto-interval');
+    const syncEl = byId('sb2-auto-sync');
+    if(intEl) intEl.value = a.interval || 0;
+    if(syncEl) syncEl.value = a.autoSync ? '1' : '0';
+  }catch(e){}
+
+  if(cfg.url && cfg.key){
+    sb2Connect(cfg.url, cfg.key);
+  } else {
+    sb2UpdateStatusUI(false);
+  }
+}
+
+function sb2Connect(url, key){
+  if(!url || !key){ _sb2Enabled=false; sb2UpdateStatusUI(false); return false; }
+  try{
+    const client = (window.supabase && window.supabase.createClient)
+      ? window.supabase.createClient(url, key)
+      : null;
+    if(!client){
+      sb2Msg('❌ Supabase client oluşturulamadı', 'error');
+      _sb2Enabled = false;
+      sb2UpdateStatusUI(false);
+      return false;
+    }
+    _sb2 = client;
+    _sb2Enabled = true;
+    sb2UpdateStatusUI(true);
+    sb2LoadBackupList();
+    sb2StartAutoTimer();
+    return true;
+  }catch(e){
+    console.error('[Yedek2] Bağlantı hatası:', e);
+    sb2Msg('❌ Bağlantı hatası: ' + e.message, 'error');
+    _sb2Enabled = false;
+    sb2UpdateStatusUI(false);
+    return false;
+  }
+}
+
+function sb2UpdateStatusUI(connected){
+  const badge = byId('sb2-status-badge');
+  const connEl = byId('sb2-conn-status');
+  if(badge){
+    badge.textContent = connected ? '✅ Bağlı' : 'Bağlı Değil';
+    badge.style.background = connected ? '#dcfce7' : '#fef3c7';
+    badge.style.color = connected ? '#166534' : '#92400e';
+  }
+  if(connEl){
+    connEl.textContent = connected ? 'Aktif ✅' : 'Pasif ❌';
+    connEl.style.color = connected ? 'var(--success)' : 'var(--danger)';
+  }
+}
+
+function sb2InputChange(){
+  // anlık feedback — boş ise uyar
+}
+
+function sb2Msg(text, type){
+  const el = byId('sb2-msg');
+  if(!el) return;
+  const colors = {
+    success: {bg:'#dcfce7',color:'#166534'},
+    error:   {bg:'#fee2e2',color:'#991b1b'},
+    info:    {bg:'#dbeafe',color:'#1e40af'},
+  };
+  const c = colors[type] || colors.info;
+  el.style.background = c.bg;
+  el.style.color = c.color;
+  el.style.padding = '6px 10px';
+  el.style.borderRadius = '6px';
+  el.textContent = text;
+  if(type === 'success') setTimeout(()=>{ if(el.textContent===text){ el.textContent=''; el.style.background=''; } }, 4000);
+}
+
+async function sb2SaveConfig(){
+  const url = (byId('sb2-url-input')?.value || '').trim();
+  const key = (byId('sb2-key-input')?.value || '').trim();
+  if(!url || !key){ sb2Msg('❌ URL ve Anahtar giriniz', 'error'); return; }
+  localStorage.setItem(SB2_URL_KEY, url);
+  localStorage.setItem(SB2_KEY_KEY, key);
+  sb2Msg('⏳ Bağlanıyor...', 'info');
+  const ok = sb2Connect(url, key);
+  if(ok){
+    // Bağlantıyı doğrula
+    try{
+      const {data, error} = await _sb2.from('mk_database').select('id').eq('id',1).single();
+      if(error && error.code !== 'PGRST116'){
+        sb2Msg('⚠️ Bağlandı fakat tablo bulunamadı. SQL\'i çalıştırın.', 'error');
+      } else {
+        sb2Msg('✅ Bağlantı başarılı! Yedek2 hazır.', 'success');
+      }
+    }catch(e){
+      sb2Msg('✅ Bağlantı kuruldu (doğrulama atlandı).', 'success');
+    }
+  } else {
+    sb2Msg('❌ Bağlantı kurulamadı. URL ve Anahtarı kontrol edin.', 'error');
+  }
+}
+
+function sb2ClearConfig(){
+  if(!confirm('Yedek2 bağlantısını kesmek istiyor musunuz?')) return;
+  localStorage.removeItem(SB2_URL_KEY);
+  localStorage.removeItem(SB2_KEY_KEY);
+  _sb2 = null;
+  _sb2Enabled = false;
+  if(_sb2AutoTimer){ clearInterval(_sb2AutoTimer); _sb2AutoTimer = null; }
+  sb2UpdateStatusUI(false);
+  sb2Msg('🔌 Bağlantı kesildi.', 'info');
+  const backupList = byId('sb2-backup-list');
+  if(backupList) backupList.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:10px 0;">Yedekleri görmek için önce bağlanın.</div>';
+  const urlEl = byId('sb2-url-input');
+  const keyEl = byId('sb2-key-input');
+  if(urlEl) urlEl.value = '';
+  if(keyEl) keyEl.value = '';
+}
+
+async function sb2SyncTo(){
+  if(!_sb2Enabled || !_sb2){ sb2Msg('❌ Önce bağlantı kurun', 'error'); return; }
+  sb2Msg('⏳ Veri buluta yükleniyor...', 'info');
+  try{
+    const payload = JSON.parse(JSON.stringify(DB));
+    const {error} = await _sb2.from('mk_database').upsert({id:1, data:payload, updated_at: new Date().toISOString()});
+    if(error){ sb2Msg('❌ Yükleme hatası: ' + error.message, 'error'); return; }
+    const now = new Date().toLocaleString('tr-TR');
+    localStorage.setItem('sb2_last_sync', now);
+    const el = byId('sb2-last-sync');
+    if(el) el.textContent = now;
+    sb2Msg('✅ Tüm veriler Yedek2 bulutuna yüklendi (' + now + ')', 'success');
+    if(typeof toast === 'function') toast('Yedek2: Buluta yüklendi ✓', 'success');
+  }catch(e){
+    sb2Msg('❌ Hata: ' + e.message, 'error');
+  }
+}
+
+async function sb2SyncFrom(){
+  if(!_sb2Enabled || !_sb2){ sb2Msg('❌ Önce bağlantı kurun', 'error'); return; }
+  if(!confirm('Yedek2 bulutundan veri indirilecek. Mevcut veriler ETKİLENEBİLİR. Devam edilsin mi?')) return;
+  sb2Msg('⏳ Buluttan indiriliyor...', 'info');
+  try{
+    const {data, error} = await _sb2.from('mk_database').select('data').eq('id',1).single();
+    if(error){ sb2Msg('❌ İndirme hatası: ' + error.message, 'error'); return; }
+    if(data && data.data){
+      DB = Object.assign({musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]}, data.data);
+      try{ localStorage.setItem(typeof DBKEY!=='undefined'?DBKEY:'mksigorta_db', JSON.stringify(DB)); }catch(e){}
+      sb2Msg('✅ Veriler Yedek2\'den indirildi. Sayfa yenilenebilir.', 'success');
+      if(typeof toast === 'function') toast('Yedek2: Buluttan indirildi ✓', 'success');
+      if(typeof updateStats === 'function') updateStats();
+    } else {
+      sb2Msg('⚠️ Bulutta veri bulunamadı.', 'error');
+    }
+  }catch(e){
+    sb2Msg('❌ Hata: ' + e.message, 'error');
+  }
+}
+
+async function sb2BackupNow(){
+  if(!_sb2Enabled || !_sb2){ sb2Msg('❌ Önce bağlantı kurun', 'error'); return; }
+  sb2Msg('⏳ Yedek alınıyor...', 'info');
+  try{
+    const now = new Date();
+    const id = 'sb2_' + now.getTime();
+    const tarih = now.toLocaleDateString('tr-TR');
+    const saat  = now.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+    const payload = JSON.parse(JSON.stringify(DB));
+    const {error} = await _sb2.from('mk_backups').insert([{
+      id, tarih, saat,
+      kaynak: 'yedek2-manuel',
+      aciklama: 'Manuel yedek - Yedek2',
+      data: payload,
+      created_at: now.toISOString()
+    }]);
+    if(error){ sb2Msg('❌ Yedek hatası: ' + error.message, 'error'); return; }
+    const lastEl = byId('sb2-last-backup');
+    if(lastEl) lastEl.textContent = tarih + ' ' + saat;
+    localStorage.setItem('sb2_last_backup', now.toISOString());
+    sb2Msg('✅ Yedek alındı: ' + tarih + ' ' + saat, 'success');
+    sb2LoadBackupList();
+    if(typeof toast === 'function') toast('Yedek2: Yedek alındı ✓', 'success');
+  }catch(e){
+    sb2Msg('❌ Hata: ' + e.message, 'error');
+  }
+}
+
+async function sb2LoadBackupList(){
+  const listEl = byId('sb2-backup-list');
+  const countEl = byId('sb2-backup-count');
+  if(!_sb2Enabled || !_sb2){
+    if(listEl) listEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:10px 0;">Bağlantı yok.</div>';
+    return;
+  }
+  if(listEl) listEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:10px 0;">⏳ Yükleniyor...</div>';
+  try{
+    const {data, error} = await _sb2.from('mk_backups').select('*').order('created_at', {ascending:false}).limit(50);
+    if(error){ if(listEl) listEl.innerHTML = '<div style="color:var(--danger);font-size:12px;padding:10px;">❌ '+error.message+'</div>'; return; }
+    if(countEl) countEl.textContent = (data||[]).length + ' yedek';
+    if(!data || !data.length){
+      if(listEl) listEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:10px 0;">Henüz yedek alınmamış.</div>';
+      return;
+    }
+    if(listEl) listEl.innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border);">
+            <th style="text-align:left;padding:8px 10px;font-weight:700;color:var(--muted);">#</th>
+            <th style="text-align:left;padding:8px 10px;font-weight:700;color:var(--muted);">Tarih</th>
+            <th style="text-align:left;padding:8px 10px;font-weight:700;color:var(--muted);">Saat</th>
+            <th style="text-align:left;padding:8px 10px;font-weight:700;color:var(--muted);">Kaynak</th>
+            <th style="text-align:right;padding:8px 10px;font-weight:700;color:var(--muted);">İşlem</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.map((bk,i)=>`
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:8px 10px;color:var(--muted);">${i+1}</td>
+              <td style="padding:8px 10px;font-weight:600;">${bk.tarih||'—'}</td>
+              <td style="padding:8px 10px;">${bk.saat||'—'}</td>
+              <td style="padding:8px 10px;color:var(--muted);">${bk.kaynak||'yedek2'}</td>
+              <td style="padding:8px 10px;text-align:right;">
+                <button class="btn btn-info btn-xs" onclick="sb2RestoreBackup('${bk.id}')" style="margin-right:4px;">🔄 Geri Yükle</button>
+                <button class="btn btn-outline btn-xs" onclick="sb2DownloadBackup('${bk.id}')" style="margin-right:4px;">⬇️ İndir</button>
+                <button class="btn btn-danger btn-xs" onclick="sb2DeleteBackup('${bk.id}')">🗑️</button>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
+  }catch(e){
+    if(listEl) listEl.innerHTML = '<div style="color:var(--danger);font-size:12px;padding:10px;">❌ '+e.message+'</div>';
+  }
+}
+
+// Yedek geri yükle
+window._sb2BackupCache = {};
+async function sb2RestoreBackup(id){
+  if(!confirm('Bu yedek geri yüklenecek. Mevcut veriler değişecek. Devam edilsin mi?')) return;
+  sb2Msg('⏳ Geri yükleniyor...', 'info');
+  try{
+    const {data, error} = await _sb2.from('mk_backups').select('data,tarih,saat').eq('id', String(id)).single();
+    if(error || !data){ sb2Msg('❌ Yedek bulunamadı: '+(error?.message||''), 'error'); return; }
+    DB = Object.assign({musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[]}, data.data);
+    try{ localStorage.setItem(typeof DBKEY!=='undefined'?DBKEY:'mksigorta_db', JSON.stringify(DB)); }catch(e){}
+    if(typeof saveDB==='function') saveDB();
+    sb2Msg('✅ Yedek geri yüklendi: '+data.tarih+' '+data.saat, 'success');
+    if(typeof toast === 'function') toast('Yedek2: Geri yüklendi ✓', 'success');
+    if(typeof updateStats === 'function') updateStats();
+  }catch(e){
+    sb2Msg('❌ Hata: '+e.message, 'error');
+  }
+}
+
+// Yedek JSON olarak indir
+async function sb2DownloadBackup(id){
+  sb2Msg('⏳ İndiriliyor...', 'info');
+  try{
+    const {data, error} = await _sb2.from('mk_backups').select('*').eq('id', String(id)).single();
+    if(error || !data){ sb2Msg('❌ Yedek bulunamadı', 'error'); return; }
+    const json = JSON.stringify(data.data, null, 2);
+    const blob = new Blob([json], {type:'application/json'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = 'mks_yedek2_'+data.tarih+'_'+data.saat+'.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    sb2Msg('✅ İndirildi.', 'success');
+  }catch(e){
+    sb2Msg('❌ Hata: '+e.message, 'error');
+  }
+}
+
+// Yedek sil
+async function sb2DeleteBackup(id){
+  if(!confirm('Bu yedek kalıcı olarak silinecek. Emin misiniz?')) return;
+  try{
+    await _sb2.from('mk_backups').delete().eq('id', String(id));
+    sb2Msg('🗑️ Yedek silindi.', 'info');
+    sb2LoadBackupList();
+  }catch(e){
+    sb2Msg('❌ Silinemedi: '+e.message, 'error');
+  }
+}
+
+// Otomatik senkron ayarları
+function sb2SaveAutoSettings(){
+  const interval = parseInt(byId('sb2-auto-interval')?.value||0)||0;
+  const autoSync = byId('sb2-auto-sync')?.value === '1';
+  localStorage.setItem(SB2_AUTO_KEY, JSON.stringify({interval, autoSync}));
+  sb2StartAutoTimer();
+  const msgEl = byId('sb2-auto-msg');
+  if(msgEl) msgEl.textContent = interval > 0
+    ? '✅ Her '+interval+' dakikada otomatik yedek aktif.'
+    : '✅ Otomatik yedek kapalı.';
+  setTimeout(()=>{ if(msgEl) msgEl.textContent=''; }, 3000);
+}
+
+function sb2StartAutoTimer(){
+  if(_sb2AutoTimer){ clearInterval(_sb2AutoTimer); _sb2AutoTimer=null; }
+  try{
+    const a = JSON.parse(localStorage.getItem(SB2_AUTO_KEY)||'{}');
+    if(!a.interval || a.interval <= 0) return;
+    const ms = a.interval * 60 * 1000;
+    _sb2AutoTimer = setInterval(()=>{
+      if(_sb2Enabled) sb2BackupNow();
+    }, ms);
+  }catch(e){}
+}
+
+// SQL kopyala
+function sb2CopySQL(){
+  const el = byId('sb2-sql-pre');
+  if(!el) return;
+  navigator.clipboard.writeText(el.textContent).then(()=>{
+    sb2Msg('✅ SQL kopyalandı!', 'success');
+  }).catch(()=>{
+    const ta = document.createElement('textarea');
+    ta.value = el.textContent;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    sb2Msg('✅ SQL kopyalandı!', 'success');
+  });
+}
+
+// SQL indir
+function sb2DownloadSQL(){
+  const el = byId('sb2-sql-pre');
+  if(!el) return;
+  const blob = new Blob([el.textContent], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'mks_yedek2_supabase.sql';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Supabase son senkron bilgisini göster
+(function sb2RestoreLastSync(){
+  const ls = localStorage.getItem('sb2_last_sync');
+  if(ls){ const el=byId('sb2-last-sync'); if(el) el.textContent=ls; }
+  const lb = localStorage.getItem('sb2_last_backup');
+  if(lb){
+    const d = new Date(lb);
+    const el=byId('sb2-last-backup');
+    if(el) el.textContent = d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+  }
+})();
+</script>
+
