@@ -1742,19 +1742,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- 1. İŞLEM TÜRÜ -->
       <div class="fg" data-field-key="islemtur" style="grid-column:1/-1;">
         <label>İşlem Türü</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="pe-islemtur-btns">
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'Trafik')">🚗 Trafik</button>
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'Kasko')">🛡️ Kasko</button>
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'DASK')">🏠 DASK</button>
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'Konut')">🏡 Konut</button>
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'Tamamlayıcı Sağlık (TSS)')">💊 TSS</button>
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'Sağlık')">❤️ Sağlık</button>
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'Hayat')">🌿 Hayat</button>
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'İşyeri')">🏢 İşyeri</button>
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'Ferdi Kaza')">⚡ Ferdi Kaza</button>
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'Seyahat')">✈️ Seyahat</button>
-          <button type="button" class="btn btn-outline btn-sm pe-islem-btn" onclick="peSetIslemTur(this,'Diğer')">📄 Diğer</button>
-        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="pe-islemtur-btns"></div>
         <input type="hidden" id="pe-islemtur">
       </div>
 
@@ -1779,7 +1767,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <input type="hidden" id="pe-acente">
           <div id="pe-acente-dropdown" style="display:none;position:absolute;z-index:200;width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-height:200px;overflow-y:auto;margin-top:2px;"></div>
         </div>
-        <div id="pe-acente-info" style="display:none;margin-top:8px;padding:10px 12px;background:color-mix(in srgb,var(--info) 8%,transparent);border:1px solid color-mix(in srgb,var(--info) 30%,transparent);border-radius:8px;font-size:12px;line-height:1.7;"></div>
       </div>
 
       <!-- 4. MÜŞTERİ SEÇ — tam satır, TC'nin üstüne gelmesin -->
@@ -1792,7 +1779,12 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <input type="hidden" id="pe-musteri">
           <div id="pe-musteri-dropdown" style="display:none;position:absolute;z-index:200;width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-height:200px;overflow-y:auto;margin-top:2px;"></div>
         </div>
-        <div id="pe-musteri-info" style="display:none;margin-top:8px;padding:10px 12px;background:color-mix(in srgb,var(--success) 8%,transparent);border:1px solid color-mix(in srgb,var(--success) 30%,transparent);border-radius:8px;font-size:12px;line-height:1.7;"></div>
+      </div>
+
+      <!-- 4b. ACENTE + MÜŞTERİ BİLGİ KARTLARI — soldan sağa yan yana -->
+      <div id="pe-secim-bilgi-row" style="grid-column:1/-1;display:flex;gap:12px;flex-wrap:wrap;">
+        <div id="pe-acente-info" style="display:none;flex:1;min-width:240px;padding:10px 12px;background:color-mix(in srgb,var(--info) 8%,transparent);border:1px solid color-mix(in srgb,var(--info) 30%,transparent);border-radius:8px;font-size:12px;line-height:1.7;"></div>
+        <div id="pe-musteri-info" style="display:none;flex:1;min-width:240px;padding:10px 12px;background:color-mix(in srgb,var(--success) 8%,transparent);border:1px solid color-mix(in srgb,var(--success) 30%,transparent);border-radius:8px;font-size:12px;line-height:1.7;"></div>
       </div>
 
       <!-- 5. TC KİMLİK -->
@@ -4685,6 +4677,16 @@ select 'MK Sigorta Yedek2 tabloları başarıyla oluşturuldu ✓' as sonuc;</pr
         <b style="color:var(--warning);">⭐ işaretli alanlar zorunludur, gizlenemez.</b>
       </p>
       <div id="police-field-order-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+
+    <!-- İŞLEM TÜRÜ YÖNETİMİ -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🧾 İşlem Türü Yönetimi</div>
+        <button class="btn btn-success btn-sm" onclick="islemTurEkleModal()">➕ Yeni Ekle</button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Poliçe Ekle formundaki İşlem Türü kısayol butonlarını yönetin (ekle / düzenle / sil).</p>
+      <div id="islem-tur-listesi" style="display:flex;flex-direction:column;gap:6px;"></div>
     </div>
 
     <!-- ARAÇ CİNSİ YÖNETİMİ -->
@@ -12450,6 +12452,98 @@ function renderPoliceFieldOrderUI(){
     });
     container.appendChild(item);
   });
+}
+
+// ══════════════════════════════════════════════════
+// İŞLEM TÜRÜ YÖNETİM SİSTEMİ
+// ══════════════════════════════════════════════════
+const ISLEM_TUR_DEFAULT = [
+  {icon:'🚗',label:'Trafik'},
+  {icon:'🛡️',label:'Kasko'},
+  {icon:'🏠',label:'DASK'},
+  {icon:'🏡',label:'Konut'},
+  {icon:'💊',label:'Tamamlayıcı Sağlık (TSS)'},
+  {icon:'❤️',label:'Sağlık'},
+  {icon:'🌿',label:'Hayat'},
+  {icon:'🏢',label:'İşyeri'},
+  {icon:'⚡',label:'Ferdi Kaza'},
+  {icon:'✈️',label:'Seyahat'},
+  {icon:'📄',label:'Diğer'}
+];
+
+function loadIslemTurleri(){
+  try{
+    const s=JSON.parse(localStorage.getItem('islemTurleri')||'null');
+    if(s&&s.length) return s;
+  }catch(e){}
+  return ISLEM_TUR_DEFAULT.map(function(x){return {...x};});
+}
+function saveIslemTurleri(list){
+  localStorage.setItem('islemTurleri',JSON.stringify(list));
+}
+// Poliçe Ekle formundaki İşlem Türü kısayol butonlarını listeye göre üretir
+function renderIslemTurButtons(){
+  const cont=byId('pe-islemtur-btns');
+  if(!cont) return;
+  const cur=gv('pe-islemtur');
+  const list=loadIslemTurleri();
+  cont.innerHTML=list.map(function(t){
+    const active=t.label===cur;
+    return '<button type="button" class="btn btn-sm pe-islem-btn '+(active?'btn-accent':'btn-outline')+'" onclick="peSetIslemTur(this,\''+t.label.replace(/'/g,"\\'")+'\')">'+t.icon+' '+t.label+'</button>';
+  }).join('');
+}
+function renderIslemTurListesi(){
+  const cont=byId('islem-tur-listesi');
+  if(!cont) return;
+  const list=loadIslemTurleri();
+  if(!list.length){cont.innerHTML='<p style="color:var(--muted);font-size:12px;">Liste boş</p>';renderIslemTurButtons();return;}
+  cont.innerHTML=list.map(function(t,i){
+    return '<div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">'
+      +'<span style="min-width:22px;height:22px;background:var(--grad-1);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">'+(i+1)+'</span>'
+      +'<span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">'+t.icon+' '+t.label+'</span>'
+      +'<button class="btn btn-primary btn-xs" onclick=\'islemTurDuzenle('+i+')\'>✏️ Düzenle</button>'
+      +'<button class="btn btn-danger btn-xs" onclick=\'islemTurSil('+i+')\'>🗑️ Sil</button>'
+      +'</div>';
+  }).join('');
+  renderIslemTurButtons();
+}
+function islemTurEkleModal(){
+  const label=prompt('Yeni İşlem Türü Adı:','');
+  if(!label||!label.trim()) return;
+  const icon=prompt('Simge (emoji) — boş bırakılabilir:','📌')||'📌';
+  const list=loadIslemTurleri();
+  const trimmed=label.trim();
+  if(list.some(function(t){return t.label.toLowerCase()===trimmed.toLowerCase();})){toast('Bu işlem türü zaten var!','error');return;}
+  list.push({icon:icon.trim()||'📌',label:trimmed});
+  saveIslemTurleri(list);
+  renderIslemTurListesi();
+  toast('İşlem türü eklendi','success');
+}
+function islemTurDuzenle(idx){
+  const list=loadIslemTurleri();
+  const t=list[idx]; if(!t) return;
+  const label=prompt('İşlem Türü Adı Düzenle:',t.label);
+  if(!label||!label.trim()) return;
+  const icon=prompt('Simge (emoji) Düzenle:',t.icon||'📌')||t.icon;
+  const eskiLabel=t.label;
+  list[idx]={icon:(icon.trim()||'📌'),label:label.trim()};
+  saveIslemTurleri(list);
+  // Bu türle kayıtlı mevcut poliçelerde adı güncelle (isim değiştiyse)
+  if(eskiLabel!==label.trim() && typeof DB!=='undefined' && DB.policeler){
+    DB.policeler.forEach(function(p){ if(p.islemTur===eskiLabel) p.islemTur=label.trim(); });
+    if(typeof saveDB==='function') saveDB();
+  }
+  renderIslemTurListesi();
+  toast('Güncellendi','success');
+}
+function islemTurSil(idx){
+  const list=loadIslemTurleri();
+  const t=list[idx]; if(!t) return;
+  if(!confirm('"'+t.label+'" silinsin mi?')) return;
+  list.splice(idx,1);
+  saveIslemTurleri(list);
+  renderIslemTurListesi();
+  toast('Silindi','error');
 }
 
 // ══════════════════════════════════════════════════
