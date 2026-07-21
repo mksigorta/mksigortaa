@@ -1194,7 +1194,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
     <!-- 3. Acenteler -->
     <div class="nav-sec">Acenteler</div>
     <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('ekle'),100)" id="nav-acente-ekle"><span class="ico">🏢</span><span class="nav-label">Acente Ekle</span></a>
-    <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('liste'),100)" id="nav-acente-liste"><span class="ico">📋</span><span class="nav-label">Acente Liste</span></a>
+    <a onclick="showPage('acente-liste')" id="nav-acente-liste"><span class="ico">📋</span><span class="nav-label">Acente Liste</span></a>
     <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('tahsilat-ekle'),100)" id="nav-acente-tahsilat"><span class="ico">💵</span><span class="nav-label">Acente Tahsilat</span></a>
     <a onclick="showPage('acente');setTimeout(()=>showAcenteTab('tahsilat-liste'),100)" id="nav-acente-tahsilat-liste"><span class="ico">📊</span><span class="nav-label">Acente Tahsilat Liste</span></a>
     <!-- 4. Poliçeler -->
@@ -1367,7 +1367,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="stat-value" id="st-cari-kalan">₺0</div>
       <div class="stat-sub" id="st-cari-kalan-sub">Cari Borç − Alacak</div>
     </div>
-    <div class="stat-card orange" data-icon="🏢" onclick="showPage('acente');setTimeout(()=>showAcenteTab('liste'),100)" title="Acente Toplam Borç (Komisyon)">
+    <div class="stat-card orange" data-icon="🏢" onclick="showPage('acente-liste')" title="Acente Toplam Borç (Komisyon)">
       <div class="stat-label">Acente Toplam Borç</div>
       <div class="stat-value" id="st-ac-borc">₺0</div>
       <div class="stat-sub">Toplam acente komisyonu</div>
@@ -1377,7 +1377,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="stat-value" id="st-ac-alacak">₺0</div>
       <div class="stat-sub">Tahsilat + İptal iadesi</div>
     </div>
-    <div class="stat-card purple" data-icon="⚖️" onclick="showPage('acente');setTimeout(()=>showAcenteTab('liste'),100)" title="Acente Kalan Bakiye">
+    <div class="stat-card purple" data-icon="⚖️" onclick="showPage('acente-liste')" title="Acente Kalan Bakiye">
       <div class="stat-label">Acente Kalan Bakiye</div>
       <div class="stat-value" id="st-ac-kalan">₺0</div>
       <div class="stat-sub" id="st-ac-kalan-sub">Komisyon − Tahsilat</div>
@@ -1469,7 +1469,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <span id="dash-acente-sayi-badge" style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);"></span>
       </div>
       <div style="display:flex;gap:6px;">
-        <button class="btn btn-outline btn-sm" onclick="showPage('acente');setTimeout(()=>showAcenteTab('liste'),100)">📋 Tüm Liste ↗</button>
+        <button class="btn btn-outline btn-sm" onclick="showPage('acente-liste')">📋 Tüm Liste ↗</button>
         <button class="btn btn-success btn-sm" onclick="showPage('acente');setTimeout(()=>showAcenteTab('ekle'),100)">➕ Acente Ekle</button>
       </div>
     </div>
@@ -1779,6 +1779,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <input type="hidden" id="pe-acente">
           <div id="pe-acente-dropdown" style="display:none;position:absolute;z-index:200;width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-height:200px;overflow-y:auto;margin-top:2px;"></div>
         </div>
+        <div id="pe-acente-info" style="display:none;margin-top:8px;padding:10px 12px;background:color-mix(in srgb,var(--info) 8%,transparent);border:1px solid color-mix(in srgb,var(--info) 30%,transparent);border-radius:8px;font-size:12px;line-height:1.7;"></div>
       </div>
 
       <!-- 4. MÜŞTERİ SEÇ — tam satır, TC'nin üstüne gelmesin -->
@@ -1791,6 +1792,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
           <input type="hidden" id="pe-musteri">
           <div id="pe-musteri-dropdown" style="display:none;position:absolute;z-index:200;width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-height:200px;overflow-y:auto;margin-top:2px;"></div>
         </div>
+        <div id="pe-musteri-info" style="display:none;margin-top:8px;padding:10px 12px;background:color-mix(in srgb,var(--success) 8%,transparent);border:1px solid color-mix(in srgb,var(--success) 30%,transparent);border-radius:8px;font-size:12px;line-height:1.7;"></div>
       </div>
 
       <!-- 5. TC KİMLİK -->
@@ -2860,7 +2862,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
   <!-- ACENTE SEKMELERİ -->
   <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:6px;">
     <button class="btn btn-primary btn-sm acente-tab-btn" onclick="showAcenteTab('ekle')" id="actab-ekle" style="border-radius:8px;">🏢 Acente Ekle</button>
-    <button class="btn btn-outline btn-sm acente-tab-btn" onclick="showAcenteTab('liste')" id="actab-liste" style="border-radius:8px;">📋 Acente Listesi</button>
+    <button class="btn btn-outline btn-sm" onclick="showPage('acente-liste')" style="border-radius:8px;">📋 Acente Listesi ↗</button>
     <button class="btn btn-outline btn-sm acente-tab-btn" onclick="showAcenteTab('tahsilat-ekle')" id="actab-tahsilat-ekle" style="border-radius:8px;">💵 Tahsilat Ekle</button>
     <button class="btn btn-outline btn-sm acente-tab-btn" onclick="showAcenteTab('tahsilat-liste')" id="actab-tahsilat-liste" style="border-radius:8px;">📊 Tahsilat Listesi</button>
   </div>
@@ -2873,6 +2875,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <div class="fg"><label>Acente Adı Soyadı *</label><input type="text" id="ac-ad" placeholder="Acente adı"></div>
       <div class="fg"><label>Telefon</label><input type="text" id="ac-tel" placeholder="0555 000 00 00"></div>
       <div class="fg"><label>Başlangıç Tarihi</label><input type="date" id="ac-tarih"></div>
+      <div class="fg"><label>Şehir</label><input type="text" id="ac-sehir" placeholder="Şehir"></div>
       <div class="fg" style="grid-column:1/-1"><label>Açıklama</label><textarea id="ac-aciklama"></textarea></div>
     </div>
     <div class="btn-group">
@@ -2882,42 +2885,6 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
   </div>
   </div><!-- /acente-tab-ekle -->
 
-  <!-- ACENTE LİSTESİ -->
-  <div id="acente-tab-liste" style="display:none;">
-  <div class="card" id="acente-tab-liste-card">
-    <div class="card-header">
-      <div class="card-title">📋 Acente Listesi</div>
-    </div>
-    <div class="search-bar" style="flex-wrap:wrap;gap:6px;margin-bottom:10px;">
-      <input type="text" id="acente-search-input" placeholder="🔍 Genel arama (ad, telefon...)" oninput="renderAcente()" style="min-width:180px;">
-      <select id="acente-srch-yil" onchange="renderAcente()" style="min-width:80px;">
-        <option value="">Tüm Yıllar</option>
-        <option value="2026">2026</option><option value="2025">2025</option>
-        <option value="2024">2024</option><option value="2023">2023</option>
-        <option value="2022">2022</option><option value="2021">2021</option>
-        <option value="2020">2020</option>
-      </select>
-      <select id="acente-srch-ay" onchange="renderAcente()" style="min-width:90px;">
-        <option value="">Tüm Aylar</option>
-        <option value="01">Ocak</option><option value="02">Şubat</option>
-        <option value="03">Mart</option><option value="04">Nisan</option>
-        <option value="05">Mayıs</option><option value="06">Haziran</option>
-        <option value="07">Temmuz</option><option value="08">Ağustos</option>
-        <option value="09">Eylül</option><option value="10">Ekim</option>
-        <option value="11">Kasım</option><option value="12">Aralık</option>
-      </select>
-      <input type="date" id="acente-srch-t1" onchange="renderAcente()" title="Başlangıç tarihi">
-      <input type="date" id="acente-srch-t2" onchange="renderAcente()" title="Bitiş tarihi">
-      <button class="btn btn-outline btn-sm" id="btn-acente-az" onclick="acenteSort('az')" title="A'dan Z'ye sırala">🔤 A→Z</button>
-      <button class="btn btn-outline btn-sm" id="btn-acente-za" onclick="acenteSort('za')" title="Z'den A'ya sırala">🔤 Z→A</button>
-      <button class="btn btn-outline btn-sm" onclick="acenteFiltreSifirla()">🔄 Sıfırla</button>
-    </div>
-    <div id="acente-kart-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:4px 0;"></div>
-    <div id="acente-footer-bar" style="margin-top:12px;padding:12px 16px;background:var(--grad-1);border-radius:10px;display:none;"></div>
-    <!-- hidden compat elements -->
-    <table style="display:none"><tbody id="tbody-acente"></tbody><tfoot id="tfoot-acente"></tfoot></table>
-  </div>
-  </div><!-- /acente-tab-liste -->
 
   <!-- ACENTE TAHSİLAT EKLE -->
   <div id="acente-tab-tahsilat-ekle" style="display:none;">
@@ -3016,6 +2983,87 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
   </div><!-- /acente-tab-tahsilat-liste -->
 
 </div>
+
+  <!-- ACENTE LİSTESİ -->
+  <div id="page-acente-liste" class="page">
+  <div class="card" id="acente-liste-card">
+    <div class="card-header">
+      <div class="card-title">📋 Acente Listesi</div>
+      <button class="btn btn-success btn-sm" onclick="showPage('acente')">🏢 Acente Ekle</button>
+    </div>
+    <div class="search-bar" style="flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+      <input type="text" id="acente-search-input" placeholder="🔍 Genel arama (ad, telefon...)" oninput="renderAcente()" style="min-width:180px;">
+      <select id="acente-srch-yil" onchange="renderAcente()" style="min-width:80px;">
+        <option value="">Tüm Yıllar</option>
+        <option value="2026">2026</option><option value="2025">2025</option>
+        <option value="2024">2024</option><option value="2023">2023</option>
+        <option value="2022">2022</option><option value="2021">2021</option>
+        <option value="2020">2020</option>
+      </select>
+      <select id="acente-srch-ay" onchange="renderAcente()" style="min-width:90px;">
+        <option value="">Tüm Aylar</option>
+        <option value="01">Ocak</option><option value="02">Şubat</option>
+        <option value="03">Mart</option><option value="04">Nisan</option>
+        <option value="05">Mayıs</option><option value="06">Haziran</option>
+        <option value="07">Temmuz</option><option value="08">Ağustos</option>
+        <option value="09">Eylül</option><option value="10">Ekim</option>
+        <option value="11">Kasım</option><option value="12">Aralık</option>
+      </select>
+      <input type="date" id="acente-srch-t1" onchange="renderAcente()" title="Başlangıç tarihi">
+      <input type="date" id="acente-srch-t2" onchange="renderAcente()" title="Bitiş tarihi">
+      <button class="btn btn-outline btn-sm" id="btn-acente-az" onclick="acenteSort('az')" title="A'dan Z'ye sırala">🔤 A→Z</button>
+      <button class="btn btn-outline btn-sm" id="btn-acente-za" onclick="acenteSort('za')" title="Z'den A'ya sırala">🔤 Z→A</button>
+      <button class="btn btn-outline btn-sm" onclick="acenteFiltreSifirla()">🔄 Sıfırla</button>
+    </div>
+    <!-- BORÇLU / ALACAKLI / TÜMÜ HESAP DURUMU FİLTRESİ -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+      <button class="btn btn-sm acente-durum-btn" data-durum="borclu" onclick="acenteSetDurumFiltre('borclu')" style="border-radius:8px;border:1.5px solid var(--danger);background:color-mix(in srgb,var(--danger) 10%,transparent);color:var(--danger);font-weight:700;">🔴 Borçlu Acente</button>
+      <button class="btn btn-sm acente-durum-btn" data-durum="alacakli" onclick="acenteSetDurumFiltre('alacakli')" style="border-radius:8px;border:1.5px solid var(--success);background:color-mix(in srgb,var(--success) 10%,transparent);color:var(--success);font-weight:700;">🟢 Alacaklı Acente</button>
+      <button class="btn btn-sm acente-durum-btn" data-durum="tumu" onclick="acenteSetDurumFiltre('tumu')" style="border-radius:8px;border:1.5px solid var(--warning);background:color-mix(in srgb,var(--warning) 10%,transparent);color:var(--warning);font-weight:700;">🟡 Tümü</button>
+    </div>
+    <!-- 6 GÖRÜNÜM ŞEMASI SEÇİCİ -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+      <button class="btn btn-sm acente-view-btn" data-view="kart" onclick="acenteSetView('kart')" style="border-radius:8px;">🗂️ Kart</button>
+      <button class="btn btn-sm acente-view-btn" data-view="tablo" onclick="acenteSetView('tablo')" style="border-radius:8px;">📊 Tablo</button>
+      <button class="btn btn-sm acente-view-btn" data-view="liste" onclick="acenteSetView('liste')" style="border-radius:8px;">📋 Liste</button>
+      <button class="btn btn-sm acente-view-btn" data-view="kompakt" onclick="acenteSetView('kompakt')" style="border-radius:8px;">🧾 Kompakt</button>
+      <button class="btn btn-sm acente-view-btn" data-view="sema" onclick="acenteSetView('sema')" style="border-radius:8px;">📈 Şema</button>
+      <button class="btn btn-sm acente-view-btn" data-view="detay" onclick="acenteSetView('detay')" style="border-radius:8px;">🗃️ Detaylı Panel</button>
+    </div>
+    <!-- GÖRÜNÜM 1: KART (grid) -->
+    <div id="acente-view-kart">
+      <div id="acente-kart-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:4px 0;"></div>
+    </div>
+    <!-- GÖRÜNÜM 2: TABLO -->
+    <div id="acente-view-tablo" style="display:none;">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Acente</th><th>Telefon</th><th>Poliçe</th><th>Müşteri</th><th>Net</th><th>Brüt</th><th>Komisyon</th><th>Tahsilat</th><th>Kalan</th><th>İşlemler</th></tr></thead>
+        <tbody id="acente-tablo-body"></tbody>
+      </table></div>
+    </div>
+    <!-- GÖRÜNÜM 3: LİSTE (yatay satır) -->
+    <div id="acente-view-liste" style="display:none;">
+      <div id="acente-liste-wrap" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+    <!-- GÖRÜNÜM 4: KOMPAKT (mini kart ızgarası) -->
+    <div id="acente-view-kompakt" style="display:none;">
+      <div id="acente-kompakt-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;"></div>
+    </div>
+    <!-- GÖRÜNÜM 5: ŞEMA (bakiye karşılaştırma grafiği) -->
+    <div id="acente-view-sema" style="display:none;">
+      <div class="card" style="padding:16px;">
+        <div id="acente-sema-chart" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+    </div>
+    <!-- GÖRÜNÜM 6: DETAYLI PANEL (akordeon) -->
+    <div id="acente-view-detay" style="display:none;">
+      <div id="acente-detay-wrap" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+    <div id="acente-footer-bar" style="margin-top:12px;padding:12px 16px;background:var(--grad-1);border-radius:10px;display:none;"></div>
+    <!-- hidden compat elements -->
+    <table style="display:none"><tbody id="tbody-acente"></tbody><tfoot id="tfoot-acente"></tfoot></table>
+  </div>
+  </div><!-- /page-acente-liste -->
 
 <!-- İPTAL & İADE EKLE -->
 <!-- ══════════════════════════════════════════
@@ -5420,7 +5468,7 @@ setInterval(updateClock,1000);updateClock();
 // ==============================
 // NAVIGATION
 // ==============================
-const pageTitles={dashboard:'Ana Sayfa','kasa-pol':'📋 Acente Komisyon','kasa-ipt':'🔄 MKöçe İptal Kazanç','kasa-acb':'🏢 Acente Bana Kalan','kasa-gen':'🏆 Toplam Kazanç',musteriler:'Müşteriler','police-ekle':'Poliçe Ekle','police-listesi':'Poliçe Listesi','police-takip':'Poliçe Takip',policeler:'📁 Poliçeler','pt-ekstra-ekle':'📌 Ekstra Takip Kayıt Ekle','pt-ekstra-liste':'📋 Ekstra Takip Kayıtları',finans:'💼 Finans',cari:'💰 Cari Ekle','cari-liste':'📋 Cari Listesi',tahsilat:'💳 Tahsilat Ekle','tahsilat-liste':'📋 Tahsilat Listesi',kasa:'MKöçe Kasa',acente:'Acente','iptal-ekle':'🔄 İptal & İade Ekle','iptal-liste':'📋 İptal & İade Listesi','iptal-iade':'İptal & İadeler','iptal-hesap':'🧮 İptal Hesaplama','not-defteri':'Not Defteri',whatsapp:'WhatsApp',ayarlar:'Ayarlar','gelir-grafigi':'📊 Gelir Grafiği',teklif:'📄 Teklif Oluştur',iletisim:'📞 İletişim Geçmişi','toplu-islem':'☑️ Toplu İşlemler','belge-arama':'🔍 Belge & Akıllı Arama'};
+const pageTitles={dashboard:'Ana Sayfa','kasa-pol':'📋 Acente Komisyon','kasa-ipt':'🔄 MKöçe İptal Kazanç','kasa-acb':'🏢 Acente Bana Kalan','kasa-gen':'🏆 Toplam Kazanç',musteriler:'Müşteriler','police-ekle':'Poliçe Ekle','police-listesi':'Poliçe Listesi','police-takip':'Poliçe Takip',policeler:'📁 Poliçeler','pt-ekstra-ekle':'📌 Ekstra Takip Kayıt Ekle','pt-ekstra-liste':'📋 Ekstra Takip Kayıtları',finans:'💼 Finans',cari:'💰 Cari Ekle','cari-liste':'📋 Cari Listesi',tahsilat:'💳 Tahsilat Ekle','tahsilat-liste':'📋 Tahsilat Listesi',kasa:'MKöçe Kasa',acente:'Acente','acente-liste':'📋 Acente Listesi','iptal-ekle':'🔄 İptal & İade Ekle','iptal-liste':'📋 İptal & İade Listesi','iptal-iade':'İptal & İadeler','iptal-hesap':'🧮 İptal Hesaplama','not-defteri':'Not Defteri',whatsapp:'WhatsApp',ayarlar:'Ayarlar','gelir-grafigi':'📊 Gelir Grafiği',teklif:'📄 Teklif Oluştur',iletisim:'📞 İletişim Geçmişi','toplu-islem':'☑️ Toplu İşlemler','belge-arama':'🔍 Belge & Akıllı Arama'};
 
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -5446,7 +5494,7 @@ function showPage(name){
   if(vBtn){vBtn.style.display=(name==='dashboard')?'inline-flex':'none';}
   closeSidebar();syncBottomNav(name);
   if(['police-ekle','police-takip','tahsilat','iptal-ekle','iptal-liste','iptal-iade','whatsapp','not-defteri','cari','teklif','iletisim','toplu-islem'].includes(name))populateSelects();
-  const renders={dashboard:renderDashboard,musteriler:renderMusteriler,'police-listesi':renderPoliceListesi,'police-takip':renderTakip,policeler:renderPolicelerHub,'pt-ekstra-ekle':()=>populateSelects(),'pt-ekstra-liste':renderPtEkstraListe,finans:renderFinansHub,cari:renderCari,'cari-liste':renderCariListe,tahsilat:renderTahsilat,'tahsilat-liste':renderTahsilatListe,kasa:renderKasa,'kasa-pol':()=>renderKasaAlt('pol'),'kasa-ipt':()=>renderKasaAlt('ipt'),'kasa-acb':()=>renderKasaAlt('acb'),'kasa-gen':()=>renderKasaAlt('gen'),acente:renderAcente,'iptal-ekle':()=>{},'iptal-liste':renderIptal,'iptal-iade':()=>showPage('iptal-ekle'),'iptal-hesap':renderIptalHesap,'not-defteri':renderNots,whatsapp:initWA,ayarlar:renderAyarlar,'gelir-grafigi':renderGelirGrafigi,teklif:renderTeklif,iletisim:renderIletisim,'toplu-islem':renderTopluIslem,'belge-arama':renderBelgeArama};
+  const renders={dashboard:renderDashboard,musteriler:renderMusteriler,'police-listesi':renderPoliceListesi,'police-takip':renderTakip,policeler:renderPolicelerHub,'pt-ekstra-ekle':()=>populateSelects(),'pt-ekstra-liste':renderPtEkstraListe,finans:renderFinansHub,cari:renderCari,'cari-liste':renderCariListe,tahsilat:renderTahsilat,'tahsilat-liste':renderTahsilatListe,kasa:renderKasa,'kasa-pol':()=>renderKasaAlt('pol'),'kasa-ipt':()=>renderKasaAlt('ipt'),'kasa-acb':()=>renderKasaAlt('acb'),'kasa-gen':()=>renderKasaAlt('gen'),acente:renderAcente,'acente-liste':renderAcente,'iptal-ekle':()=>{},'iptal-liste':renderIptal,'iptal-iade':()=>showPage('iptal-ekle'),'iptal-hesap':renderIptalHesap,'not-defteri':renderNots,whatsapp:initWA,ayarlar:renderAyarlar,'gelir-grafigi':renderGelirGrafigi,teklif:renderTeklif,iletisim:renderIletisim,'toplu-islem':renderTopluIslem,'belge-arama':renderBelgeArama};
   if(renders[name])renders[name]();
   if(typeof syncMobileView === 'function') syncMobileView();
 }
@@ -6088,6 +6136,7 @@ function delMusteri(id){
 }
 function openMusteriDetay(id){
   const m=getMusteri(id);if(!m)return;
+  window._cyMusteriId=id; window._fpOpenType='musteri';
   const polices=DB.policeler.filter(p=>p.musteriId===id);
   const caris=DB.cariler.filter(c=>c.musteriId===id);
   const tahsilatlar=DB.tahsilatlar.filter(t=>t.musteriId===id);
@@ -6563,14 +6612,13 @@ document.addEventListener('click',function(e){
 // ACENTE SEKMELERİ
 // ══════════════════════════════════════════════════
 function showAcenteTab(tab){
-  ['ekle','liste','tahsilat-ekle','tahsilat-liste'].forEach(function(t){
+  ['ekle','tahsilat-ekle','tahsilat-liste'].forEach(function(t){
     const el=byId('acente-tab-'+t);
     const btn=byId('actab-'+t);
     if(el) el.style.display=t===tab?'':'none';
     if(btn){ btn.classList.toggle('btn-primary',t===tab); btn.classList.toggle('btn-outline',t!==tab); }
   });
   localStorage.setItem('acenteTab',tab);
-  if(tab==='liste') renderAcente();
   if(tab==='tahsilat-liste') renderAtList();
 }
 
@@ -7023,16 +7071,28 @@ function peSetPolTur(btn, val){
   btn.classList.remove('btn-outline');
   btn.classList.add('btn-primary');
 }
-// Acente seçince komisyon oranını otomatik doldur
+// Acente seçince komisyon oranını otomatik doldur + bilgi kartını göster
 function peAcenteAutoOran(){
   const acenteId = gv('pe-acente');
-  if(!acenteId) return;
+  const infoBox = byId('pe-acente-info');
+  if(!acenteId){ if(infoBox){infoBox.style.display='none';infoBox.innerHTML='';} return; }
   const a = getAcente(acenteId);
   // Acente kaydında oran varsa doldur, yoksa dokunma
-  if(a && a.oran){ sv('pe-oran', a.oran); peCalc(); } peAutoFillAciklama();
+  if(a && a.oran){ sv('pe-oran', a.oran); peCalc(); }
+  if(a && infoBox){
+    infoBox.style.display='block';
+    infoBox.innerHTML=
+      '<div><b>🏢 Acente Adı:</b> '+(a.ad||'-')+'</div>'
+      +'<div><b>📞 Telefon:</b> '+(a.tel||'-')+'</div>'
+      +'<div><b>🗓️ Ay:</b> '+(a.tarih?fmtD(a.tarih):'-')+'</div>'
+      +'<div><b>📍 Şehir:</b> '+(a.sehir||'-')+'</div>'
+      +'<div><b>📝 Açıklama:</b> '+(a.aciklama||'-')+'</div>';
+  }
+  peAutoFillAciklama();
 }
 function peAutoFillMusteri(){
   const m=getMusteri(gv('pe-musteri'));
+  const infoBox=byId('pe-musteri-info');
   if(m){
     sv('pe-tc',m.tc||'');
     sv('pe-vergino',m.vergino||'');
@@ -7045,6 +7105,18 @@ function peAutoFillMusteri(){
         b.classList.remove('btn-outline'); b.classList.add('btn-primary');
       }
     });
+    if(infoBox){
+      infoBox.style.display='block';
+      infoBox.innerHTML=
+        '<div><b>👤 Ad Soyad:</b> '+(m.ad||'-')+'</div>'
+        +'<div><b>🪪 TC:</b> '+(m.tc||'-')+'</div>'
+        +'<div><b>📞 Telefon:</b> '+(m.tel||'-')+'</div>'
+        +'<div><b>🎂 Doğum Tarihi:</b> '+(m.dogum?fmtD(m.dogum):'-')+'</div>'
+        +'<div><b>📍 Şehir:</b> '+(m.sehir||'-')+'</div>'
+        +'<div><b>📝 Açıklama:</b> '+(m.aciklama||'-')+'</div>';
+    }
+  } else if(infoBox){
+    infoBox.style.display='none'; infoBox.innerHTML='';
   }
   peAutoFillAciklama();
 }
@@ -7066,18 +7138,18 @@ function peAutoFillAciklama(){
   const kimin =(gv('pe-kimin-karti')||'').trim();
 
   const satirlar=[];
-  if(ad)     satirlar.push('Ad Soyad          : '+ad);
-  if(tc)     satirlar.push('TC                : '+tc);
-  if(dogum)  satirlar.push('Dogum Tarihi      : '+dogum);
-  if(plaka)  satirlar.push('Plaka             : '+plaka);
-  if(belge)  satirlar.push('Belge Seri No     : '+belge);
-  if(cinsi)  satirlar.push('Arac Cinsi        : '+cinsi);
-  if(marka)  satirlar.push('Arac Markasi      : '+marka);
-  if(model)  satirlar.push('Model Yili        : '+model);
-  if(islem)  satirlar.push('Islem Turu        : '+islem);
-  const acenteStr=[a?a.ad:'', oran?'%'+oran:'', sirket].filter(Boolean).join(' / ');
-  if(acenteStr) satirlar.push('Acente/Oran/Sirket: '+acenteStr);
-  if(kimin)  satirlar.push('Kimin Karti       : '+kimin);
+  if(ad)     satirlar.push(ad);
+  if(tc)     satirlar.push(tc);
+  if(plaka)  satirlar.push(plaka);
+  if(belge)  satirlar.push(belge);
+  if(dogum)  satirlar.push(dogum);
+  if(cinsi)  satirlar.push(cinsi);
+  if(marka)  satirlar.push(marka);
+  if(model)  satirlar.push(model);
+  if(islem)  satirlar.push(islem);
+  const acenteStr=[a?a.ad:'', oran?'% '+oran:'', sirket].filter(Boolean).join(' ');
+  if(acenteStr) satirlar.push(acenteStr);
+  if(kimin)  satirlar.push(kimin+' KARTI GİRDİ');
 
   if(satirlar.length) sv('pe-aciklama', satirlar.join('\n'));
 }
@@ -8771,24 +8843,62 @@ function downloadDocFromPolice(policeId, type){
 
 function saveAcente(){
   const ad=gv('ac-ad').trim();if(!ad){toast('Acente adı zorunludur!','error');return;}
-  DB.acenteler.push({id:uid(),ad,tel:gv('ac-tel'),tarih:gv('ac-tarih'),aciklama:gv('ac-aciklama')});
+  DB.acenteler.push({id:uid(),ad,tel:gv('ac-tel'),tarih:gv('ac-tarih'),sehir:gv('ac-sehir'),aciklama:gv('ac-aciklama')});
   saveDB();renderAcente();populateSelects();toast('Acente eklendi','success');
-  ['ac-ad','ac-tel','ac-tarih','ac-aciklama'].forEach(id=>sv(id,''));updateStats();
+  ['ac-ad','ac-tel','ac-tarih','ac-sehir','ac-aciklama'].forEach(id=>sv(id,''));updateStats();
 }
-function resetAcenteForm(){['ac-ad','ac-tel','ac-tarih','ac-aciklama'].forEach(id=>sv(id,''));}
+function resetAcenteForm(){['ac-ad','ac-tel','ac-tarih','ac-sehir','ac-aciklama'].forEach(id=>sv(id,''));}
+// ══════════════════════════════════════════════════
+// ACENTE LİSTESİ — 6 SEÇMELİ GÖRÜNÜM ŞEMASI
+// ══════════════════════════════════════════════════
+function acenteGetView(){ return localStorage.getItem('acenteView')||'kart'; }
+function acenteGetDurumFiltre(){ return localStorage.getItem('acenteDurumFiltre')||'tumu'; }
+function acenteSetDurumFiltre(v){
+  localStorage.setItem('acenteDurumFiltre',v);
+  renderAcente();
+}
+function _acenteSyncDurumBtns(){
+  const cur=acenteGetDurumFiltre();
+  document.querySelectorAll('.acente-durum-btn').forEach(function(b){
+    const on=b.getAttribute('data-durum')===cur;
+    b.style.opacity=on?'1':'.45';
+    b.style.boxShadow=on?'0 0 0 2px currentColor inset':'none';
+  });
+}
+function acenteSetView(v){
+  localStorage.setItem('acenteView',v);
+  ['kart','tablo','liste','kompakt','sema','detay'].forEach(function(vv){
+    const el=byId('acente-view-'+vv); if(el) el.style.display=vv===v?'':'none';
+  });
+  document.querySelectorAll('.acente-view-btn').forEach(function(b){
+    const on=b.getAttribute('data-view')===v;
+    b.classList.toggle('btn-primary',on); b.classList.toggle('btn-outline',!on);
+  });
+  renderAcente();
+}
 function renderAcente(){
-  // Sekmeyi başlat — sadece hiçbir sekme açık değilse
-  const aktifTab=['ekle','liste','tahsilat-ekle','tahsilat-liste'].find(t=>{
+  // Sekmeyi başlat — sadece hiçbir sekme açık değilse (Acente Listesi artık ayrı bir sayfa)
+  const aktifTab=['ekle','tahsilat-ekle','tahsilat-liste'].find(t=>{
     const el=byId('acente-tab-'+t);
     return el && el.style.display!=='none';
   });
-  if(!aktifTab){
-    const saved=localStorage.getItem('acenteTab')||'liste';
-    showAcenteTab(saved);
+  if(!aktifTab && byId('acente-tab-ekle')){
+    const saved=localStorage.getItem('acenteTab')||'ekle';
+    showAcenteTab(saved==='liste'?'ekle':saved);
   }
   const tb=byId('tbody-acente');
-  const tf=byId('tfoot-acente');
   if(!tb) return;
+  // Görünüm butonlarının aktif durumunu senkronize et
+  const curView=acenteGetView();
+  ['kart','tablo','liste','kompakt','sema','detay'].forEach(function(vv){
+    const el=byId('acente-view-'+vv); if(el) el.style.display=vv===curView?'':'none';
+  });
+  document.querySelectorAll('.acente-view-btn').forEach(function(b){
+    const on=b.getAttribute('data-view')===curView;
+    b.classList.toggle('btn-primary',on); b.classList.toggle('btn-outline',!on);
+  });
+  _acenteSyncDurumBtns();
+
   const query=(byId('acente-search-input')?byId('acente-search-input').value.toLowerCase():'');
   const srchYil=byId('acente-srch-yil')?byId('acente-srch-yil').value:'';
   const srchAy=byId('acente-srch-ay')?byId('acente-srch-ay').value:'';
@@ -8800,81 +8910,40 @@ function renderAcente(){
   if(srchAy)  list=list.filter(function(a){ return a.tarih&&(a.tarih||'').slice(5,7)===srchAy; });
   if(srchT1)  list=list.filter(function(a){ return a.tarih&&a.tarih>=srchT1; });
   if(srchT2)  list=list.filter(function(a){ return a.tarih&&a.tarih<=srchT2; });
-  const grid=byId('acente-kart-grid');
+
   const footerBar=byId('acente-footer-bar');
-  if(!list.length){
-    if(grid) grid.innerHTML='<div style="color:var(--muted);font-size:12px;padding:18px;grid-column:1/-1;text-align:center;">Kayıt bulunamadı</div>';
-    if(footerBar) footerBar.style.display='none';
-  } else {
-    let totNet=0,totBrut=0,totK=0,totA=0,totAcIade=0,totMus=0;
-    let cards='';
-    list.forEach(function(a){
-      const ps=DB.policeler.filter(p=>p.acenteId===a.id);
-      const topNet=ps.reduce((s,p)=>s+(parseFloat(p.net)||0),0);
-      const topBrut=ps.reduce((s,p)=>s+(parseFloat(p.brut)||0),0);
-      const topK=ps.reduce((s,p)=>s+(parseFloat(p.ackomisyon)||0),0);
-      const topA=DB.atList.filter(t=>t.acenteId===a.id&&t.tip!=='iade').reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
-      const topAcIade=DB.iptaller.filter(ii=>ii.acenteId===a.id).reduce((s,ii)=>s+(parseFloat(ii.acIade)||0),0);
-      const musteriSayisi=new Set(ps.map(p=>p.musteriId).filter(Boolean)).size;
-      const kalan=topK-topAcIade-topA;
-      totNet+=topNet; totBrut+=topBrut; totK+=topK; totA+=topA; totAcIade+=topAcIade; totMus+=musteriSayisi;
-      const kalanClr=kalan>0?'var(--danger)':kalan<0?'var(--success)':'var(--muted)';
-      const initials=a.ad.split(' ').map(w=>w[0]||'').slice(0,2).join('').toUpperCase();
-      const avatarColors=['#6366f1','#f59e0b','#10b981','#ef4444','#3b82f6','#8b5cf6','#ec4899'];
-      const avClr=avatarColors[(a.ad.charCodeAt(0)||0)%avatarColors.length];
-      cards+=`<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:box-shadow .15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow)'">
-        <div style="background:var(--grad-1);padding:14px 16px;display:flex;align-items:center;gap:12px;">
-          <div style="width:44px;height:44px;border-radius:50%;background:${avClr};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;">${initials}</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:14px;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.ad}</div>
-            <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;">${a.tel?'📞 '+a.tel:''}${a.tarih?' · 📅 '+fmtD(a.tarih):''}</div>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
-          <div style="padding:10px 12px;text-align:center;border-right:1px solid var(--border);">
-            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Poliçe</div>
-            <div style="font-size:18px;font-weight:800;color:var(--info);">${ps.length}</div>
-          </div>
-          <div style="padding:10px 12px;text-align:center;border-right:1px solid var(--border);">
-            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Müşteri</div>
-            <div style="font-size:18px;font-weight:800;color:var(--accent);">${musteriSayisi}</div>
-          </div>
-          <div style="padding:10px 12px;text-align:center;">
-            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Kalan</div>
-            <div style="font-size:14px;font-weight:800;color:${kalanClr};">₺${fmt(kalan)}</div>
-          </div>
-        </div>
-        <div style="padding:12px 14px;flex:1;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <span style="font-size:11px;color:var(--muted);">Net Tutar</span>
-            <span style="font-size:12px;font-weight:700;color:var(--text);">₺${fmt(topNet)}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <span style="font-size:11px;color:var(--muted);">Brüt Tutar</span>
-            <span style="font-size:12px;font-weight:700;color:var(--accent);">₺${fmt(topBrut)}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <span style="font-size:11px;color:var(--muted);">Komisyon</span>
-            <span style="font-size:12px;font-weight:700;color:var(--warning);">₺${fmt(topK)}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);">
-            <span style="font-size:11px;color:var(--muted);">Tahsilat</span>
-            <span style="font-size:12px;font-weight:700;color:var(--success);">₺${fmt(topA)}</span>
-          </div>
-        </div>
-        <div style="padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:6px;">
-          <button onclick='openAcenteDetay("${a.id}")' style="flex:1;padding:7px;border:none;background:color-mix(in srgb,var(--info) 12%,transparent);color:var(--info);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;">👁️ Detay</button>
-          <button onclick='editAcente("${a.id}")' style="flex:1;padding:7px;border:none;background:color-mix(in srgb,var(--warning) 12%,transparent);color:var(--warning);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;">✏️ Düzenle</button>
-          <button onclick='waAcente&&waAcente("${a.id}")' style="padding:7px 10px;border:none;background:color-mix(in srgb,var(--success) 12%,transparent);color:var(--success);border-radius:8px;font-size:11px;cursor:pointer;">💬</button>
-          <button onclick='delAcente("${a.id}")' style="padding:7px 10px;border:none;background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border-radius:8px;font-size:11px;cursor:pointer;">🗑️</button>
-        </div>
-      </div>`;
-    });
-    if(grid) grid.innerHTML=cards;
-    if(footerBar){
+  const avatarColors=['#6366f1','#f59e0b','#10b981','#ef4444','#3b82f6','#8b5cf6','#ec4899'];
+  const emptyMsg='<div style="color:var(--muted);font-size:12px;padding:18px;text-align:center;">Kayıt bulunamadı</div>';
+
+  // ─ Her acente için ortak istatistikleri tek seferde hesapla ─
+  let totNet=0,totBrut=0,totK=0,totA=0,totAcIade=0,totMus=0;
+  let stats=list.map(function(a){
+    const ps=DB.policeler.filter(p=>p.acenteId===a.id);
+    const topNet=ps.reduce((s,p)=>s+(parseFloat(p.net)||0),0);
+    const topBrut=ps.reduce((s,p)=>s+(parseFloat(p.brut)||0),0);
+    const topK=ps.reduce((s,p)=>s+(parseFloat(p.ackomisyon)||0),0);
+    const topA=DB.atList.filter(t=>t.acenteId===a.id&&t.tip!=='iade').reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+    const topAcIade=DB.iptaller.filter(ii=>ii.acenteId===a.id).reduce((s,ii)=>s+(parseFloat(ii.acIade)||0),0);
+    const musteriSayisi=new Set(ps.map(p=>p.musteriId).filter(Boolean)).size;
+    const kalan=topK-topAcIade-topA;
+    const initials=a.ad.split(' ').map(w=>w[0]||'').slice(0,2).join('').toUpperCase();
+    const avClr=avatarColors[(a.ad.charCodeAt(0)||0)%avatarColors.length];
+    return {a,ps,topNet,topBrut,topK,topA,topAcIade,musteriSayisi,kalan,initials,avClr};
+  });
+  // 🔴 Borçlu / 🟢 Alacaklı / 🟡 Tümü hesap durumu filtresi
+  const durumFiltre=acenteGetDurumFiltre();
+  if(durumFiltre==='borclu') stats=stats.filter(s=>s.kalan>0.009);
+  else if(durumFiltre==='alacakli') stats=stats.filter(s=>s.kalan<-0.009);
+  stats.forEach(function(s){
+    totNet+=s.topNet; totBrut+=s.topBrut; totK+=s.topK; totA+=s.topA; totAcIade+=s.topAcIade; totMus+=s.musteriSayisi;
+  });
+
+  if(footerBar){
+    if(!stats.length){ footerBar.style.display='none'; }
+    else{
       footerBar.style.display='block';
       footerBar.innerHTML=`<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
-        <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7);">TOPLAM (${list.length} acente)</span>
+        <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7);">TOPLAM (${stats.length} acente)</span>
         <span style="font-size:12px;font-weight:700;color:#fff;">👥 ${totMus} müşteri</span>
         <span style="font-size:12px;font-weight:700;color:#a5f3fc;">Net: ₺${fmt(totNet)}</span>
         <span style="font-size:12px;font-weight:700;color:#fbbf24;">Brüt: ₺${fmt(totBrut)}</span>
@@ -8883,6 +8952,186 @@ function renderAcente(){
       </div>`;
     }
   }
+
+  // ─ 1) KART ─
+  const grid=byId('acente-kart-grid');
+  if(grid){
+    grid.innerHTML = stats.length ? stats.map(function(s){
+      const kalanClr=s.kalan>0?'var(--danger)':s.kalan<0?'var(--success)':'var(--muted)';
+      return `<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:box-shadow .15s;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='var(--shadow)'">
+        <div style="background:var(--grad-1);padding:14px 16px;display:flex;align-items:center;gap:12px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:${s.avClr};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;">${s.initials}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.a.ad}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;">${s.a.tel?'📞 '+s.a.tel:''}${s.a.tarih?' · 📅 '+fmtD(s.a.tarih):''}</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
+          <div style="padding:10px 12px;text-align:center;border-right:1px solid var(--border);">
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Poliçe</div>
+            <div style="font-size:18px;font-weight:800;color:var(--info);">${s.ps.length}</div>
+          </div>
+          <div style="padding:10px 12px;text-align:center;border-right:1px solid var(--border);">
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Müşteri</div>
+            <div style="font-size:18px;font-weight:800;color:var(--accent);">${s.musteriSayisi}</div>
+          </div>
+          <div style="padding:10px 12px;text-align:center;">
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Kalan</div>
+            <div style="font-size:14px;font-weight:800;color:${kalanClr};">₺${fmt(s.kalan)}</div>
+          </div>
+        </div>
+        <div style="padding:12px 14px;flex:1;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+            <span style="font-size:11px;color:var(--muted);">Net Tutar</span>
+            <span style="font-size:12px;font-weight:700;color:var(--text);">₺${fmt(s.topNet)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+            <span style="font-size:11px;color:var(--muted);">Brüt Tutar</span>
+            <span style="font-size:12px;font-weight:700;color:var(--accent);">₺${fmt(s.topBrut)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+            <span style="font-size:11px;color:var(--muted);">Komisyon</span>
+            <span style="font-size:12px;font-weight:700;color:var(--warning);">₺${fmt(s.topK)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);">
+            <span style="font-size:11px;color:var(--muted);">Tahsilat</span>
+            <span style="font-size:12px;font-weight:700;color:var(--success);">₺${fmt(s.topA)}</span>
+          </div>
+        </div>
+        <div style="padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:6px;">
+          <button onclick='openAcenteDetay("${s.a.id}")' style="flex:1;padding:7px;border:none;background:color-mix(in srgb,var(--info) 12%,transparent);color:var(--info);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;">👁️ Detay</button>
+          <button onclick='editAcente("${s.a.id}")' style="flex:1;padding:7px;border:none;background:color-mix(in srgb,var(--warning) 12%,transparent);color:var(--warning);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;">✏️ Düzenle</button>
+          <button onclick='waAcente&&waAcente("${s.a.id}")' style="padding:7px 10px;border:none;background:color-mix(in srgb,var(--success) 12%,transparent);color:var(--success);border-radius:8px;font-size:11px;cursor:pointer;">💬</button>
+          <button onclick='delAcente("${s.a.id}")' style="padding:7px 10px;border:none;background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border-radius:8px;font-size:11px;cursor:pointer;">🗑️</button>
+        </div>
+        <div style="padding:0 12px 12px;">
+          <button onclick='acenteHesapSifirla("${s.a.id}")' title="Ödeme alındı — hesabı sıfırla" style="width:100%;padding:8px;border:none;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">⚡ Ödeme Alındı — Hesabı Sıfırla</button>
+        </div>
+      </div>`;
+    }).join('') : `<div style="grid-column:1/-1;">${emptyMsg}</div>`;
+  }
+
+  // ─ 2) TABLO ─
+  const tbodyT=byId('acente-tablo-body');
+  if(tbodyT){
+    tbodyT.innerHTML = stats.length ? stats.map(function(s){
+      const kalanClr=s.kalan>0?'var(--danger)':s.kalan<0?'var(--success)':'var(--muted)';
+      return `<tr>
+        <td style="font-weight:700;">${s.a.ad}</td>
+        <td>${s.a.tel||'-'}</td>
+        <td style="text-align:center;">${s.ps.length}</td>
+        <td style="text-align:center;">${s.musteriSayisi}</td>
+        <td>₺${fmt(s.topNet)}</td>
+        <td>₺${fmt(s.topBrut)}</td>
+        <td>₺${fmt(s.topK)}</td>
+        <td>₺${fmt(s.topA)}</td>
+        <td style="font-weight:800;color:${kalanClr};">₺${fmt(s.kalan)}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-outline btn-sm" onclick='openAcenteDetay("${s.a.id}")' title="Detay">👁️</button>
+          <button class="btn btn-outline btn-sm" onclick='editAcente("${s.a.id}")' title="Düzenle">✏️</button>
+          <button class="btn btn-outline btn-sm" onclick='acenteHesapSifirla("${s.a.id}")' title="Ödeme Alındı — Sıfırla">⚡</button>
+          <button class="btn btn-outline btn-sm" onclick='delAcente("${s.a.id}")' title="Sil">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('') : `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:18px;">Kayıt bulunamadı</td></tr>`;
+  }
+
+  // ─ 3) LİSTE (yatay kompakt satır) ─
+  const listeWrap=byId('acente-liste-wrap');
+  if(listeWrap){
+    listeWrap.innerHTML = stats.length ? stats.map(function(s){
+      const kalanClr=s.kalan>0?'var(--danger)':s.kalan<0?'var(--success)':'var(--muted)';
+      return `<div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
+        <div style="width:34px;height:34px;border-radius:50%;background:${s.avClr};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;">${s.initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:700;color:var(--text);">${s.a.ad}</div>
+          <div style="font-size:11px;color:var(--muted);">${s.ps.length} poliçe · ${s.musteriSayisi} müşteri${s.a.tel?' · 📞 '+s.a.tel:''}</div>
+        </div>
+        <div style="text-align:right;min-width:100px;">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;">Kalan</div>
+          <div style="font-size:14px;font-weight:800;color:${kalanClr};">₺${fmt(s.kalan)}</div>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-outline btn-sm" onclick='openAcenteDetay("${s.a.id}")'>👁️</button>
+          <button class="btn btn-outline btn-sm" onclick='acenteHesapSifirla("${s.a.id}")' title="Ödeme Alındı — Sıfırla">⚡</button>
+          <button class="btn btn-outline btn-sm" onclick='delAcente("${s.a.id}")'>🗑️</button>
+        </div>
+      </div>`;
+    }).join('') : emptyMsg;
+  }
+
+  // ─ 4) KOMPAKT (mini kart) ─
+  const kompaktGrid=byId('acente-kompakt-grid');
+  if(kompaktGrid){
+    kompaktGrid.innerHTML = stats.length ? stats.map(function(s){
+      const kalanClr=s.kalan>0?'var(--danger)':s.kalan<0?'var(--success)':'var(--muted)';
+      return `<div onclick='openAcenteDetay("${s.a.id}")' style="cursor:pointer;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+        <div style="width:36px;height:36px;border-radius:50%;background:${s.avClr};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;margin:0 auto 8px;">${s.initials}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.a.ad}</div>
+        <div style="font-size:13px;font-weight:800;color:${kalanClr};margin-top:4px;">₺${fmt(s.kalan)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">${s.ps.length} poliçe</div>
+        <button onclick='event.stopPropagation();acenteHesapSifirla("${s.a.id}")' title="Ödeme Alındı — Sıfırla" style="margin-top:8px;width:100%;padding:5px;border:none;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;">⚡ Sıfırla</button>
+      </div>`;
+    }).join('') : `<div style="grid-column:1/-1;">${emptyMsg}</div>`;
+  }
+
+  // ─ 5) ŞEMA (bakiye karşılaştırma çubuk grafiği) ─
+  const semaChart=byId('acente-sema-chart');
+  if(semaChart){
+    if(!stats.length){ semaChart.innerHTML=emptyMsg; }
+    else{
+      const maxAbs=Math.max(1,...stats.map(s=>Math.abs(s.kalan)));
+      semaChart.innerHTML = stats.map(function(s){
+        const pct=Math.round(Math.abs(s.kalan)/maxAbs*100);
+        const barClr=s.kalan>0?'var(--danger)':s.kalan<0?'var(--success)':'var(--muted)';
+        return `<div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+            <span style="font-weight:700;color:var(--text);">${s.a.ad}</span>
+            <span style="font-weight:800;color:${barClr};">₺${fmt(s.kalan)}</span>
+          </div>
+          <div style="background:var(--bg);border-radius:6px;height:14px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:${barClr};border-radius:6px;transition:width .3s;"></div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // ─ 6) DETAYLI PANEL (akordeon) ─
+  const detayWrap=byId('acente-detay-wrap');
+  if(detayWrap){
+    detayWrap.innerHTML = stats.length ? stats.map(function(s){
+      const kalanClr=s.kalan>0?'var(--danger)':s.kalan<0?'var(--success)':'var(--muted)';
+      return `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;" onclick="toggleAcenteRow('${s.a.id}')">
+          <div style="width:38px;height:38px;border-radius:50%;background:${s.avClr};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;">${s.initials}</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">${s.a.ad}</div>
+            <div style="font-size:11px;color:var(--muted);">${s.a.tel||''}${s.a.tarih?' · '+fmtD(s.a.tarih):''}</div>
+          </div>
+          <div style="font-size:14px;font-weight:800;color:${kalanClr};">₺${fmt(s.kalan)}</div>
+          <span id="acente-arrow-${s.a.id}" style="color:var(--muted);">▼</span>
+        </div>
+        <div id="acente-detail-${s.a.id}" style="display:none;padding:0 14px 14px;border-top:1px solid var(--border);">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-top:12px;">
+            <div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;">Poliçe</div><div style="font-size:14px;font-weight:700;">${s.ps.length}</div></div>
+            <div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;">Müşteri</div><div style="font-size:14px;font-weight:700;">${s.musteriSayisi}</div></div>
+            <div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;">Net</div><div style="font-size:14px;font-weight:700;">₺${fmt(s.topNet)}</div></div>
+            <div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;">Brüt</div><div style="font-size:14px;font-weight:700;">₺${fmt(s.topBrut)}</div></div>
+            <div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;">Komisyon</div><div style="font-size:14px;font-weight:700;">₺${fmt(s.topK)}</div></div>
+            <div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;">Tahsilat</div><div style="font-size:14px;font-weight:700;">₺${fmt(s.topA)}</div></div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:12px;">
+            <button class="btn btn-outline btn-sm" onclick='openAcenteDetay("${s.a.id}")'>👁️ Tam Detay</button>
+            <button class="btn btn-outline btn-sm" onclick='editAcente("${s.a.id}")'>✏️ Düzenle</button>
+            <button class="btn btn-sm" onclick='acenteHesapSifirla("${s.a.id}")' style="background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);border:none;">⚡ Ödeme Alındı</button>
+            <button class="btn btn-outline btn-sm" onclick='delAcente("${s.a.id}")'>🗑️ Sil</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('') : emptyMsg;
+  }
+
   // at dropdown
   const atSel=byId('at-acente');
   if(atSel){atSel.innerHTML='<option value="">-- Seçin --</option>';DB.acenteler.forEach(a=>{const o=document.createElement('option');o.value=a.id;o.textContent=a.ad;atSel.appendChild(o);});}
@@ -8902,6 +9151,30 @@ function delAcente(id){
   if(!confirm('Acente silinsin mi?'))return;
   DB.acenteler=DB.acenteler.filter(a=>a.id!==id);
   saveDB();renderAcente();populateSelects();toast('Silindi','error');updateStats();
+}
+// ⚡ Hızlı Kısayol: "Ödeme Alındı" — acentenin kalan hesabını (komisyon - acente iade - tahsilat)
+// tek tıkla sıfırlar. Farkı otomatik bir tahsilat kaydı olarak acente tahsilat listesine ekler,
+// böylece hesap geçmişi kaybolmaz, sadece kalan bakiye 0'a çekilir.
+function acenteHesapSifirla(id){
+  const a=getAcente(id); if(!a) return;
+  const ps=DB.policeler.filter(p=>p.acenteId===id);
+  const topK=ps.reduce((s,p)=>s+(parseFloat(p.ackomisyon)||0),0);
+  const topA=DB.atList.filter(t=>t.acenteId===id&&t.tip!=='iade').reduce((s,t)=>s+(parseFloat(t.tutar)||0),0);
+  const topAcIade=DB.iptaller.filter(ii=>ii.acenteId===id).reduce((s,ii)=>s+(parseFloat(ii.acIade)||0),0);
+  const kalan=topK-topAcIade-topA;
+  if(Math.abs(kalan)<0.01){ toast(a.ad+' hesabı zaten sıfır','info'); return; }
+  const yon=kalan>0?'tahsil edilecek':'iade edilecek';
+  if(!confirm('💰 '+a.ad+'\n\nKalan bakiye: ₺'+fmt(kalan)+' ('+yon+')\n\nÖdeme alındı olarak işaretlensin ve hesap sıfırlansın mı?'))return;
+  DB.atList.push({
+    id:uid(),acenteId:id,
+    policeId:null,polNo:'',musteriId:'',sirket:'',plaka:'',
+    tarih:new Date().toISOString().substr(0,10),
+    tutar:kalan,
+    aciklama:'⚡ Hızlı Kısayol — Ödeme Alındı / Hesap Sıfırlandı',
+    tip:'tahsilat'
+  });
+  saveDB();renderAcente();
+  toast('✅ '+a.ad+' hesabı sıfırlandı (₺'+fmt(kalan)+')','success');
 }
 function editAcente(id){
   const a=getAcente(id);if(!a)return;
@@ -8923,6 +9196,10 @@ function editAcente(id){
         <label>Başlangıç Tarihi</label>
         <input type="date" id="ea-tarih" value="${a.tarih||''}">
       </div>
+      <div class="fg" style="margin-bottom:10px;">
+        <label>Şehir</label>
+        <input type="text" id="ea-sehir" value="${(a.sehir||'').replace(/"/g,'&quot;')}" placeholder="Şehir">
+      </div>
       <div class="fg" style="grid-column:1/-1;margin-bottom:10px;">
         <label>Açıklama</label>
         <input type="text" id="ea-aciklama" value="${(a.aciklama||'').replace(/"/g,'&quot;')}" placeholder="Notlar...">
@@ -8940,6 +9217,7 @@ function updateAcente(id){
   a.oran=parseFloat((byId('ea-oran')||{}).value)||a.oran||0;
   a.tel=(byId('ea-tel')||{}).value||'';
   a.tarih=(byId('ea-tarih')||{}).value||'';
+  a.sehir=(byId('ea-sehir')||{}).value||'';
   a.aciklama=(byId('ea-aciklama')||{}).value||'';
   saveDB();renderAcente();populateSelects();
   toast('✅ '+a.ad+' güncellendi','success');
@@ -8947,6 +9225,7 @@ function updateAcente(id){
 }
 function openAcenteDetay(id){
   const a=getAcente(id);if(!a)return;
+  window._acenteDetayId=id; window._fpOpenType='acente';
   const ps=DB.policeler.filter(p=>p.acenteId===id);
   const atListAll=DB.atList.filter(t=>t.acenteId===id);
   const atList=atListAll.filter(t=>t.tip!=='iade');   // sadece tahsilatlar
@@ -9380,6 +9659,7 @@ function atFiltreSifirla(){
 function acenteFiltreSifirla(){
   ['acente-search-input','acente-srch-yil','acente-srch-ay','acente-srch-t1','acente-srch-t2']
     .forEach(id=>sv(id,''));
+  localStorage.setItem('acenteDurumFiltre','tumu');
   renderAcente();
 }
 function atSil(id){
@@ -11664,7 +11944,7 @@ function renderDashboard(){
         const kalanIkon= kalan>0?'⬆ ':kalan<0?'⬇ ':'';
         const bg = idx%2===0?'var(--card)':'var(--bg)';
         return `<tr style="background:${bg};cursor:pointer;transition:background .15s;"
-            onclick="showPage('acente');setTimeout(()=>{showAcenteTab('liste');},100)"
+            onclick="showPage('acente-liste')"
             onmouseover="this.style.background='color-mix(in srgb,var(--accent) 6%,transparent)'"
             onmouseout="this.style.background='${bg}'">
           <td style="padding:9px 12px;font-weight:700;color:var(--info);">
@@ -11725,6 +12005,36 @@ function renderDashboard(){
       dashAcenteEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:16px;text-align:center;">Henüz acente kaydı yok. <span style="color:var(--accent);cursor:pointer;font-weight:700;" onclick="showPage(\'acente\')">➕ İlk acenteyi ekleyin →</span></div>';
     }
   }
+}
+// ══════════════════════════════════════════════════
+// TAM SİSTEM ENTEGRASYONU — herhangi bir yerde ekleme/
+// düzenleme/silme olduğunda TÜM ekranları günceller
+// ══════════════════════════════════════════════════
+function refreshAll(){
+  const safe=(fn)=>{ try{ fn(); }catch(e){ /* sayfa açık değilse sessizce geç */ } };
+  safe(()=>populateSelects());
+  safe(()=>updateStats());
+  safe(()=>renderMusteriler());
+  safe(()=>renderPoliceListesi());
+  safe(()=>renderPolicelerHub());
+  safe(()=>renderAcente());
+  safe(()=>renderCari());
+  safe(()=>renderCariListe());
+  safe(()=>renderTahsilat());
+  safe(()=>renderTahsilatListe());
+  safe(()=>renderIptal());
+  safe(()=>renderTakip());
+  safe(()=>renderAtList());
+  safe(()=>renderDashboard());
+  safe(()=>renderKasa());
+  // Açık olan Müşteri Detay / Acente Detay panelini de tazele
+  safe(()=>{
+    const ov=byId('fullpage-overlay');
+    if(ov && ov.classList.contains('open')){
+      if(window._fpOpenType==='musteri' && window._cyMusteriId) openMusteriDetay(window._cyMusteriId);
+      else if(window._fpOpenType==='acente' && window._acenteDetayId) openAcenteDetay(window._acenteDetayId);
+    }
+  });
 }
 function updateStats(){
   byId('st-musteri').textContent=DB.musteriler.length;
@@ -14527,6 +14837,8 @@ const _origSaveDB = saveDB;
 function saveDB(){
   try{
     localStorage.setItem(DBKEY, JSON.stringify(DB));
+    // Tam sistem entegrasyonu: her kayıt sonrası tüm liste ve detay ekranlarını tazele
+    if(typeof refreshAll==='function'){ try{ refreshAll(); }catch(e){} }
   }catch(e){
     if(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||(e.code&&e.code===22)){
       console.error('[saveDB] localStorage quota aşıldı:', e);
@@ -18332,4 +18644,3 @@ function sb2DownloadSQL(){
   }
 })();
 </script>
-
