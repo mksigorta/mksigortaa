@@ -6939,17 +6939,19 @@ function peSetIslemTur(btn,val){
   });
   btn.classList.remove('btn-outline');btn.classList.add('btn-accent');
 
-  // Tür grupları
-  const ARAC_TURLERI    = ['Trafik','Kasko'];
-  const KONUT_TURLERI   = ['Konut','İşyeri','DASK'];
-  const SAGLIK_TURLERI  = ['Tamamlayıcı Sağlık (TSS)','Sağlık','Hayat'];
-  const SEYAHAT_TURLERI = ['Seyahat'];
-  const FERDI_TURLERI   = ['Ferdi Kaza','Diğer'];
+  // Tür grupları — Ayarlar'dan İşlem Türü yeniden adlandırılsa bile (örn. "Trafik" -> "Trafik Sigortası")
+  // doğru çalışması için tam eşleşme yerine kök-kelime (içerir) eşleşmesi kullanılır.
+  const _norm = s => (s||'').toLocaleLowerCase('tr-TR').replace(/[^a-zçğıöşü0-9]/g,'');
+  const normVal = _norm(val);
+  const ARAC_ANAHTAR    = ['trafik','kasko'];
+  const KONUT_ANAHTAR   = ['konut','işyeri','isyeri','dask'];
+  const SAGLIK_ANAHTAR  = ['sağlık','saglik','tss','hayat'];
+  const SEYAHAT_ANAHTAR = ['seyahat'];
 
-  const isArac    = ARAC_TURLERI.includes(val);
-  const isKonut   = KONUT_TURLERI.includes(val);
-  const isSaglik  = SAGLIK_TURLERI.includes(val);
-  const isSeyahat = SEYAHAT_TURLERI.includes(val);
+  const isArac    = ARAC_ANAHTAR.some(k=>normVal.includes(k));
+  const isKonut   = KONUT_ANAHTAR.some(k=>normVal.includes(k));
+  const isSaglik  = SAGLIK_ANAHTAR.some(k=>normVal.includes(k));
+  const isSeyahat = SEYAHAT_ANAHTAR.some(k=>normVal.includes(k));
 
   // ── Konut/DASK/İşyeri bloğu ──
   const konutBlok = byId('pe-dask-block');
