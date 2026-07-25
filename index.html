@@ -4302,6 +4302,17 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
         <input type="file" accept=".json" onchange="importData(event)" style="display:none;">
       </label>
 
+      <!-- BİLGİSAYARA İNDİR -->
+      <div onclick="bilgisayaraYedekIndir()" style="cursor:pointer;background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all .2s;"
+        onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)'"
+        onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="width:52px;height:52px;border-radius:14px;background:color-mix(in srgb,var(--accent) 15%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;">💻</div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:var(--text);">Bilgisayara İndir</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px;">Anlık veriyi .json olarak indir</div>
+        </div>
+      </div>
+
       <!-- TÜM VERİLERİ SİL -->
       <div onclick="veriSilOnay()" style="cursor:pointer;background:var(--card);border:2px solid var(--danger);border-radius:14px;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all .2s;"
         onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)'"
@@ -13391,6 +13402,41 @@ function initBackupSystem(){
       if(elapsed>=settings.interval) setTimeout(()=>backupNow(false),3000);
     }
   }
+}
+// ── Anlık veriyi bilgisayara indir ─────────────────────────────
+function bilgisayaraYedekIndir(){
+  try{
+    const now=new Date();
+    const dataStr=JSON.stringify(DB,null,2);
+    const blob=new Blob([dataStr],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    const tarih=now.toISOString().slice(0,10);
+    const saat=now.toTimeString().slice(0,5).replace(':','');
+    a.download='mksigorta_yedek_'+tarih+'_'+saat+'.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},1000);
+    // Yedek geçmişine de kaydet (Yedeklerim listesinde de görünsün)
+    localStorage.setItem('mksigorta_last_backup', now.toISOString());
+    if(typeof renderBackupPanel==='function') renderBackupPanel();
+    toast('💻 Yedek bilgisayara indirildi ('+tarih+' '+saat+')','success');
+  }catch(e){
+    toast('İndirme başarısız: '+e.message,'error');
+  }
+}
+// ── Tüm verileri sil ────────────────────────────────────────
+function deleteAllData(){
+  DB={musteriler:[],policeler:[],cariler:[],tahsilatlar:[],acenteler:[],atList:[],iptaller:[],ptExtras:[],notlar:[],taksitler:[],teklifler:[],iletisimler:[],ckKartlar:[],ckKategoriler:['Acente','Toptancı','Müşteri','Diğer']};
+  saveDB();
+  updateStats();
+  populateSelects();
+  if(typeof renderAyarlar==='function') renderAyarlar();
+  if(typeof renderDashboard==='function') renderDashboard();
+  if(typeof showPage==='function') showPage('dashboard');
+  toast('🗑️ Tüm veriler silindi','success');
 }
 function veriSilOnay(){
   const onay1 = confirm('⚠️ TÜM VERİLER SİLİNECEK!\n\nMüşteriler, poliçeler, tahsilatlar, cariler, iptaller, notlar ve tüm kayıtlar silinir.\n\nDevam etmek istiyor musunuz?');
