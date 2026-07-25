@@ -1982,8 +1982,8 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
 
       <!-- 24. AÇIKLAMA -->
       <div class="fg" data-field-key="aciklama" style="grid-column:1/-1">
-        <label>Açıklama</label>
-        <textarea id="pe-aciklama" placeholder="Açıklama..."></textarea>
+        <label>Açıklama <span id="pe-aciklama-manual-badge" style="display:none;font-size:10px;font-weight:700;color:var(--warning);">✏️ Elle düzenlendi — otomatik doldurma durduruldu</span></label>
+        <textarea id="pe-aciklama" placeholder="Açıklama..." oninput="_peAciklamaAuto=(this.value.trim()==='');byId('pe-aciklama-manual-badge').style.display=_peAciklamaAuto?'none':'inline';"></textarea>
       </div>
 
       <!-- KONUT / İŞYERİ / DASK ÖZEL ALANLAR (seçilince görünür) -->
@@ -7161,6 +7161,9 @@ function peAutoFillMusteri(){
 }
 
 function peAutoFillAciklama(){
+  // Kullanıcı Açıklama kutusuna kendi eliyle bir şey yazdıysa, İşlem Türü / Poliçe Türü
+  // gibi seçimler değiştiğinde bu bilgiyi SİLMEDEN sabit tutuyoruz.
+  if(window._peAciklamaAuto===false) return;
   const m    = getMusteri(gv('pe-musteri'));
   const a    = getAcente(gv('pe-acente'));
   const ad   = m ? m.ad : '';
@@ -7425,6 +7428,9 @@ function peTaksitDetay(forceOpen){
 function resetPeForm(){
   ['pe-edit-id','pe-musteri','pe-tanzim','pe-baslama','pe-bitis','pe-no','pe-sirket','pe-poltur','pe-islemtur','pe-tc','pe-vergino','pe-plaka','pe-ruhsat','pe-acente','pe-oran','pe-net','pe-brut','pe-ackomisyon','pe-aciklama','pe-vade-fark','pe-vade-tutar','pe-taksit-toplam','pe-kimin-karti','pe-arac-cinsi','pe-arac-marka','pe-model-yili'].forEach(id=>sv(id,''));
   sv('pe-odemedurum','odenmedi');sv('pe-tip','borclu');
+  // Açıklama otomatik doldurmayı yeniden aç (yeni kayıt için)
+  window._peAciklamaAuto=true;
+  const acBadge=byId('pe-aciklama-manual-badge'); if(acBadge) acBadge.style.display='none';
   // İşlem türü ve Poliçe türü butonlarını sıfırla
   document.querySelectorAll('.pe-islem-btn').forEach(b=>{b.classList.remove('btn-accent');b.classList.add('btn-outline');});
   document.querySelectorAll('.pe-poltur-btn').forEach(b=>{b.classList.remove('btn-primary');b.classList.add('btn-outline');});
@@ -7856,6 +7862,9 @@ function editPolice(id){
   sv('pe-brut',p.brut||'');sv('pe-ackomisyon',p.ackomisyon||'');
   sv('pe-odemedurum',p.odemeDurum||'odenmedi');sv('pe-tip',p.odemeTip||'borclu');
   sv('pe-aciklama',p.aciklama||'');
+  // Mevcut kayıttan yüklenen Açıklama'yı koru — İşlem/Poliçe Türü değişse bile üzerine yazılmasın
+  window._peAciklamaAuto=!p.aciklama;
+  const acBadge=byId('pe-aciklama-manual-badge'); if(acBadge) acBadge.style.display=p.aciklama?'inline':'none';
   sv('pe-kimin-karti',p.kiminKarti||'');
   sv('pe-arac-cinsi',p.aracCinsi||'');
   sv('pe-arac-marka',p.aracMarka||'');
@@ -14465,6 +14474,7 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   updateStats();renderDashboard();populateSelects();
   byId('pe-tip-row').style.display='none';
   window._editTahsilatId=null;
+  window._peAciklamaAuto=true;
   applyPoliceFieldOrder();
   rebuildAracCinsSelect(loadAracCinsleri());
   rebuildModelYiliSelect(loadModelYillari());
