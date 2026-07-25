@@ -1749,11 +1749,7 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- 2. POLİÇE TÜRÜ (Bireysel/Kurumsal/Kobi) -->
       <div class="fg" data-field-key="poltur" style="grid-column:1/-1;">
         <label>Poliçe Türü</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="pe-poltur-btns">
-          <button type="button" class="btn btn-outline btn-sm pe-poltur-btn" onclick="peSetPolTur(this,'Bireysel')">👤 Bireysel</button>
-          <button type="button" class="btn btn-outline btn-sm pe-poltur-btn" onclick="peSetPolTur(this,'Kurumsal')">🏢 Kurumsal</button>
-          <button type="button" class="btn btn-outline btn-sm pe-poltur-btn" onclick="peSetPolTur(this,'Kobi')">🏭 KOBİ</button>
-        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="pe-poltur-btns"></div>
         <input type="hidden" id="pe-poltur">
       </div>
 
@@ -4689,6 +4685,16 @@ select 'MK Sigorta Yedek2 tabloları başarıyla oluşturuldu ✓' as sonuc;</pr
       <div id="islem-tur-listesi" style="display:flex;flex-direction:column;gap:6px;"></div>
     </div>
 
+    <!-- POLİÇE TÜRÜ YÖNETİMİ -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📋 Poliçe Türü Yönetimi</div>
+        <button class="btn btn-success btn-sm" onclick="policeTurEkleModal()">➕ Yeni Ekle</button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Poliçe Ekle formundaki Poliçe Türü (Bireysel / Kurumsal / KOBİ vb.) kısayol butonlarını yönetin (ekle / düzenle / sil). Her türün kaç poliçede kullanıldığını görebilirsiniz.</p>
+      <div id="police-tur-listesi" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+
     <!-- ARAÇ CİNSİ YÖNETİMİ -->
     <div class="card">
       <div class="card-header">
@@ -5496,7 +5502,7 @@ function showPage(name){
   if(vBtn){vBtn.style.display=(name==='dashboard')?'inline-flex':'none';}
   closeSidebar();syncBottomNav(name);
   if(['police-ekle','police-takip','tahsilat','iptal-ekle','iptal-liste','iptal-iade','whatsapp','not-defteri','cari','teklif','iletisim','toplu-islem'].includes(name))populateSelects();
-  const renders={dashboard:renderDashboard,musteriler:renderMusteriler,'police-listesi':renderPoliceListesi,'police-takip':renderTakip,policeler:renderPolicelerHub,'pt-ekstra-ekle':()=>populateSelects(),'pt-ekstra-liste':renderPtEkstraListe,finans:renderFinansHub,cari:renderCari,'cari-liste':renderCariListe,tahsilat:renderTahsilat,'tahsilat-liste':renderTahsilatListe,kasa:renderKasa,'kasa-pol':()=>renderKasaAlt('pol'),'kasa-ipt':()=>renderKasaAlt('ipt'),'kasa-acb':()=>renderKasaAlt('acb'),'kasa-gen':()=>renderKasaAlt('gen'),acente:renderAcente,'acente-liste':renderAcente,'iptal-ekle':()=>{},'iptal-liste':renderIptal,'iptal-iade':()=>showPage('iptal-ekle'),'iptal-hesap':renderIptalHesap,'not-defteri':renderNots,whatsapp:initWA,ayarlar:renderAyarlar,'gelir-grafigi':renderGelirGrafigi,teklif:renderTeklif,iletisim:renderIletisim,'toplu-islem':renderTopluIslem,'belge-arama':renderBelgeArama};
+  const renders={dashboard:renderDashboard,'police-ekle':()=>{renderIslemTurButtons();renderPoliceTurButtons();},musteriler:renderMusteriler,'police-listesi':renderPoliceListesi,'police-takip':renderTakip,policeler:renderPolicelerHub,'pt-ekstra-ekle':()=>populateSelects(),'pt-ekstra-liste':renderPtEkstraListe,finans:renderFinansHub,cari:renderCari,'cari-liste':renderCariListe,tahsilat:renderTahsilat,'tahsilat-liste':renderTahsilatListe,kasa:renderKasa,'kasa-pol':()=>renderKasaAlt('pol'),'kasa-ipt':()=>renderKasaAlt('ipt'),'kasa-acb':()=>renderKasaAlt('acb'),'kasa-gen':()=>renderKasaAlt('gen'),acente:renderAcente,'acente-liste':renderAcente,'iptal-ekle':()=>{},'iptal-liste':renderIptal,'iptal-iade':()=>showPage('iptal-ekle'),'iptal-hesap':renderIptalHesap,'not-defteri':renderNots,whatsapp:initWA,ayarlar:renderAyarlar,'gelir-grafigi':renderGelirGrafigi,teklif:renderTeklif,iletisim:renderIletisim,'toplu-islem':renderTopluIslem,'belge-arama':renderBelgeArama};
   if(renders[name])renders[name]();
   if(typeof syncMobileView === 'function') syncMobileView();
 }
@@ -7103,7 +7109,7 @@ function peAutoFillMusteri(){
     document.querySelectorAll('.pe-poltur-btn').forEach(b=>{
       b.classList.remove('btn-primary','btn-accent');
       b.classList.add('btn-outline');
-      if(b.textContent.includes(tip==='Kobi'?'KOBİ':tip)) {
+      if(b.getAttribute('data-val')===tip) {
         b.classList.remove('btn-outline'); b.classList.add('btn-primary');
       }
     });
@@ -11506,7 +11512,7 @@ function renderDashboard(){
     const b=new Date(p.bitis);
     const diff=Math.ceil((b-today)/(864e5));
     const color=diff<=7?'var(--accent)':diff<=15?'var(--warning)':'var(--info)';
-    return `<div class="exp-row" onclick='showPage("police-takip")'>
+    return `<div class="exp-row" onclick="showPage('police-ekle');setTimeout(()=>editPolice('${p.id}'),300)">
       <div><b>${m?m.ad:'-'}</b> – ${p.polNo} – <span style="color:var(--muted);">${p.plaka||''}</span></div>
       <div class="exp-days" style="background:${color}20;color:${color};">${diff} gün</div>
     </div>`;
@@ -12547,6 +12553,108 @@ function islemTurSil(idx){
 }
 
 // ══════════════════════════════════════════════════
+// POLİÇE TÜRÜ YÖNETİM SİSTEMİ
+// ══════════════════════════════════════════════════
+const POLICE_TUR_DEFAULT = [
+  {icon:'👤',label:'Bireysel'},
+  {icon:'🏢',label:'Kurumsal'},
+  {icon:'🏭',label:'Kobi',display:'KOBİ'}
+];
+function loadPoliceTurleri(){
+  try{
+    const s=JSON.parse(localStorage.getItem('policeTurleri')||'null');
+    if(s&&s.length) return s;
+  }catch(e){}
+  return POLICE_TUR_DEFAULT.map(function(x){return {...x};});
+}
+function savePoliceTurleri(list){
+  localStorage.setItem('policeTurleri',JSON.stringify(list));
+}
+// Poliçe Ekle formundaki Poliçe Türü kısayol butonlarını listeye göre üretir
+function renderPoliceTurButtons(){
+  const cont=byId('pe-poltur-btns');
+  if(!cont) return;
+  const cur=gv('pe-poltur');
+  const list=loadPoliceTurleri();
+  cont.innerHTML=list.map(function(t){
+    const disp=t.display||t.label;
+    const active=t.label===cur;
+    return '<button type="button" class="btn btn-sm pe-poltur-btn '+(active?'btn-primary':'btn-outline')+'" data-val="'+t.label.replace(/"/g,'&quot;')+'" onclick="peSetPolTur(this,\''+t.label.replace(/'/g,"\\'")+'\')">'+t.icon+' '+disp+'</button>';
+  }).join('');
+}
+// Ayarlar > Poliçe sekmesindeki Poliçe Türü Yönetimi listesini üretir
+function renderPoliceTurListesi(){
+  const cont=byId('police-tur-listesi');
+  if(!cont) return;
+  const list=loadPoliceTurleri();
+  if(!list.length){cont.innerHTML='<p style="color:var(--muted);font-size:12px;">Liste boş</p>';renderPoliceTurButtons();return;}
+  cont.innerHTML=list.map(function(t,i){
+    const disp=t.display||t.label;
+    const kullanim=(typeof DB!=='undefined'&&DB.policeler)?DB.policeler.filter(function(p){return p.polTur===t.label;}).length:0;
+    return '<div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">'
+      +'<span style="min-width:22px;height:22px;background:var(--grad-1);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">'+(i+1)+'</span>'
+      +'<span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">'+t.icon+' '+disp+'</span>'
+      +'<span style="font-size:10px;color:var(--muted);background:var(--bg);padding:2px 8px;border-radius:20px;white-space:nowrap;">'+kullanim+' poliçe</span>'
+      +'<button class="btn btn-primary btn-xs" onclick=\'policeTurDuzenle('+i+')\'>✏️ Düzenle</button>'
+      +'<button class="btn btn-danger btn-xs" onclick=\'policeTurSil('+i+')\'>🗑️ Sil</button>'
+      +'</div>';
+  }).join('');
+  renderPoliceTurButtons();
+}
+function policeTurEkleModal(){
+  const label=prompt('Yeni Poliçe Türü Adı:','');
+  if(!label||!label.trim()) return;
+  const icon=prompt('Simge (emoji) — boş bırakılabilir:','📋')||'📋';
+  const list=loadPoliceTurleri();
+  const trimmed=label.trim();
+  if(list.some(function(t){return t.label.toLowerCase()===trimmed.toLowerCase();})){toast('Bu poliçe türü zaten var!','error');return;}
+  list.push({icon:icon.trim()||'📋',label:trimmed});
+  savePoliceTurleri(list);
+  renderPoliceTurListesi();
+  toast('Poliçe türü eklendi','success');
+}
+function policeTurDuzenle(idx){
+  const list=loadPoliceTurleri();
+  const t=list[idx]; if(!t) return;
+  const label=prompt('Poliçe Türü Adı Düzenle:',t.display||t.label);
+  if(!label||!label.trim()) return;
+  const icon=prompt('Simge (emoji) Düzenle:',t.icon||'📋')||t.icon;
+  const eskiLabel=t.label;
+  const yeniLabel=label.trim();
+  list[idx]={icon:(icon.trim()||'📋'),label:yeniLabel};
+  savePoliceTurleri(list);
+  // Bu türle kayıtlı mevcut poliçelerde adı güncelle (isim değiştiyse) — sistem geneline yayılır
+  if(eskiLabel!==yeniLabel && typeof DB!=='undefined' && DB.policeler){
+    DB.policeler.forEach(function(p){ if(p.polTur===eskiLabel) p.polTur=yeniLabel; });
+    if(typeof saveDB==='function') saveDB();
+    if(typeof renderPoliceListesi==='function') renderPoliceListesi();
+    if(typeof updateStats==='function') updateStats();
+    if(typeof renderDashboard==='function') renderDashboard();
+  }
+  renderPoliceTurListesi();
+  toast('Güncellendi','success');
+}
+function policeTurSil(idx){
+  const list=loadPoliceTurleri();
+  const t=list[idx]; if(!t) return;
+  const kullanim=(typeof DB!=='undefined'&&DB.policeler)?DB.policeler.filter(function(p){return p.polTur===t.label;}).length:0;
+  const uyari = kullanim>0 ? ('\n\n⚠️ Bu tür '+kullanim+' poliçede kullanılıyor. Silinirse bu poliçelerdeki Poliçe Türü alanı boşaltılacaktır.') : '';
+  if(!confirm('"'+(t.display||t.label)+'" silinsin mi?'+uyari)) return;
+  list.splice(idx,1);
+  savePoliceTurleri(list);
+  // Silinen türü kullanan tüm poliçelerden de kaldır — sistem geneline yayılır
+  if(kullanim>0 && typeof DB!=='undefined' && DB.policeler){
+    DB.policeler.forEach(function(p){ if(p.polTur===t.label) p.polTur=''; });
+    if(typeof saveDB==='function') saveDB();
+    if(typeof renderPoliceListesi==='function') renderPoliceListesi();
+    if(typeof updateStats==='function') updateStats();
+    if(typeof renderDashboard==='function') renderDashboard();
+  }
+  renderPoliceTurListesi();
+  toast('Poliçe türü silindi','error');
+}
+
+// ══════════════════════════════════════════════════
 // ARAÇ CİNSİ YÖNETİM SİSTEMİ
 // ══════════════════════════════════════════════════
 const ARAC_CINS_DEFAULT = ['OTOMOBİL','MOTORSİKLET','KAMYONET','MİNİBÜS','OTOBÜS','KAMYON','TIR','ÇEKİCİ','DİĞER'];
@@ -12628,7 +12736,7 @@ function showAyarlarTab(tab){
     }
   });
   localStorage.setItem('ayarlarTab', tab);
-  if(tab==='police'){  renderPoliceFieldOrderUI(); renderAracCinsListesi(); renderIptalSebebiListesi(); }
+  if(tab==='police'){  renderPoliceFieldOrderUI(); renderIslemTurListesi(); renderPoliceTurListesi(); renderAracCinsListesi(); renderIptalSebebiListesi(); }
   if(tab==='kullanici'){ renderUsers(); renderUserList(); }
   if(tab==='tema'){    const tg=byId('theme-grid-ayarlar');if(tg){tg.innerHTML='';buildThemeGrid();} }
   if(tab==='modul'){   renderModulGrid(); renderMenuOrderList(); renderMenuOrderList2(); }
@@ -14326,6 +14434,8 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   rebuildAracCinsSelect(loadAracCinsleri());
   rebuildModelYiliSelect(loadModelYillari());
   rebuildIptalSebepSelect(loadIptalSebepler());
+  renderIslemTurButtons();
+  renderPoliceTurButtons();
   initBackupSystem();
   setTimeout(syncMobileView, 300);
 });
