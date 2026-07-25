@@ -1868,7 +1868,9 @@ tfoot tr td,tfoot tr th{padding:9px 12px;font-size:12px;}
       <!-- 16. MODEL YILI -->
       <div class="fg" data-field-key="modelyili">
         <label>Model Yılı</label>
-        <input type="text" id="pe-model-yili" placeholder="Örn: 2022" maxlength="4" oninput="this.value=this.value.replace(/\D/g,'');peAutoFillAciklama()">
+        <select id="pe-model-yili" onchange="peAutoFillAciklama()">
+          <option value="">-- Seçin --</option>
+        </select>
       </div>
 
       <!-- 17. NET TUTAR -->
@@ -4703,6 +4705,35 @@ select 'MK Sigorta Yedek2 tabloları başarıyla oluşturuldu ✓' as sonuc;</pr
       </div>
       <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Poliçe Ekle formundaki Araç Cinsi seçeneklerini yönetin.</p>
       <div id="arac-cins-listesi" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+
+    <!-- MODEL YILI YÖNETİMİ -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📅 Model Yılı Yönetimi</div>
+        <button class="btn btn-success btn-sm" onclick="modelYiliEkleModal()">➕ Yeni Ekle</button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Poliçe Ekle formundaki Model Yılı seçeneklerini yönetin (ekle / düzenle / sil) veya toplu aralık ile hızlıca doldurun.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;">
+        <div class="fg" style="margin:0;min-width:110px;">
+          <label>Başlangıç Yılı</label>
+          <input type="number" id="my-range-start" value="1980" style="width:100%;">
+        </div>
+        <div class="fg" style="margin:0;min-width:110px;">
+          <label>Bitiş Yılı</label>
+          <input type="number" id="my-range-end" value="2030" style="width:100%;">
+        </div>
+        <div class="fg" style="margin:0;min-width:150px;">
+          <label>Sıralama</label>
+          <select id="my-range-dir" style="width:100%;">
+            <option value="desc">Büyükten Küçüğe</option>
+            <option value="asc">Küçükten Büyüğe</option>
+          </select>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="modelYiliAralikDoldur(false)">➕ Aralığı Ekle</button>
+        <button class="btn btn-danger btn-sm" onclick="if(confirm('Mevcut liste silinip aralık yeniden oluşturulsun mu?'))modelYiliAralikDoldur(true)">↺ Sıfırla ve Doldur</button>
+      </div>
+      <div id="model-yili-listesi" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;"></div>
     </div>
 
     <!-- İPTAL SEBEBİ YÖNETİMİ -->
@@ -12313,6 +12344,8 @@ function exportGecikRapor(){
 // POLİÇE FORMU SIRALAMA SİSTEMİ
 // ══════════════════════════════════════════════════
 const PE_FIELDS_DEFAULT = [
+  {key:'islemtur',   label:'İşlem Türü',            required:false, visible:true},
+  {key:'poltur',     label:'Poliçe Türü',           required:false, visible:true},
   {key:'acente',     label:'Acente',                required:false, visible:true},
   {key:'musteri',    label:'Müşteri Seç',           required:true,  visible:true},
   {key:'tc',         label:'TC Kimlik No',           required:false, visible:true},
@@ -12736,7 +12769,7 @@ function showAyarlarTab(tab){
     }
   });
   localStorage.setItem('ayarlarTab', tab);
-  if(tab==='police'){  renderPoliceFieldOrderUI(); renderIslemTurListesi(); renderPoliceTurListesi(); renderAracCinsListesi(); renderIptalSebebiListesi(); }
+  if(tab==='police'){  renderPoliceFieldOrderUI(); renderIslemTurListesi(); renderPoliceTurListesi(); renderAracCinsListesi(); renderModelYiliListesi(); renderIptalSebebiListesi(); }
   if(tab==='kullanici'){ renderUsers(); renderUserList(); }
   if(tab==='tema'){    const tg=byId('theme-grid-ayarlar');if(tg){tg.innerHTML='';buildThemeGrid();} }
   if(tab==='modul'){   renderModulGrid(); renderMenuOrderList(); renderMenuOrderList2(); }
@@ -12791,7 +12824,9 @@ function rebuildModelYiliSelect(list){
   const sel=byId('pe-model-yili');
   if(!sel) return;
   const cur=sel.value;
-  sel.innerHTML='<option value="">-- Seçin --</option>'+list.map(function(y){return '<option'+(y===cur?' selected':'')+'>'+y+'</option>';}).join('');
+  let opts=list.slice();
+  if(cur && !opts.includes(cur)) opts=[cur].concat(opts); // mevcut kayıttaki değeri kaybetme
+  sel.innerHTML='<option value="">-- Seçin --</option>'+opts.map(function(y){return '<option'+(y===cur?' selected':'')+'>'+y+'</option>';}).join('');
 }
 function modelYiliAralikDoldur(resetFirst){
   const start=parseInt(byId('my-range-start').value)||1980;
